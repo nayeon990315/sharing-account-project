@@ -1,47 +1,50 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+// import Header from './components/Header.vue'
+// import Footer from './components/Footer.vue'
+import { useRoute } from 'vue-router';
+import { computed } from 'vue';
+const route = useRoute();
+
+const routeKey = computed(() => route.fullPath);
+// const headerKey = computed(() => route.fullPath);
+
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <!-- <Header :key="headerKey" /> -->
+  <router-view :key="routeKey"></router-view>
+  <!-- <Footer /> -->
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+* {
+  box-sizing: border-box;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+section {
+  border: 1px solid;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+section {
+  height: 500px;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+article {
+  width: 75%;
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+  background-color: azure;
+  margin: 10px;
+  height: 90%;
+  float: left;
+  overflow: auto;
+
+}
+
+aside {
+  width: 20%;
+  background-color: #f4f4f1;
+  height: 90%;
+  /* display: inline-block; */
+  float: right;
 }
 </style>
