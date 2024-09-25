@@ -1,9 +1,9 @@
 <template>
     <div class="container">
         <!-- Header -->
-        <header class="text-center my-4">
+        <!-- <header class="text-center my-4">
             <h1>K-Bee</h1>
-        </header>
+        </header> -->
 
         <div class="row">
             <!-- Left Sidebar (Routine Category) -->
@@ -33,7 +33,6 @@
                             </div>
                             <ul>
                                 <li>오늘 총 지출: {{ formatCurrency(totalExpenses) }}원</li>
-
                                 <li>가장 지출이 많은 카테고리는 {{ maxExpenseCategory.maxCategory }}입니다.</li>
                                 <li>오늘 총 지출의 {{ formatPercentage(maxExpenseCategory.maxPercentage) }}
                                     ({{formatCurrency(maxExpenseCategory.maxAmount) }}원) 입니다.</li>
