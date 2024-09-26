@@ -32,15 +32,15 @@
         <div class="expenses">
             <div id="present-expense">
                 <ul>
-                    <li>a</li>
-                    <li>b</li>
+                    <li>여기에 과거</li>
+                    <li>지출 내역</li>
                 </ul>
             </div>
 
             <div id="past-expense">
                 <ul>
-                    <li>c</li>
-                    <li>d</li>
+                    <li>여기에 현재</li>
+                    <li>지출 내역</li>
                 </ul>
             </div>
         </div>
