@@ -7,23 +7,41 @@ import Upload from '@/pages/Upload.vue';
 import PostCommunity from '@/pages/PostCommunity/PostCommunity.vue';
 import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
 import MyRoutine from '@/pages/MyRoutine.vue';
+import RoutineCommunity from '../pages/RoutineCommunity.vue';
+import Card from '../pages/card.vue';
+import Card2 from '../pages/card2.vue';
 
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component : HomePage
+    component: HomePage
   },
   {
     path: '/myroutine',
     name: 'MyRoutine',
-    component : MyRoutine
+    component: MyRoutine
   },
   {
     path: '/versus',
     name: 'MeVersus',
-    component : MeVersusPage
+    component: MeVersusPage
+  },
+  {
+    path: '/routine-community',
+    name: 'routineCommunity',
+    component: RoutineCommunity
+  },
+  {
+    path: '/test',
+    name: 'card',
+    component: Card
+  },
+  {
+    path: '/test2',
+    name: 'card2',
+    component: Card2
   },
   {
     path: '/post-community',
@@ -52,43 +70,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-});
-
-import HomePage from '../pages/HomePage.vue';
-import HomePage2 from '../pages/HomePage2.vue';
-import RoutineCommunity from '../pages/RoutineCommunity.vue';
-import Card from '../pages/card.vue';
-import Card2 from '../pages/card2.vue';
-
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomePage,
-    },
-    {
-        path: '/home2',
-        name: 'home2', 
-        component: HomePage2 },
-    {
-        path: '/routine_community',
-        name: 'routineCommunity',
-        component: RoutineCommunity 
-    },
-    {
-      path: '/test',
-      name: 'card',
-      component: Card 
-    },
-    {
-      path: '/test2',
-      name: 'card2',
-      component: Card2
-  }
-  ],
 });
 
 export default router;
