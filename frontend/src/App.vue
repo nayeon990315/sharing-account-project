@@ -8,11 +8,37 @@ const route = useRoute();
 const routeKey = computed(() => route.fullPath);
 // const headerKey = computed(() => route.fullPath);
 
+
+import { ref } from 'vue';
+import TodoList from './components/TodoList.vue';
+import Header from './components/Header.vue';
+
+const isTodoListVisible = ref(false);
+
+// To-Do List를 토글하는 함수
+const toggleTodoList = () => {
+  isTodoListVisible.value = !isTodoListVisible.value;
+};
+
+
 </script>
 
 <template>
   <!-- <Header :key="headerKey" /> -->
+  <!-- <Header :key="headerKey" /> -->
+  <Header/>
   <router-view :key="routeKey"></router-view>
+  <router-view>
+    <!-- To-Do 아이콘 -->
+  <button class="btn btn-primary floating-button" @click="toggleTodoList">
+    Check<br>List
+    <!-- <i class="bi bi-check2"></i>  -->
+  </button>
+
+  <!-- To-Do List 컴포넌트 -->
+  <TodoList :show="isTodoListVisible" @close="toggleTodoList" />
+</router-view>
+
   <!-- <Footer /> -->
 </template>
 
@@ -46,5 +72,19 @@ aside {
   height: 90%;
   /* display: inline-block; */
   float: right;
+}
+
+.floating-button {
+  width: 100px;
+  height: 100px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  text-transform: uppercase;
+  border-radius: 50%;
+  background-color: black;
+  color: white;
+  border: none;
 }
 </style>
