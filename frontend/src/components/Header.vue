@@ -16,7 +16,7 @@
                 Money
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" href="home">지출: 나 vs 나</a></li>
+                <li><a class="dropdown-item" href="versus">지출: 나 vs 나</a></li>
                 <li><a class="dropdown-item" href="#">가계부</a></li>
                 </ul>
             </div>
