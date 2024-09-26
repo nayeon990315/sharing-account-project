@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import CommentSection from '../components/CommentSection.vue';
+import CommentSection from '@/components/PostCommunity/CommentSection.vue';
 
 export default {
   components: {

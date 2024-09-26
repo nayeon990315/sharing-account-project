@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import HomePage from '@/pages/HomePage.vue';
-import Explore from '@/pages/Explore.vue';
-import MyShots from '@/pages/MyShots.vue';
+import Explore from '@/pages/PostCommunity/Explore.vue';
+import MyShots from '@/pages/PostCommunity/MyShots.vue';
 import Upload from '@/pages/Upload.vue';
-import PostCommunity from '@/pages/PostCommunity.vue';
+import PostCommunity from '@/pages/PostCommunity/PostCommunity.vue';
 import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
 import MyRoutine from '@/pages/MyRoutine.vue';
 
