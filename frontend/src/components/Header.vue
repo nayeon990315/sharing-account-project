@@ -7,7 +7,7 @@
                 Routine
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" href="myroutine">마이 루틴 관리</a></li>
+                <li><a class="dropdown-item" href="/myroutine">마이 루틴 관리</a></li>
                 </ul>
             </div>
 
@@ -16,7 +16,7 @@
                 Money
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" href="versus">지출: 나 vs 나</a></li>
+                <li><a class="dropdown-item" href="/versus">지출: 나 vs 나</a></li>
                 <li><a class="dropdown-item" href="#">가계부</a></li>
                 </ul>
             </div>
@@ -26,8 +26,8 @@
                 Community
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" href="home">습관 공유 커뮤니티</a></li>
-                <li><a class="dropdown-item" href="post-community">인증 커뮤니티</a></li>
+                <li><a class="dropdown-item" href="/home">습관 공유 커뮤니티</a></li>
+                <li><a class="dropdown-item" href="/post-community">인증 커뮤니티</a></li>
                 </ul>
             </div>
         </div>

@@ -6,7 +6,7 @@
     </header>
     <div class="content">
       <aside>
-        <router-link to="/post-community/explore">Explore</router-link>
+        <router-link to="post-community/explore">Explore</router-link>
         <router-link to="/post-community/my-shots">My Shots</router-link>
         <router-link to="/post-community/upload">Upload</router-link>
       </aside>
