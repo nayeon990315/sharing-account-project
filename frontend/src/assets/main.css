@@ -1,9 +1,19 @@
-@import './base.css';
+@import "./base.css";
+/* @import url("https://fastly.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css"); */
+
+/* @font-face {
+  font-family: "Wanted Sans";
+  src: url("https://fastly.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css");
+} */
+
+/* * {
+  font-family: "Wanted Sans", sans-serif;
+} */
 
 #app {
-  max-width: 1280px;
+  /* max-width: 1280px; */
   margin: 0 auto;
-  padding: 2rem;
+  /* padding: 2rem; */
   font-weight: normal;
 }
 
@@ -29,7 +39,7 @@ a,
 
   #app {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    /* grid-template-columns: 1fr 1fr; */
+    /* padding: 0 2rem; */
   }
 }
