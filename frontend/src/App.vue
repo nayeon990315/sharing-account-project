@@ -4,10 +4,8 @@
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
 const route = useRoute();
-
 const routeKey = computed(() => route.fullPath);
 // const headerKey = computed(() => route.fullPath);
-
 
 import { ref } from 'vue';
 import TodoList from './components/TodoList.vue';

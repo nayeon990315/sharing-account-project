@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
 import HomePage from '@/pages/HomePage.vue';
 import Explore from '@/pages/Explore.vue';
 import MyShots from '@/pages/MyShots.vue';
@@ -10,7 +11,12 @@ import MyRoutine from '@/pages/MyRoutine.vue';
 
 const routes = [
   {
-    path: '/home1',
+    path: '/',
+    name: 'home',
+    component : HomePage
+  },
+  {
+    path: '/myroutine',
     name: 'MyRoutine',
     component : MyRoutine
   },
@@ -18,12 +24,34 @@ const routes = [
     path: '/versus',
     name: 'MeVersus',
     component : MeVersusPage
-  }
+  },
+  {
+    path: '/post-community',
+    name: 'PostCommunity',
+    component: PostCommunity,
+    children: [
+      {
+        path: 'explore',
+        name: 'explore',
+        component: Explore,
+      },
+      {
+        path: 'my-shots',
+        name: 'myShots',
+        component: MyShots,
+      },
+      {
+        path: 'upload',
+        name: 'upload',
+        component: Upload,
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
-  history:createWebHistory,
-  routes
+  history: createWebHistory(),
+  routes,
 });
 
 

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="post-community">
     <header>
       <div class="logo">LOGO</div>
       <input type="text" placeholder="#Search" />
@@ -45,7 +45,7 @@ html {
   font-family: Avenir, Helvetica, Arial, sans-serif;
 }
 
-#app {
+#post-community {
   display: flex;
   flex-direction: column;
   height: 100vh;
