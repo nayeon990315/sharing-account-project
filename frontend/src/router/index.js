@@ -3,13 +3,11 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '@/pages/HomePage.vue';
 import Explore from '@/pages/PostCommunity/Explore.vue';
 import MyShots from '@/pages/PostCommunity/MyShots.vue';
-import Upload from '@/pages/Upload.vue';
+import Upload from '@/pages/PostCommunity/Upload.vue';
 import PostCommunity from '@/pages/PostCommunity/PostCommunity.vue';
 import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
-import MyRoutine from '@/pages/MyRoutine.vue';
-import RoutineCommunity from '../pages/RoutineCommunity.vue';
-import Card from '../pages/card.vue';
-import Card2 from '../pages/card2.vue';
+import MyRoutine from '@/pages/MyRoutine/MyRoutine.vue';
+import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
 
 
 const routes = [
@@ -32,16 +30,6 @@ const routes = [
     path: '/routine-community',
     name: 'routineCommunity',
     component: RoutineCommunity
-  },
-  {
-    path: '/test',
-    name: 'card',
-    component: Card
-  },
-  {
-    path: '/test2',
-    name: 'card2',
-    component: Card2
   },
   {
     path: '/post-community',

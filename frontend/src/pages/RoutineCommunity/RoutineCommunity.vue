@@ -1,6 +1,4 @@
 <template>
-    <Header/>
-
   <nav class="filter">
     <div class="categoryFilter">
         <form action="#">
@@ -95,8 +93,6 @@
   <!-- <p v-else>좋아요한 루틴이 없습니다.</p>  -->
 </div>
 
-
-  <Footer></Footer>
 </template>
 
 
@@ -119,7 +115,7 @@
 
 
 <script setup>
-import Header from "@/components/Header.vue";
+import Header from "@/components/global/Header.vue";
 import Footer from "@/components/Footer.vue";
 import {ref, reactive} from 'vue';
 

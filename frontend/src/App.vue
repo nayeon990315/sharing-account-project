@@ -8,8 +8,8 @@ const routeKey = computed(() => route.fullPath);
 // const headerKey = computed(() => route.fullPath);
 
 import { ref } from 'vue';
-import TodoList from './components/TodoList.vue';
-import Header from './components/Header.vue';
+import TodoList from './components/global/TodoList.vue';
+import Header from './components/global/Header.vue';
 
 const isTodoListVisible = ref(false);
 
