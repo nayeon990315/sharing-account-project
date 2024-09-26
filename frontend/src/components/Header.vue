@@ -7,7 +7,7 @@
                 Routine
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" href="home">마이 루틴 관리</a></li>
+                <li><a class="dropdown-item" href="home1">마이 루틴 관리</a></li>
                 </ul>
             </div>
 
