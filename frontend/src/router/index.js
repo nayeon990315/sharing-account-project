@@ -9,6 +9,8 @@ import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
 import MyRoutine from '@/pages/MyRoutine/MyRoutine.vue';
 import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
 import MyRoutineEdit from '@/pages/MyRoutine/MyRoutineEdit.vue';
+import Login from '../pages/Login&SignUp/Login.vue'
+import SignUp from '@/pages/Login&SignUp/SignUp.vue';
 
 
 const routes = [
@@ -16,6 +18,16 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomePage
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: SignUp
   },
   {
     path: '/myroutine',

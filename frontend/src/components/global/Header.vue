@@ -37,7 +37,7 @@
         </div>
 
         <div class="auth-buttons">
-            <button class="auth-button">Log in</button>
+            <router-link to="/login"><button class="auth-button">Log in</button></router-link>
             <button class="auth-button">Join</button>
         </div>
     </header>
