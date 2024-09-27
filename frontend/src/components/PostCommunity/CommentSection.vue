@@ -1,19 +1,29 @@
 <template>
   <div class="comment-section">
     <h3>Comments</h3>
-    <div v-for="(comment, index) in comments" :key="comment.id">
+    <div
+      v-for="(comment, index) in comments"
+      :key="comment.id"
+      class="comment-item"
+    >
       <strong>{{ comment.user }}</strong
       >:
       <span v-if="!comment.isEditing">{{ comment.text }}</span>
       <input v-else v-model="comment.text" />
 
-      <button @click="editComment(index)">
-        {{ comment.isEditing ? 'Save' : 'Edit' }}
+      <button v-if="!comment.isEditing" @click="editComment(index)">
+        Edit
       </button>
-      <button @click="deleteComment(index)">Delete</button>
+      <button v-if="!comment.isEditing" @click="deleteComment(index)">
+        Delete
+      </button>
     </div>
-    <textarea v-model="newComment" placeholder="Add a comment..."></textarea>
-    <button @click="addComment">Post</button>
+    <div class="comment-input">
+      <textarea v-model="newComment" placeholder="Add a comment..."></textarea>
+      <button class="comment-submit-button" @click="addComment">
+        <span class="arrow-icon">↑</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -39,11 +49,7 @@ export default {
     },
     editComment(index) {
       const comment = this.comments[index];
-      if (comment.isEditing) {
-        comment.isEditing = false;
-      } else {
-        comment.isEditing = true;
-      }
+      comment.isEditing = !comment.isEditing;
     },
     deleteComment(index) {
       this.comments.splice(index, 1);
@@ -52,18 +58,18 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .comment-section {
   margin-top: 20px;
 }
 
-.comment-section textarea,
-.comment-section input {
-  width: 100%;
+.comment-item {
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
 }
 
-button {
+.comment-item button {
   margin-left: 5px;
   padding: 5px;
   background-color: #42b983;
@@ -72,7 +78,36 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.comment-item button:hover {
   background-color: #369f6b;
+}
+
+.comment-input {
+  display: flex;
+  align-items: center;
+}
+
+.comment-input textarea {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.comment-submit-button {
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
+  border-radius: 50%;
+  background-color: #007bff; /* Blue background */
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow-icon {
+  color: white; /* White arrow */
+  font-size: 20px;
 }
 </style>
