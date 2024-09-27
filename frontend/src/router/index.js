@@ -8,6 +8,7 @@ import PostCommunity from '@/pages/PostCommunity/PostCommunity.vue';
 import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
 import MyRoutine from '@/pages/MyRoutine/MyRoutine.vue';
 import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
+import MyRoutineEdit from '@/pages/MyRoutine/MyRoutineEdit.vue';
 
 
 const routes = [
@@ -20,6 +21,11 @@ const routes = [
     path: '/myroutine',
     name: 'MyRoutine',
     component: MyRoutine
+  },
+  {
+    path: '/myroutine/edit',
+    name: 'MyRoutineEdit',
+    component: MyRoutineEdit
   },
   {
     path: '/versus',

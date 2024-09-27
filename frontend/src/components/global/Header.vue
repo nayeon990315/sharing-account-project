@@ -86,6 +86,7 @@ onMounted(() => {
     align-items: center;
     padding: 20px;
     background-color: #F5F5F5;
+    width: 1000px;
 }
 
 .menu-buttons {
