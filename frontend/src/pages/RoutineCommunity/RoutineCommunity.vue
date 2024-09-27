@@ -56,7 +56,7 @@
 
           <div class="card-text">
             <div class="writer">
-                <img class="avatar" src="../assets/images/sample.jpg">
+                <img class="avatar" src="@/assets/images/sample.jpg">
                 <span class="writerName">{{routine.user_id}}</span>
             </div>
             <div class="likeContainer">
@@ -580,7 +580,7 @@ const likesArray = ref([
 }
 
 * {
-    font-family: "Wanted Sans" !important;
+    font-family: "Wanted Sans";
 }
 
 
