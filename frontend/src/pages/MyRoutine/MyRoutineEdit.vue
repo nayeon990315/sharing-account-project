@@ -18,14 +18,14 @@
                                 <span class="task-name mx-3">{{ element.name }}</span>
                             </div>
                             <div class="d-flex bd-highlight">
-                                <button class="btn" @click="removeItem('waiting', element.id)">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="editItem(element)">
                                     <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                 </button>
-                                <button class="btn" @click="removeItem('waiting', element.id)">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="removeItem('waiting', element.id)">
                                     <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                 </button>
                             </div>
-                            
+
                         </div>
                     </template>
                 </draggable>
@@ -46,9 +46,14 @@
                                 </span>
                                 <span class="task-name mx-3">{{ element.name }}</span>
                             </div>
-                            <button class="btn" @click="removeItem('inProgress', element.id)">
-                                <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
-                            </button>
+                            <div class="d-flex bd-highlight">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="editItem(element)">
+                                    <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn" @click="removeItem('inProgress', element.id)">
+                                    <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
+                                </button>
+                            </div>
                         </div>
                     </template>
                 </draggable>
@@ -59,7 +64,7 @@
         </button>
     </div>
 
-    <!-- Modal -->
+    <!-- 루틴 추가 Modal -->
     <div class="modal fade" id="myModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -73,7 +78,8 @@
                 <!-- Modal body -->
                 <div class="modal-body">
                     <label>카테고리 선택</label>
-                    <select v-model="newHabitCategory" class="form-select" aria-label="Category select" id="categorySelect">
+                    <select v-model="newHabitCategory" class="form-select" aria-label="Category select"
+                        id="categorySelect">
                         <option disabled value="">카테고리를 선택하세요</option>
                         <option v-for="category in categories" :key="category.value" :value="category.value">
                             {{ category.label }}
@@ -85,17 +91,50 @@
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
-                    <button class="btn"
-                            :class="isFormValid ? 'btn-dark' : 'btn-secondary'" 
-                            @click="addHabit"
-                            :disabled="!isFormValid">
+                    <button class="btn" :class="isAddFormValid ? 'btn-dark' : 'btn-secondary'" @click="addHabit"
+                        :disabled="!isAddFormValid">
                         추가하기
                     </button>
                 </div>
-
-
             </div>
         </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">루틴 수정하기</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>카테고리 선택</label>
+                    <select v-model="editHabitCategory" class="form-select" aria-label="Category select"
+                        id="categorySelect">
+                        <option disabled value="">카테고리를 선택하세요</option>
+                        <option v-for="category in categories" :key="category.value" :value="category.value">
+                            {{ category.label }}
+                        </option>
+                    </select>
+                    <label>이름</label>
+                    <input v-model="editHabitName" type="text" class="form-control" placeholder="이름 입력">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn" data-bs-dismiss="modal" :class="isEditFormValid ? 'btn-dark' : 'btn-secondary'" @click="editHabbit(element)"
+                        :disabled="!isEditFormValid">
+                        수정하기
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </template>
@@ -110,8 +149,11 @@ export default {
     },
     data() {
         return {
-            newHabitCategory: "", // To store the new habit's category
-            newHabitName: "", // To store the new habit's name
+            newHabitCategory: "",
+            newHabitName: "",
+            editHabitCategory: "",
+            editHabitName: "",
+            editHabbitId: 0,
             categories: [
                 { value: "식비", label: "식비 (Food)" },
                 { value: "카페/간식", label: "카페/간식 (Cafe/Snacks)" },
@@ -138,14 +180,18 @@ export default {
             ],
             inProgressList: [
                 { id: 4, name: "커피 텀블러에 담아가기", category: "카페/간식" },
-                { id: 5, name: "헌혈하고 영화 보기", category: "문화" },
+                { id: 5, name: "헌혈하고 영화 보기", category: "문화/여가" },
             ],
         };
     },
     computed: {
-        isFormValid() {
+        isAddFormValid() {
             // 카테고리와 이름이 모두 존재할 때만 true
-            return this.newHabitCategory && this.newHabitName;
+            return this.newHabitCategory && this.newHabitName
+        },
+        isEditFormValid() {
+            // 카테고리와 이름이 모두 존재할 때만 true
+            return this.editHabitCategory && this.editHabitName
         }
     },
     methods: {
@@ -158,6 +204,21 @@ export default {
             } else if (listType === "inProgress") {
                 this.inProgressList = this.inProgressList.filter(item => item.id !== id);
             }
+        },
+        // removeItem('inProgress', element.id)
+        editItem(element) {
+            // const id = element.id
+            
+            // let tempList;
+            // if (listType === "waiting") {
+            //     tempList = this.waitingList.filter(item => item.id === id);
+            // } else if (listType === "inProgress") {
+            //     tempList = this.inProgressList.filter(item => item.id === id);
+            // }
+            // console.log(tempList[0])
+            this.editHabitCategory = element.category
+            this.editHabitName = element.name
+            this.editHabbitId = element.id
         },
         getCategoryClass(category) {
             switch (category) {
@@ -200,15 +261,31 @@ export default {
             }
         },
         addHabit() {
-        this.waitingList.push({ 
-            category: this.newHabitCategory, 
-            name: this.newHabitName, 
-            id: id++ 
-        });
-        // 입력 필드 초기화
-        this.newHabitCategory = "";
-        this.newHabitName = "";
+            this.waitingList.push({
+                category: this.newHabitCategory,
+                name: this.newHabitName,
+                id: id++
+            });
+            // 입력 필드 초기화
+            this.newHabitCategory = "";
+            this.newHabitName = "";
         },
+        editHabbit() {
+            let habit = this.waitingList.find(item => item.id === this.editHabbitId);
+            if (!habit) {
+                habit = this.inProgressList.find(item => item.id === this.editHabbitId);
+            }
+            
+            if (habit) {
+                habit.category = this.editHabitCategory;
+                habit.name = this.editHabitName;
+
+                this.editHabitCategory = "";
+                this.editHabitName = "";
+                this.editHabbitId = 0;
+            }
+        }
+
     }
 };
 </script>
@@ -247,54 +324,71 @@ export default {
 .badge-food {
     background-color: #5193F4;
 }
+
 .badge-snack {
     background-color: #8B6555;
 }
+
 .badge-online-shopping {
     background-color: #3EBAC2;
 }
+
 .badge-fashion {
     background-color: #F5778D;
 }
+
 .badge-culture {
     background-color: #8C46C2;
 }
+
 .badge-alcohol {
     background-color: #FFAD0D;
 }
+
 .badge-education {
     background-color: #A2C616;
 }
+
 .badge-health {
     background-color: #FA4949;
 }
+
 .badge-lifestyle {
     background-color: #5B9FF4;
 }
+
 .badge-housing {
-    background-color: #ffdfba;
+    background-color: #6D5D3F;
 }
+
 .badge-finance {
-    background-color: #ffdfba;
+    background-color: #757E95;
 }
+
 .badge-beauty {
-    background-color: #ffdfba;
+    background-color: #E659E9;
 }
+
 .badge-automobile {
-    background-color: #ffdfba;
+    background-color: #5B9FF4;
 }
+
 .badge-transport {
     background-color: #949BAD;
 }
+
 .badge-pet {
     background-color: #6D5D3F;
 }
+
 .badge-travel {
     background-color: #696E76;
 }
+
 .badge-events {
-    background-color: #ffdfba;
+    background-color: #F39C77;
 }
+
 .badge-default {
     background-color: #ffdfba;
     color: #d08b44;
