@@ -92,18 +92,16 @@
               </span>
               <!-- mb-2 text-body-secondary -->
             </div>
-            <h5 class="card-title">{{ routine.habit_title }}</h5>
 
-            <div class="card-text">
-              <div class="writer">
-                <img class="avatar" src="../assets/images/sample.jpg" />
-                <span class="writerName">{{ routine.user_id }}</span>
-              </div>
-              <div class="likeContainer">
-                <button
-                  class="likeButton"
-                  @click="toggleLike(routine.community_id)"
-                >
+            <h5 class="card-title">{{routine.habit_title}}</h5>
+          <div class="card-text">
+            <div class="writer">
+                <img class="avatar" src="@/assets/images/sample.jpg">
+                <span class="writerName">{{routine.user_id}}</span>
+            </div>
+            <div class="likeContainer">
+              <button class="likeButton" @click="toggleLike(routine.community_id)">
+
                   <img
                     class="likeImg"
                     :src="isLiked(routine.community_id) ? fullLike : emptyLike"
@@ -556,7 +554,9 @@ function applyFilters() {
 }
 
 * {
-  font-family: 'Wanted Sans' !important;
+
+    font-family: "Wanted Sans";
+
 }
 
 /* 화면 줄이면 !!*/
