@@ -11,18 +11,6 @@
         <router-link to="/post-community/upload">Upload</router-link>
       </aside>
       <main>
-        <!-- Upload 페이지가 아닐 때만 해시태그 표시 -->
-        <div v-if="$route.path !== '/post-community/upload'" class="hashtags">
-          <button>#식비</button>
-          <button>#카페/간식</button>
-          <button>#쇼핑</button>
-          <button>#교통</button>
-          <button>#전체</button>
-          <button>#문화/여가</button>
-          <button>#술/유흥</button>
-          <button>#주거/공과금</button>
-          <button>#기타</button>
-        </div>
         <router-view />
       </main>
     </div>
@@ -100,7 +88,7 @@ main {
   border-radius: 20px;
   border: none;
   background-color: #e0e4e8;
-  color: black;
+  color: black; /* 기본 글자색을 검정으로 설정 */
 }
 
 .hashtags button:hover {
