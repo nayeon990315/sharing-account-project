@@ -4,11 +4,10 @@
             <button class="btn btn-primary mb-2" @click="selectYesterday">1일전</button>
             <button class="btn btn-secondary mb-2" @click="selectMonthAgo">1달전</button>
             <button class="btn btn-success mb-2" @click="selectYearAgo">1년전</button>
-
+            <button class="btn btn-info mb-2" @click="selectCalender">기간설정</button>
             <!-- 날짜 선택을 위한 버튼과 달력 -->
             <div class="date-picker-container">
                 <Datepicker v-model="selectedDate" locale="ko" :enable-time-picker="false" />
-                <button class="btn btn-info mb-2" @click="selectCalender">기간설정</button>
             </div>
         </div>
         <!-- 총 지출 내역 -->
@@ -30,16 +29,15 @@
             </template>
         </div>
         <div class="expenses">
-            <div id="present-expense">
-                <ul>
-                    <li>여기에 과거</li>
-                    <li>지출 내역</li>
-                </ul>
-            </div>
-
             <div id="past-expense">
                 <ul>
                     <li>여기에 현재</li>
+                    <li>지출 내역</li>
+                </ul>
+            </div>
+            <div id="present-expense">
+                <ul>
+                    <li>여기에 과거</li>
                     <li>지출 내역</li>
                 </ul>
             </div>
