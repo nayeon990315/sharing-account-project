@@ -36,9 +36,12 @@
 
             <!-- 소셜 로그인 -->
             <div>
-              <div class="socialLogin googleLogin"><img src="@/assets/icons/googleIcon.png">구글 계정으로 로그인</div>
-              <div class="socialLogin kakaoLogin"><img src="@/assets/icons/kakaoIcon.png">카카오 계정으로 로그인</div>
-              <div class="socialLogin naverLogin"><img src="@/assets/icons/naverIcon.png">네이버 계정으로 로그인</div>
+              <div class="socialLogin googleLogin"
+              @click="googleLogin"><img src="@/assets/icons/googleIcon.png">구글 계정으로 로그인</div>
+              <div class="socialLogin kakaoLogin"
+              @click="kakaoLogin"><img src="@/assets/icons/kakaoIcon.png">카카오 계정으로 로그인</div>
+              <div class="socialLogin naverLogin"
+              @click="naverLogin"><img src="@/assets/icons/naverIcon.png">네이버 계정으로 로그인</div>
             </div>
           </div>
 
@@ -110,6 +113,29 @@ const findId = () => {
 const findPassword = () => {
   console.log('Finding password for', recoveryForm.username, 'with email', recoveryForm.email);
 };
+const googleLogin = () => {
+  
+  const callBackUrl = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=' +
+      '988888812178-qvlick1q80lcvlc56sdi50noiqd5n1r2.apps.googleusercontent.com' +
+      '&redirect_uri=' +
+      'http://localhost:8080/login/oauth2/code/google' +
+      '&response_type=code' +
+      '&scope=email profile';
+
+      window.location.href = callBackUrl; // 백엔드의 구글 OAuth2 경로로 이동
+};
+
+const kakaoLogin = () =>{
+  const callBackUrl = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=598ab35b62d4a6a3684bd57b070cb398&redirect_uri=http://localhost:8080/login/oauth2/code/kakao&scope=profile_nickname,profile_image,account_email'
+
+  window.location.href = callBackUrl; // 백엔드의 Kakao OAuth2 경로로 이동
+}
+
+const naverLogin = ()=>{
+  const callBackUrl = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=omEGJqXqex9ZirWPDyqC&state=STATE_STRING&redirect_uri=http://localhost:8080/login/oauth2/code/naver'
+
+  window.location.href = callBackUrl;
+}
 </script>
 
 
