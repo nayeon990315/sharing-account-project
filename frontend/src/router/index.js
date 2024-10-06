@@ -11,6 +11,7 @@ import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
 import MyRoutineEdit from '@/pages/MyRoutine/MyRoutineEdit.vue';
 import Login from '../pages/Login&SignUp/Login.vue'
 import SignUp from '@/pages/Login&SignUp/SignUp.vue';
+import Register from '@/pages/Login&SignUp/Register.vue';
 
 
 const routes = [
@@ -28,6 +29,11 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: SignUp
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register
   },
   {
     path: '/myroutine',
