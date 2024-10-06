@@ -139,14 +139,6 @@ const naverLogin = ()=>{
 </script>
 
 
-
-
-
-
-
-
-
-
 <style scoped>
 /* General resets */
 @font-face {
@@ -275,6 +267,17 @@ input[type="submit"]:hover {
 .socialLogin img {
     width: 20px;
     margin-right: 5px;
+}
+
+.socialLogin:hover {
+    background-color: #FFD565;
+    transform: translateY(-2px); /* 버튼이 약간 위로 올라가는 효과 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 살짝 눌리는 효과 */
+}
+
+.socialLogin:active {
+    transform: translateY(2px); /* 버튼이 눌리는 효과 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 눌린 상태에서 그림자 변화 */
 }
 
 /* or 구분선 */
