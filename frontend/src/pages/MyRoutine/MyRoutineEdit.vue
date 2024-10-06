@@ -141,6 +141,8 @@
 
 <script>
 import draggable from "vuedraggable";
+import axios from 'axios';
+
 let id = 7;
 export default {
     name: "TaskManager",
@@ -269,6 +271,7 @@ export default {
             // 입력 필드 초기화
             this.newHabitCategory = "";
             this.newHabitName = "";
+            
         },
         editHabbit() {
             let habit = this.waitingList.find(item => item.id === this.editHabbitId);
