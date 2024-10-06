@@ -3,9 +3,19 @@
 // import Footer from './components/Footer.vue'
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+
+import { onMounted } from 'vue';
+import { useAuthStore } from './stores/auth';
+
+
 const route = useRoute();
 const routeKey = computed(() => route.fullPath);
 // const headerKey = computed(() => route.fullPath);
+const authStore = useAuthStore();
+
+onMounted(()=>{
+  authStore.checkLoginStatus();
+})
 
 import { ref } from 'vue';
 import TodoList from './components/global/TodoList.vue';
@@ -17,6 +27,7 @@ const isTodoListVisible = ref(false);
 const toggleTodoList = () => {
   isTodoListVisible.value = !isTodoListVisible.value;
 };
+
 
 
 </script>

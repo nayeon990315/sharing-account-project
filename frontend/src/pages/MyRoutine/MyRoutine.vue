@@ -270,7 +270,9 @@ export default {
                 console.log(response.data)
                 // 응답으로 받은 userId를 localStorage에 저장
                 const userId = response.data.userId;
+                const nickname = response.data.nickname;
                 localStorage.setItem('userId', userId);
+                localStorage.setItem('nickname', nickname);
                 console.log('사용자 ID가 localStorage에 저장되었습니다:', userId);
             } catch (error) {
                 console.error('사용자 정보를 가져오지 못했습니다:', error);
