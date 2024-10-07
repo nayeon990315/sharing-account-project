@@ -8,6 +8,12 @@ import PostCommunity from '@/pages/PostCommunity/PostCommunity.vue';
 import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
 import MyRoutine from '@/pages/MyRoutine/MyRoutine.vue';
 import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
+import MyRoutineEdit from '@/pages/MyRoutine/MyRoutineEdit.vue';
+import Login from '../pages/Login&SignUp/Login.vue'
+import SignUp from '@/pages/Login&SignUp/SignUp.vue';
+import MyPage from '@/pages/Mypage/MyPage.vue';
+import Register from '@/pages/Login&SignUp/Register.vue';
+
 
 const routes = [
   {
@@ -16,9 +22,29 @@ const routes = [
     component: HomePage,
   },
   {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: SignUp
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register
+  },
+  {
     path: '/myroutine',
     name: 'MyRoutine',
     component: MyRoutine,
+  },
+  {
+    path: '/myroutine/edit',
+    name: 'MyRoutineEdit',
+    component: MyRoutineEdit
   },
   {
     path: '/versus',
@@ -52,7 +78,13 @@ const routes = [
       },
     ],
   },
-];
+  {
+    path: '/mypage',
+    name: 'mypage',
+    component: MyPage,
+  },
+]
+
 
 const router = createRouter({
   history: createWebHistory(),
