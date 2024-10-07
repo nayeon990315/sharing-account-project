@@ -128,7 +128,7 @@ const logout = () => {
     align-items: center;
     padding: 20px;
     background-color: #F5F5F5;
-    width: 1000px;
+    width: 100%;
 }
 
 .menu-buttons {
