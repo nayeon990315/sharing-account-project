@@ -1,77 +1,43 @@
 <template>
-    <div class="container">
-        <!-- Header -->
-        <!-- <header class="text-center my-4">
-            <h1>K-Bee</h1>
-        </header> -->
+  <div class="container">
+    <h1>Daily Report</h1>
 
-        <div class="row">
-            <!-- Left Sidebar (Routine Category) -->
-            <aside class="col-md-3 bg-light p-3">
-                <h2 class="h5">ROUTINE CATEGORY</h2>
-                <div v-for="(category, index) in routineCategories" :key="index" class="mb-3 category-block"
-                    :class="{ 'selected-category': selectedCategory === category }" @click="selectCategory(category)">
-                    <h4 class="h6">{{ category }}</h4>
-                    <ul class="list-group">
-                        <li v-for="routine in filteredRoutines(category)" :key="routine.routine_name"
-                            class="list-group-item">
-                            {{ routine.routine_name }}
-                        </li>
-                    </ul>
-                </div>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="col-md-9">
-                <div class="row">
-                    <!-- Daily Report Section -->
-                    <section class="col-md-12">
-                        <h2>DAILY REPORT</h2>
-                        <div class="d-flex border p-3">
-                            <div class="text-center bg-secondary mb-3" style="width: 150px; height: 150px;">
-                                차트 영역
-                            </div>
-                            <ul>
-                                <li>오늘 총 지출: {{ formatCurrency(totalExpenses) }}원</li>
-                                <li>가장 지출이 많은 카테고리는 {{ maxExpenseCategory.maxCategory }}입니다.</li>
-                                <li>오늘 총 지출의 {{ formatPercentage(maxExpenseCategory.maxPercentage) }}
-                                    ({{ formatCurrency(maxExpenseCategory.maxAmount) }}원) 입니다.</li>
-                                <li v-if="selectedCategory"></li>
-                                <li v-if="selectedCategory">선택하신 카테고리는 {{ selectedCategory }}입니다.</li>
-                                <li v-if="selectedCategory">오늘 총 지출의 {{
-                                    formatPercentage(selectedCategoryExpenses.percentage) }}
-                                    ({{ formatCurrency(selectedCategoryExpenses.amount) }}원)입니다.</li>
-                            </ul>
-                        </div>
-                    </section>
-
-                    <!-- Spending Details Section -->
-                    <section class="col-md-12 mt-4">
-                        <h2>SPENDING DETAILS</h2>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>시간</th>
-                                    <th>지출 내역</th>
-                                    <th>지출액</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="!selectedCategory">
-                                    <td colspan="3" class="text-center">카테고리를 고르세요</td>
-                                </tr>
-                                <tr v-else v-for="(expense, index) in filteredExpenses" :key="index">
-                                    <td>{{ formatTime(expense.transactionDate) }}</td>
-                                    <td>{{ expense.recipient }}</td>
-                                    <td>{{ expense.withdrawalAmount }}원</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                </div>
-            </main>
-        </div>
+    <div class="report-section">
+      <h2>오늘의 소비 내역 리포트</h2>
+      <p>루틴 형성 정도를 한눈에 볼 수 있습니다.</p>
+      <div class="flex-container">
+        <div class="report-graph">리포트 그래프</div>
+        <ul class="category-list">
+          <li>식비</li>
+          <li>카페/간식</li>
+          <li>쇼핑</li>
+          <li>교통</li>
+          <li>문화/여가</li>
+        </ul>
+      </div>
     </div>
+
+
+    <div class="report-section">
+      <h2>오늘의 루틴 & 절약 리포트</h2>
+      <p>루틴 형성 정도를 한눈에 볼 수 있습니다.</p>
+      <div class="flex-container">
+        <div class="report-graph">리포트 그래프</div>
+        <!-- 추가적인 내용 -->
+      </div>
+    </div>
+
+    <h2>Details</h2>
+    <div class="flex-container">
+      <ul class="routine-list">
+        <li><input type="checkbox" /> 루틴 1</li>
+        <li><input type="checkbox" /> 루틴 2</li>
+        <li><input type="checkbox" /> 루틴 3</li>
+        <!-- 추가 항목 -->
+      </ul>
+      <div class="details-list">관련 지출내역 리스트</div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -287,25 +253,32 @@ export default {
 </script>
 
 <style scoped>
-header {
-    font-size: 2.5rem;
-    font-weight: bold;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
 }
-
-aside {
-    background-color: #f8f9fa;
+.report-section {
+  margin-bottom: 40px;
 }
-
-.table-bordered th,
-.table-bordered td {
-    text-align: center;
+.flex-container {
+  display: flex;
+  justify-content: space-between;
 }
-
-.category-block {
-    cursor: pointer;
+.report-graph,
+.details-list {
+  width: 48%;
+  height: 200px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.selected-category {
-    background-color: #d1e7dd;
+.category-list,
+.routine-list {
+  width: 48%;
+  list-style-type: none; /* 리스트 아이콘 제거 */
+}
+.details-list {
+  background-color: #f9f9f9;
 }
 </style>

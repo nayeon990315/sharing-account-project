@@ -50,15 +50,19 @@
 
 <script>
 import profileImage from '@/assets/profile.jpg';
+
 import axios from 'axios';
+
 
 export default {
   data() {
     return {
       user: {
+
         name: 'John Doe',
         nickname: 'Johnny', // 닉네임 추가
         email: 'john.doe@example.com',
+
         phone: '010-1234-5678',
       },
       profileImageUrl: profileImage,
@@ -71,11 +75,11 @@ export default {
     },
     saveChanges() {
       this.isEditing = false;  
-      // 변경 사항을 저장하는 로직 추가 (예: API 호출 등)
     },
     cancelEdit() {
       this.isEditing = false;  
       // 변경 사항을 취소하는 로직 추가
+
     },
     onFileChange(event) {
       const file = event.target.files[0];
@@ -91,6 +95,7 @@ export default {
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
+
     },
     async getUserIdFromToken() {
             const jwtToken = this.$cookies.get('jwtToken');
@@ -119,7 +124,7 @@ export default {
   },
   mounted() {
         this.getUserIdFromToken();
-  },
+  }
 };
 </script>
 
