@@ -40,6 +40,7 @@
         <div class="auth-buttons">
             <router-link to="/login"><button class="auth-button">Log in</button></router-link>
             <button class="auth-button">Join</button>
+            <router-link to="/mypage"><button class="auth-button">Mypage</button></router-link>
         </div>
     </header>
 </template>
