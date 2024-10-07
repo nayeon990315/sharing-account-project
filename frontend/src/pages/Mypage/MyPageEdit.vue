@@ -51,13 +51,18 @@
 <script>
 import profileImage from '@/assets/profile.jpg';
 
+import axios from 'axios';
+
+
 export default {
   data() {
     return {
       user: {
-        name: 'user1',
-        nickname: 'nick1', 
-        email: 'email1@example.com',
+
+        name: 'John Doe',
+        nickname: 'Johnny', // 닉네임 추가
+        email: 'john.doe@example.com',
+
         phone: '010-1234-5678',
       },
       profileImageUrl: profileImage,
@@ -73,6 +78,8 @@ export default {
     },
     cancelEdit() {
       this.isEditing = false;  
+      // 변경 사항을 취소하는 로직 추가
+
     },
     onFileChange(event) {
       const file = event.target.files[0];
@@ -88,7 +95,35 @@ export default {
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
-    }
+
+    },
+    async getUserIdFromToken() {
+            const jwtToken = this.$cookies.get('jwtToken');
+            if (!jwtToken) {
+                alert('로그인이 필요합니다!');
+                this.$router.push('/login');
+                return;
+            }
+            console.log(jwtToken); 
+            try {
+                // axios를 이용해 백엔드의 findId 컨트롤러에 JWT 토큰을 전송
+                const response = await axios.post('http://localhost:8080/users/findId', {}, {
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 Authorization 헤더에 추가
+                    }
+                });
+                console.log(response.data)
+            } catch (error) {
+                console.error('사용자 정보를 가져오지 못했습니다:', error);
+                if (error.response && error.response.status === 401) {
+                    alert('인증 오류: 로그인이 필요합니다.');
+                    this.$router.push('/login');
+                }
+            }
+        }
+  },
+  mounted() {
+        this.getUserIdFromToken();
   }
 };
 </script>
