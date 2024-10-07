@@ -1,245 +1,110 @@
 <template>
-  <div class="mypage">
-    <h1 v-if="!isEditing">{{ user.name }}님, 안녕하세요</h1>
-
-    <div class="profile-container" v-if="!isEditing">
-      <div class="profile-picture">
-        <img :src="profileImageUrl" alt="Profile Picture" v-if="profileImageUrl" />
-        <p v-else>No profile picture</p>
-      </div>
-
+  <div class="my-page">
+    <h1>My Page</h1>
+    <div class="profile-section">
+      <img 
+        :src="profileImageUrl" 
+        alt="Profile" 
+        class="profile-image" 
+        @click="triggerFileInput" 
+      />
       <div class="profile-info">
-        <p><strong>Name:</strong> {{ user.name }}</p>
-        <p><strong>Nickname:</strong> {{ user.nickname }}</p> <!-- 추가된 부분 -->
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Phone:</strong> {{ user.phone }}</p>
-        <button class="edit-btn" @click="enableEdit">정보 수정</button>
+        <h2>{{ user.name }} 님</h2>
+        <p>오늘도 한 꿀씩 쌓아볼까요?</p>
+        <button @click="editProfile">프로필 수정</button>
       </div>
     </div>
 
-    <div v-else>
-      <h2>회원 정보 수정</h2>
-      <label><strong>Profile Picture:</strong></label>
-      <div class="profile-picture" @click="triggerFileInput">
-        <img :src="profileImageUrl" alt="Profile Picture" v-if="profileImageUrl" />
-        <p v-else>No profile picture</p>
+    <div class="stats-section">
+      <div class="stat">
+        <p>지금까지 벌꿀님이 모은 꿀은</p>
+        <h3>1,000 꿀</h3>
       </div>
-
-      <div class="profile-info-edit">
-        <label><strong>Name:</strong></label>
-        <input type="text" v-model="user.name" class="input-field" />
-        
-        <label><strong>Nickname:</strong></label> <!-- 추가된 부분 -->
-        <input type="text" v-model="user.nickname" class="input-field" />
-        
-        <label><strong>Email:</strong></label>
-        <input type="email" v-model="user.email" class="input-field" />
-        
-        <label><strong>Phone:</strong></label>
-        <input type="text" v-model="user.phone" class="input-field" />
+      <div class="stat">
+        <p>지금까지 이행한 루틴은</p>
+        <h3>15건</h3>
       </div>
-      <div class="button-group">
-        <button class="save-btn" @click="saveChanges">저장</button>
-        <button class="cancel-btn" @click="cancelEdit">취소</button>
+      <div class="stat">
+        <p>지금까지 절약한 금액은</p>
+        <h3>153,000원</h3>
       </div>
     </div>
 
+    <button class="save-button">꿀 단지 넣기</button>
+    
+    <!-- Hidden file input for uploading profile picture -->
     <input type="file" ref="fileInput" @change="onFileChange" accept="image/*" style="display: none;" />
   </div>
 </template>
 
 <script>
-import profileImage from '@/assets/profile.jpg';
-
-import axios from 'axios';
-
-
 export default {
   data() {
     return {
       user: {
-
-        name: 'John Doe',
-        nickname: 'Johnny', // 닉네임 추가
-        email: 'john.doe@example.com',
-
-        phone: '010-1234-5678',
+        name: '김벌꿀',
       },
-      profileImageUrl: profileImage,
-      isEditing: false,
+      profileImageUrl: require('@/assets/images/profile-image.jpg'), // 기본 프로필 이미지 경로
     };
   },
   methods: {
-    enableEdit() {
-      this.isEditing = true;  
+    editProfile() {
+      alert('프로필 수정 페이지로 이동합니다.');
     },
-    saveChanges() {
-      this.isEditing = false;  
-    },
-    cancelEdit() {
-      this.isEditing = false;  
-      // 변경 사항을 취소하는 로직 추가
-
+    triggerFileInput() {
+      // 숨겨진 파일 입력 클릭
+      this.$refs.fileInput.click();
     },
     onFileChange(event) {
-      const file = event.target.files[0];
+      const file = event.target.files[0]; // 선택된 파일
       if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.profileImageUrl = e.target.result; 
+          this.profileImageUrl = e.target.result; // 새 프로필 이미지로 변경
         };
         reader.readAsDataURL(file);
       } else {
         alert('이미지를 선택해 주세요.');
       }
     },
-    triggerFileInput() {
-      this.$refs.fileInput.click();
-
-    },
-    async getUserIdFromToken() {
-            const jwtToken = this.$cookies.get('jwtToken');
-            if (!jwtToken) {
-                alert('로그인이 필요합니다!');
-                this.$router.push('/login');
-                return;
-            }
-            console.log(jwtToken); 
-            try {
-                // axios를 이용해 백엔드의 findId 컨트롤러에 JWT 토큰을 전송
-                const response = await axios.post('http://localhost:8080/users/findId', {}, {
-                    headers: {
-                        'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 Authorization 헤더에 추가
-                    }
-                });
-                console.log(response.data)
-            } catch (error) {
-                console.error('사용자 정보를 가져오지 못했습니다:', error);
-                if (error.response && error.response.status === 401) {
-                    alert('인증 오류: 로그인이 필요합니다.');
-                    this.$router.push('/login');
-                }
-            }
-        }
   },
-  mounted() {
-        this.getUserIdFromToken();
-  }
 };
 </script>
 
 <style scoped>
-.mypage {
-  max-width: 600px;
+.my-page {
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  text-align: center;
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-h1 {
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.profile-container {
+.profile-section {
   display: flex;
-  align-items: center; 
+  align-items: center;
   margin-bottom: 20px;
 }
-
-.profile-picture {
-  margin-right: 20px;
-}
-
-.profile-picture img {
-  width: 150px;
-  height: 150px;
+.profile-image {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ddd;
+  margin-right: 20px;
+  cursor: pointer; /* 클릭 가능한 커서로 변경 */
 }
-
-.profile-info {
-  text-align: left; 
+.profile-info h2 {
+  margin: 0;
 }
-
-.profile-info p {
-  font-size: 16px;
-  margin: 10px 0;
+.stats-section {
+  display: flex;
+  justify-content: space-between;
 }
-
-.edit-btn {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.stat {
+  background-color: #f0f0f0;
+  padding: 10px;
+  width: calc(33% - 10px);
 }
-
-.edit-btn:hover {
-  background-color: #0056b3;
-}
-
-.profile-info-edit {
-  text-align: left;
-  margin-bottom: 20px;
-}
-
-.profile-info-edit label {
+.save-button {
   display: block;
-  font-weight: bold;
-  margin: 10px 0 5px;
-}
-
-.input-field {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-  margin-bottom: 15px;
-}
-
-.input-field:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.save-btn, .cancel-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.save-btn {
-  background-color: #28a745;
-  color: white;
-}
-
-.save-btn:hover {
-  background-color: #218838;
-}
-
-.cancel-btn {
-  background-color: #dc3545;
-  color: white;
-}
-
-.cancel-btn:hover {
-  background-color: #c82333;
+  margin-top: 20px;
 }
 </style>
