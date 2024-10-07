@@ -35,10 +35,11 @@
                                 <li>오늘 총 지출: {{ formatCurrency(totalExpenses) }}원</li>
                                 <li>가장 지출이 많은 카테고리는 {{ maxExpenseCategory.maxCategory }}입니다.</li>
                                 <li>오늘 총 지출의 {{ formatPercentage(maxExpenseCategory.maxPercentage) }}
-                                    ({{formatCurrency(maxExpenseCategory.maxAmount) }}원) 입니다.</li>
+                                    ({{ formatCurrency(maxExpenseCategory.maxAmount) }}원) 입니다.</li>
                                 <li v-if="selectedCategory"></li>
                                 <li v-if="selectedCategory">선택하신 카테고리는 {{ selectedCategory }}입니다.</li>
-                                <li v-if="selectedCategory">오늘 총 지출의 {{ formatPercentage(selectedCategoryExpenses.percentage) }}
+                                <li v-if="selectedCategory">오늘 총 지출의 {{
+                                    formatPercentage(selectedCategoryExpenses.percentage) }}
                                     ({{ formatCurrency(selectedCategoryExpenses.amount) }}원)입니다.</li>
                             </ul>
                         </div>
@@ -74,6 +75,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
@@ -175,6 +178,9 @@ export default {
             selectedCategory: null
         };
     },
+    mounted() {
+        this.getUserIdFromToken();
+    },
 
     computed: {
         // 카테고리별로 그룹화된 배열 생성
@@ -246,6 +252,35 @@ export default {
         // 확률을 소수점 1번째 자리까지 표시
         formatPercentage(value) {
             return value.toFixed(1) + '%';
+        },
+        async getUserIdFromToken() {
+            const jwtToken = this.$cookies.get('jwtToken');
+            if (!jwtToken) {
+                alert('로그인이 필요합니다!');
+                this.$router.push('/login'); // Vue Router를 사용하여 리다이렉트
+                return;
+            }
+            console.log(jwtToken); try {
+                // axios를 이용해 백엔드의 findId 컨트롤러에 JWT 토큰을 전송
+                const response = await axios.post('http://localhost:8080/users/findId', {}, {
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 Authorization 헤더에 추가
+                    }
+                });
+                console.log(response.data)
+                // 응답으로 받은 userId를 localStorage에 저장
+                const userId = response.data.userId;
+                const nickname = response.data.nickname;
+                localStorage.setItem('userId', userId);
+                localStorage.setItem('nickname', nickname);
+                console.log('사용자 ID가 localStorage에 저장되었습니다:', userId);
+            } catch (error) {
+                console.error('사용자 정보를 가져오지 못했습니다:', error);
+                if (error.response && error.response.status === 401) {
+                    alert('인증 오류: 로그인이 필요합니다.');
+                    this.$router.push('/login');
+                }
+            }
         }
     }
 };

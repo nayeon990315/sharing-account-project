@@ -1,4 +1,13 @@
 <template>
+    <!-- 루틴 커뮤니티 -->
+    <div class="intro">
+      <h3>Routine Share Community</h3>
+      <p>
+        나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로 만들어보세요!
+      </p>
+    </div>
+
+
   <nav class="filter">
     <div class="categoryFilter">
       <form action="#">
@@ -30,6 +39,7 @@
           name="otherFilter"
           value="manyLikes"
           @change="handleFilterChange"
+           checked="checked"
         />
         좋아요 순
         <input
@@ -60,13 +70,20 @@
   </nav>
 
   <div class="main">
-    <!-- 루틴 커뮤니티 -->
-    <div class="intro">
-      <h3>Routine Share Community</h3>
-      <p>
-        나만의 '벌루틴'을 공유하고, <br />다른 사람들의 '벌루틴'을<br />내
-        것으로 만들어보세요!
-      </p>
+    <!-- 인증사진 프리뷰 -->
+    <div class="shots">
+        <h5>SHOT PREVIEW</h5>
+        <p>벌루틴을 클릭하면, 해당 루틴에 대한 사람들의 꿀샷을 미리볼 수 있어요.</p>
+        <!-- 선택한 루틴 제목 표시 -->
+        <!-- <h4 v-if="selectedHabitTitle">{{ selectedHabitTitle }}</h4> -->
+
+        <div class="row gx-0 gy-0"> <!-- 열과 행 간의 간격을 없앰 -->
+        <div class="col-6 col-md-6" v-for="shot in filteredPosts" :key="shot.post_id">
+            <div class="card h-100"> <!-- 카드 높이를 100%로 설정 -->
+                <img :src="shot.imageUrl" class="card-img-top img-fluid">
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- 카드들 -->
@@ -81,7 +98,8 @@
         v-for="routine in filteredRoutines"
         :key="routine.community_id"
       >
-        <div class="card h-100">
+        <!-- <div class="card h-100 "> -->
+        <div class="card h-100" @click="selectHabit(routine.habit_id)">
           <div class="card-body">
             <div class="subtitle">
               <span class="type card-subtitle">
@@ -100,7 +118,7 @@
                 <span class="writerName">{{routine.user_id}}</span>
             </div>
             <div class="likeContainer">
-              <button class="likeButton" @click="toggleLike(routine.community_id)">
+              <button class="likeButton" @click.stop="toggleLike(routine.community_id)">
 
                   <img
                     class="likeImg"
@@ -143,16 +161,21 @@
 <script setup>
 import Header from '@/components/global/Header.vue';
 import Footer from '@/components/Footer.vue';
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 
 import fullLike from '@/assets/icons/fullLike.png';
 import emptyLike from '@/assets/icons/emptyLike.png';
+import coffeeImg from '@/assets/images/coffee_sample.png';
+import coffeeImg2 from '@/assets/images/coffee_sample2.jpg';
+import foodImg from '@/assets/images/food_sample.jpg';
+import foodImg2 from '@/assets/images/food_sample2.jpg';
 
 // routineCommunityArray 데이터
 const routineCommunityArray = ref([
   {
     community_id: 1,
     habit_title: '커피 텀블러에 담아서 출근하기',
+    habit_id: 2,
     category_title: '카페/간식',
     user_id: 'Money.java',
     habit_likes: 9, // 좋아요 누른 사용자 수
@@ -163,6 +186,7 @@ const routineCommunityArray = ref([
   {
     community_id: 2,
     habit_title: '하루 외식값 25000원 넘지 않기',
+    habit_id: 1,
     category_title: '식비',
     user_id: 'user456',
     habit_likes: 5,
@@ -173,6 +197,7 @@ const routineCommunityArray = ref([
   {
     community_id: 3,
     habit_title: '수제 모델링팩 만들기',
+    habit_id: 3,
     category_title: '뷰티',
     user_id: 'beautylover',
     habit_likes: 6,
@@ -183,6 +208,7 @@ const routineCommunityArray = ref([
   {
     community_id: 4,
     habit_title: '하루 커피 1잔 이하로 줄이기',
+    habit_id: 4,
     category_title: '카페/간식',
     user_id: 'coffeelover',
     habit_likes: 9,
@@ -193,6 +219,7 @@ const routineCommunityArray = ref([
   {
     community_id: 5,
     habit_title: '아침 식사는 집에서 해결하기',
+    habit_id: 5,
     category_title: '식비',
     user_id: 'user321',
     habit_likes: 7,
@@ -203,6 +230,7 @@ const routineCommunityArray = ref([
   {
     community_id: 6,
     habit_title: '마스크팩 자주 하지 않고 필요한 날만 하기',
+    habit_id: 6,
     category_title: '뷰티',
     user_id: 'skincareguru',
     habit_likes: 9,
@@ -213,6 +241,7 @@ const routineCommunityArray = ref([
   {
     community_id: 7,
     habit_title: '카페 대신 집에서 차 마시기',
+    habit_id: 7,
     category_title: '카페/간식',
     user_id: 'user654',
     habit_likes: 11,
@@ -223,6 +252,7 @@ const routineCommunityArray = ref([
   {
     community_id: 8,
     habit_title: '하루에 필요한 만큼만 장보기',
+    habit_id: 8,
     category_title: '식비',
     user_id: 'user543',
     habit_likes: 12,
@@ -233,6 +263,7 @@ const routineCommunityArray = ref([
   {
     community_id: 9,
     habit_title: '화장품 꼭 필요한 것만 사기',
+    habit_id: 9,
     category_title: '뷰티',
     user_id: 'makeupminimalist',
     habit_likes: 11,
@@ -243,6 +274,7 @@ const routineCommunityArray = ref([
   {
     community_id: 10,
     habit_title: '디저트 대신 과일로 간식 해결하기',
+    habit_id: 10,
     category_title: '카페/간식',
     user_id: 'user432',
     habit_likes: 15,
@@ -360,8 +392,54 @@ const likesArray = ref([
   { community_id: 10, habit_likes_id: 'user345' },
 ]);
 
+const posts = ref([
+  {
+    post_id: 1,
+    habit_id: 1,
+    // user: {
+    //   name: 'Money.java',
+    // //   icon: userIcon,
+    // },
+    imageUrl: foodImg,
+    // description: '요즘에는 하루에 2번만 외식해도 3만원이 훌쩍 넘네요.. 생각보다 지키기 어려운 루틴 ㅠㅠ.',
+    // hashtags: ['#식비', '#외식', '#하루외식값25000원넘지않기', '#가끔은도시락'],
+    // likes: 131,
+    // comments: 27,
+    // isLiked: false,
+    // showComments: false, // 댓글 표시 여부
+  },
+  {
+    post_id: 2,
+    habit_id: 2,
+    imageUrl: coffeeImg,
+  },
+  {
+    post_id: 3,
+    habit_id: 1,
+    imageUrl: foodImg2,
+  },
+  {
+    post_id: 4,
+    habit_id: 2,
+    imageUrl: coffeeImg2,
+  },
+]);
+
+
+
 // 필터링된 데이터
 const filteredRoutines = ref([...routineCommunityArray.value]); // 기본값으로 전체 데이터
+
+// 선택된 habit post만 담을 데이터
+// const filteredPosts = ref([...posts.value]);
+
+
+
+
+// 페이지가 처음 렌더링될 때 필터를 적용하는 onMounted 훅 추가
+onMounted(() => {
+  applyFilters(); // 기본으로 좋아요 순 필터 적용
+});
 
 // 각종 메소드
 
@@ -421,7 +499,7 @@ function updateHabitLikes(communityId, value) {
 // 우측 필터링
 
 // 오른쪽 필터 상태, 최신순이 기본값
-const selectedOtherFilter = ref('recent');
+const selectedOtherFilter = ref('manyLikes');
 
 // 2. 나의 좋아요만 필터링
 // currentId 현재 사용자 id로 판단
@@ -543,6 +621,42 @@ function applyFilters() {
 //         filteredRoutines.value = [...routineCommunityArray.value]; // 전체 데이터를 복사
 //     }
 // }
+
+
+
+
+
+// 선택된 habit_id 저장 변수 (아무것도 클릭하지 않았을 때는 null)
+const selectedHabitId = ref(null);
+
+// 특정 habit_id를 선택하는 함수
+function selectHabit(habitId) {
+  // 이미 선택된 habit을 클릭하면 전체 포스트를 다시 보여줌
+  if (selectedHabitId.value === habitId) {
+    selectedHabitId.value = null;
+  } else {
+    selectedHabitId.value = habitId;
+  }
+}
+
+
+// 선택된 habit_id에 맞는 포스트 필터링
+const filteredPosts = computed(() => {
+  if (selectedHabitId.value === null) {
+    // 아무 것도 선택되지 않았으면 전체 보여줌
+    return posts.value; // 전체 포스트를 반환
+  } else {
+    const filtered = posts.value.filter((post) => post.habit_id === selectedHabitId.value);
+    return filtered.length > 0 ? filtered : []; // 필터링 결과가 없으면 빈 배열 반환
+  }
+});
+// 선택된 루틴 이름
+// const selectedHabitTitle = ref(""); // 선택된 루틴 제목 저장
+
+// const selectHabit = (routine) => {
+//       // 선택된 루틴의 habit_title을 저장
+//       selectedHabitTitle.value = routine.habit_title;
+//     };
 </script>
 
 <style scoped>
@@ -594,6 +708,8 @@ function applyFilters() {
   display: grid;
   /* grid-template-columns: 20% 80%; */
   grid-template-columns: 1fr 3fr;
+  /* grid-template-rows: auto 1fr; */
+  grid-gap: 20px; /* 그리드 간의 간격 */
 }
 
 .categoryFilter {
@@ -605,9 +721,8 @@ function applyFilters() {
 }
 
 .intro {
-  margin: 0 1%;
-
-  grid-column: 1;
+    margin: 3% 8%;
+  grid-column: 1 / span 2; /* 소개는 두 열을 모두 차지 */
 }
 
 /* .col {
@@ -622,9 +737,96 @@ function applyFilters() {
   /* min-width: 200px; 비었을 때 최소 높이 */
 }
 
+
+
+
+
+/* 1등, 2등, 3등 표시 */
+.cards .col {
+  position: relative;
+}
+
+.cards .col:nth-child(1) .card::before {
+  content: "1st";
+  position: absolute;
+  top: -4px; /* 삼각형의 위치를 조금 위로 조정 */
+  left: -4px; /* 왼쪽으로 살짝 배치 */
+  background-color: gold;
+  color: white;
+  width: 50px; /* 삼각형의 너비 */
+  height: 50px; /* 삼각형의 높이 */
+  clip-path: polygon(0 0, 100% 0, 0 100%); /* 삼각형 모양 */
+  font-weight: bold;
+  font-size: 14px; /* 글씨 크기 */
+
+  display: flex;
+  padding-left: 5px; /* 텍스트를 왼쪽으로 이동 */
+  padding-top: 5px; /* 텍스트를 위쪽으로 이동 */
+  text-align: left; /* 텍스트 정렬을 왼쪽으로 */
+}
+
+.cards .col:nth-child(2) .card::before {
+  content: "2nd";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  background-color: silver;
+  color: white;
+  width: 50px;
+  height: 50px;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  font-weight: bold;
+  font-size: 14px;
+  padding-left: 5px; /* 텍스트를 왼쪽으로 이동 */
+  padding-top: 5px; /* 텍스트를 위쪽으로 이동 */
+  text-align: left;
+}
+
+.cards .col:nth-child(3) .card::before {
+  content: "3rd";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  background-color: #cd7f32; /* 동메달 색상 */
+  color: white;
+  width: 50px;
+  height: 50px;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  font-weight: bold;
+  font-size: 14px;
+  padding-left: 5px; /* 텍스트를 왼쪽으로 이동 */
+  padding-top: 5px; /* 텍스트를 위쪽으로 이동 */
+  text-align: left;
+}
+
+
+
+.cards .col:nth-child(1) .card {
+    box-shadow: 0 1px 3px #ffd9008a, 0 1px 2px #ffd9008a;
+}
+.cards .col:nth-child(2) .card {
+    box-shadow: 0 1px 3px #c0c0c0ac, 0 1px 2px #c0c0c0ac;
+}
+.cards .col:nth-child(3) .card {
+    box-shadow: 0 1px 3px #cd8032ab, 0 1px 2px #cd8032ab;
+}
+
+
+
+
+
+
+
+
 /* ************ 인트로 세부 ************ */
 .intro p {
-  margin-top: 10%;
+  /* margin-top: 10%; */
+  margin-bottom: 6%;
+  font-weight: 500;
+}
+
+.intro h3 {
+    font-weight: 900;
 }
 
 /* ************ 카드 세부 ************ */
@@ -724,4 +926,53 @@ function applyFilters() {
 .challengeButtonText {
   font-size: 14px;
 }
+
+
+
+/* 인증사진 미리보기 */
+.shots {
+    grid-column: 1;
+    background-color: #d3be5544;
+    margin-right: 100px;
+    padding: 8px;
+    width: 100%;
+}
+
+.shots h5 {
+    margin-bottom: 20px;
+    text-decoration: underline;
+}
+
+.shots p {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* 카드 높이를 제한하고, 이미지 크기 조정 */
+.shots .card {
+    height: auto; /* 카드가 부모 요소 내에서 가득 차도록 설정 */
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: transparent;
+}
+
+.shots .card img {
+    width: 130px;
+    height: 130px; /* 이미지 높이를 자동으로 맞추기 */
+    object-fit: cover; /* 이미지 비율 유지 */
+
+    border-radius: 0;
+}
+
+/* 카드를 조밀하게 배치 */
+.shots .row .col {
+    padding: 0; /* 여백 제거 */
+    margin-bottom: 0; /* 행 간 여백 제거 */
+}
+
+
+
+
 </style>
