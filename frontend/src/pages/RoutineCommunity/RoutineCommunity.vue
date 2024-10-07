@@ -8,10 +8,25 @@
           id="category"
           @change="handleCategoryFilterChange"
         >
-          <option value="all">전체</option>
+        <option value="all">전체</option>
           <option value="food">식비</option>
           <option value="dessert">카페/간식</option>
+          <option value="online_shopping">온라인쇼핑</option>
+          <option value="fashion_shopping">패션/쇼핑</option>
+          <option value="culture_leisure">문화/여가</option>
+          <option value="alcohol_entertainment">술/유흥</option>
+          <option value="education">교육</option>
+          <option value="health_medical">의료/건강</option>
+          <option value="living">생활</option>
+          <option value="housing_utilities">주거/공과금</option>
+          <option value="travel">여행</option>
+          <option value="automobile">자동차</option>
+          <option value="pet">반려동물</option>
           <option value="beauty">뷰티</option>
+          <option value="finance">금융</option>
+          <option value="transportation">교통</option>
+          <option value="event_fees">경조사/회비</option>
+
         </select>
       </form>
     </div>
@@ -78,56 +93,60 @@
       <!-- <div class="col" v-for="routine in routineCommunityArray" :key="routine.community_id"> -->
       <div
         class="col"
-        v-for="routine in filteredRoutines"
-        :key="routine.community_id"
+        v-for="routine in translatedRoutines"
+        :key="routine.communityId"
       >
         <div class="card h-100">
           <div class="card-body">
             <div class="subtitle">
               <span class="type card-subtitle">
-                {{ routine.category_title }}
+                {{ routine.categoryTitle }}
               </span>
               <span class="date card-subtitle">
-                {{ routine.update_date }}
+                {{ routine.uploadDate }}
               </span>
               <!-- mb-2 text-body-secondary -->
             </div>
-
-            <h5 class="card-title">{{routine.habit_title}}</h5>
+            <h5 class="card-title">{{ routine.habitTitle }}</h5>
           <div class="card-text">
             <div class="writer">
                 <img class="avatar" src="@/assets/images/sample.jpg">
-                <span class="writerName">{{routine.user_id}}</span>
+                <span class="writerName">{{ routine.nickname }}</span>
             </div>
             <div class="likeContainer">
-              <button class="likeButton" @click="toggleLike(routine.community_id)">
-
+                <button class="likeButton" @click="toggleLike(routine.communityId)">
                   <img
                     class="likeImg"
-                    :src="isLiked(routine.community_id) ? fullLike : emptyLike"
+                    :src="isLiked(routine.communityId) ? fullLike : emptyLike"
                     alt="like"
                   />
                 </button>
-                <!-- <span class="likeComment" v-if="isLiked">{{routine.habit_likes + (isLiked(routine.community_id) ? 1 : 0)}}</span> -->
-                <span class="likeComment">{{ routine.habit_likes }}</span>
+                <span class="likeComment">{{ routine.habitLikes }}</span>
               </div>
             </div>
 
             <div class="challengeContainer">
               <p class="challengeComment">
                 {{ routine.participants }}명의 루티너 중<br />
-                오늘 {{ routine.complete }}명이 목표를 달성했어요. <br />
-                <!-- {{routine.complete + 1}}번째 주인공이 되어보세요! -->
+                오늘 {{ routine.complete }}명이 목표를 달성했어요.
               </p>
-              <a href="#" class="challengeButton btn btn-primary">
+              <!-- <a href="#" class="challengeButton btn btn-primary">
                 <img
                   class="challengeIcon"
                   src="@/assets/icons/together_invertColor.png"
                 />
-                <span class="challengeButtonText"
-                  >내 루틴에 담고 함께 도전하기</span
-                >
-              </a>
+                <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
+              </a> -->
+              <button
+                @click="addHabitToMyHabit(routine.communityId)"
+                class="challengeButton btn btn-primary"
+              >
+                <img
+                  class="challengeIcon"
+                  src="@/assets/icons/together_invertColor.png"
+                />
+                <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
+              </button>
             </div>
           </div>
         </div>
@@ -141,408 +160,163 @@
 </template>
 
 <script setup>
-import Header from '@/components/global/Header.vue';
-import Footer from '@/components/Footer.vue';
-import { ref, reactive } from 'vue';
-
+import { ref, onMounted, watch ,computed} from 'vue';
+import axios from 'axios';
 import fullLike from '@/assets/icons/fullLike.png';
 import emptyLike from '@/assets/icons/emptyLike.png';
 
-// routineCommunityArray 데이터
-const routineCommunityArray = ref([
-  {
-    community_id: 1,
-    habit_title: '커피 텀블러에 담아서 출근하기',
-    category_title: '카페/간식',
-    user_id: 'Money.java',
-    habit_likes: 9, // 좋아요 누른 사용자 수
-    participants: 1784,
-    complete: 512,
-    update_date: '2024-09-24T14:48:00Z',
-  },
-  {
-    community_id: 2,
-    habit_title: '하루 외식값 25000원 넘지 않기',
-    category_title: '식비',
-    user_id: 'user456',
-    habit_likes: 5,
-    participants: 980,
-    complete: 350,
-    update_date: '2024-09-23T09:12:00Z',
-  },
-  {
-    community_id: 3,
-    habit_title: '수제 모델링팩 만들기',
-    category_title: '뷰티',
-    user_id: 'beautylover',
-    habit_likes: 6,
-    participants: 620,
-    complete: 420,
-    update_date: '2024-09-22T16:20:00Z',
-  },
-  {
-    community_id: 4,
-    habit_title: '하루 커피 1잔 이하로 줄이기',
-    category_title: '카페/간식',
-    user_id: 'coffeelover',
-    habit_likes: 9,
-    participants: 1400,
-    complete: 920,
-    update_date: '2024-09-21T11:30:00Z',
-  },
-  {
-    community_id: 5,
-    habit_title: '아침 식사는 집에서 해결하기',
-    category_title: '식비',
-    user_id: 'user321',
-    habit_likes: 7,
-    participants: 740,
-    complete: 520,
-    update_date: '2024-09-20T10:15:00Z',
-  },
-  {
-    community_id: 6,
-    habit_title: '마스크팩 자주 하지 않고 필요한 날만 하기',
-    category_title: '뷰티',
-    user_id: 'skincareguru',
-    habit_likes: 9,
-    participants: 550,
-    complete: 320,
-    update_date: '2024-09-19T15:05:00Z',
-  },
-  {
-    community_id: 7,
-    habit_title: '카페 대신 집에서 차 마시기',
-    category_title: '카페/간식',
-    user_id: 'user654',
-    habit_likes: 11,
-    participants: 600,
-    complete: 400,
-    update_date: '2024-09-18T12:48:00Z',
-  },
-  {
-    community_id: 8,
-    habit_title: '하루에 필요한 만큼만 장보기',
-    category_title: '식비',
-    user_id: 'user543',
-    habit_likes: 12,
-    participants: 820,
-    complete: 580,
-    update_date: '2024-09-17T13:20:00Z',
-  },
-  {
-    community_id: 9,
-    habit_title: '화장품 꼭 필요한 것만 사기',
-    category_title: '뷰티',
-    user_id: 'makeupminimalist',
-    habit_likes: 11,
-    participants: 500,
-    complete: 300,
-    update_date: '2024-09-16T14:00:00Z',
-  },
-  {
-    community_id: 10,
-    habit_title: '디저트 대신 과일로 간식 해결하기',
-    category_title: '카페/간식',
-    user_id: 'user432',
-    habit_likes: 15,
-    participants: 640,
-    complete: 420,
-    update_date: '2024-09-15T11:30:00Z',
-  },
-]);
-
-// likesArray 데이터
-const likesArray = ref([
-  { community_id: 1, habit_likes_id: 'Money.java' },
-  { community_id: 1, habit_likes_id: 'user123' },
-  { community_id: 1, habit_likes_id: 'user432' },
-  { community_id: 1, habit_likes_id: 'user567' },
-  { community_id: 1, habit_likes_id: 'user789' },
-  { community_id: 1, habit_likes_id: 'user101' },
-  { community_id: 1, habit_likes_id: 'user234' },
-  { community_id: 1, habit_likes_id: 'user345' },
-  { community_id: 1, habit_likes_id: 'user456' },
-
-  { community_id: 2, habit_likes_id: 'Money.java' },
-  { community_id: 2, habit_likes_id: 'user789' },
-  { community_id: 2, habit_likes_id: 'user111' },
-  { community_id: 2, habit_likes_id: 'user222' },
-  { community_id: 2, habit_likes_id: 'user333' },
-
-  { community_id: 3, habit_likes_id: 'beautylover' },
-  { community_id: 3, habit_likes_id: 'user987' },
-  { community_id: 3, habit_likes_id: 'user543' },
-  { community_id: 3, habit_likes_id: 'user654' },
-  { community_id: 3, habit_likes_id: 'user765' },
-  { community_id: 3, habit_likes_id: 'user876' },
-
-  { community_id: 4, habit_likes_id: 'coffeelover' },
-  { community_id: 4, habit_likes_id: 'user567' },
-  { community_id: 4, habit_likes_id: 'user876' },
-  { community_id: 4, habit_likes_id: 'user999' },
-  { community_id: 4, habit_likes_id: 'user111' },
-  { community_id: 4, habit_likes_id: 'user222' },
-  { community_id: 4, habit_likes_id: 'user333' },
-  { community_id: 4, habit_likes_id: 'user444' },
-  { community_id: 4, habit_likes_id: 'user555' },
-
-  { community_id: 5, habit_likes_id: 'user321' },
-  { community_id: 5, habit_likes_id: 'user654' },
-  { community_id: 5, habit_likes_id: 'user123' },
-  { community_id: 5, habit_likes_id: 'user345' },
-  { community_id: 5, habit_likes_id: 'user567' },
-  { community_id: 5, habit_likes_id: 'user789' },
-  { community_id: 5, habit_likes_id: 'user101' },
-
-  { community_id: 6, habit_likes_id: 'skincareguru' },
-  { community_id: 6, habit_likes_id: 'user876' },
-  { community_id: 6, habit_likes_id: 'user543' },
-  { community_id: 6, habit_likes_id: 'user654' },
-  { community_id: 6, habit_likes_id: 'user321' },
-  { community_id: 6, habit_likes_id: 'user987' },
-  { community_id: 6, habit_likes_id: 'user123' },
-  { community_id: 6, habit_likes_id: 'user111' },
-  { community_id: 6, habit_likes_id: 'user555' },
-
-  { community_id: 7, habit_likes_id: 'user654' },
-  { community_id: 7, habit_likes_id: 'user123' },
-  { community_id: 7, habit_likes_id: 'user789' },
-  { community_id: 7, habit_likes_id: 'user101' },
-  { community_id: 7, habit_likes_id: 'user234' },
-  { community_id: 7, habit_likes_id: 'user345' },
-  { community_id: 7, habit_likes_id: 'user456' },
-  { community_id: 7, habit_likes_id: 'user567' },
-  { community_id: 7, habit_likes_id: 'user876' },
-  { community_id: 7, habit_likes_id: 'user543' },
-  { community_id: 7, habit_likes_id: 'user321' },
-
-  { community_id: 8, habit_likes_id: 'user543' },
-  { community_id: 8, habit_likes_id: 'user123' },
-  { community_id: 8, habit_likes_id: 'user456' },
-  { community_id: 8, habit_likes_id: 'user654' },
-  { community_id: 8, habit_likes_id: 'user101' },
-  { community_id: 8, habit_likes_id: 'user789' },
-  { community_id: 8, habit_likes_id: 'user111' },
-  { community_id: 8, habit_likes_id: 'user222' },
-  { community_id: 8, habit_likes_id: 'user333' },
-  { community_id: 8, habit_likes_id: 'user444' },
-  { community_id: 8, habit_likes_id: 'user555' },
-  { community_id: 8, habit_likes_id: 'user666' },
-
-  { community_id: 9, habit_likes_id: 'makeupminimalist' },
-  { community_id: 9, habit_likes_id: 'user999' },
-  { community_id: 9, habit_likes_id: 'user654' },
-  { community_id: 9, habit_likes_id: 'user321' },
-  { community_id: 9, habit_likes_id: 'user765' },
-  { community_id: 9, habit_likes_id: 'user987' },
-  { community_id: 9, habit_likes_id: 'user543' },
-  { community_id: 9, habit_likes_id: 'user876' },
-  { community_id: 9, habit_likes_id: 'user654' },
-  { community_id: 9, habit_likes_id: 'user123' },
-  { community_id: 9, habit_likes_id: 'user101' },
-
-  { community_id: 10, habit_likes_id: 'user432' },
-  { community_id: 10, habit_likes_id: 'user123' },
-  { community_id: 10, habit_likes_id: 'user987' },
-  { community_id: 10, habit_likes_id: 'user543' },
-  { community_id: 10, habit_likes_id: 'user111' },
-  { community_id: 10, habit_likes_id: 'user222' },
-  { community_id: 10, habit_likes_id: 'user333' },
-  { community_id: 10, habit_likes_id: 'user444' },
-  { community_id: 10, habit_likes_id: 'user555' },
-  { community_id: 10, habit_likes_id: 'user666' },
-  { community_id: 10, habit_likes_id: 'user777' },
-  { community_id: 10, habit_likes_id: 'user888' },
-  { community_id: 10, habit_likes_id: 'user999' },
-  { community_id: 10, habit_likes_id: 'user101' },
-  { community_id: 10, habit_likes_id: 'user234' },
-  { community_id: 10, habit_likes_id: 'user345' },
-]);
-
-// 필터링된 데이터
-const filteredRoutines = ref([...routineCommunityArray.value]); // 기본값으로 전체 데이터
-
-// 각종 메소드
-
-// 1. 좋아요 버튼 누르는 로직
-
-// 현재 사용자 id를 임의로 Money.java로 해놓겠음
-const currentId = 'Money.java';
-
-function isLiked(communityId) {
-  return likesArray.value.some(
-    (like) =>
-      like.community_id === communityId && like.habit_likes_id === currentId
-  );
-}
-
-function toggleLike(communityId) {
-  const routine = routineCommunityArray.value.find(
-    (r) => r.community_id === communityId
-  );
-
-  if (isLiked(communityId)) {
-    // 좋아요를 눌러놓은 상태면
-    // 좋아요 취소
-    const index = likesArray.value.findIndex(
-      (like) =>
-        like.community_id === communityId && like.habit_likes_id === currentId
-    );
-    if (index !== -1) {
-      // index가 있는지 확인차 한번더 체크
-      routine.habit_likes -= 1; // 1. routineCommunityArray에서 좋아요 수 -1
-      likesArray.value.splice(index, 1); // 2. likesArray에서 삭제
-
-      updateHabitLikes(communityId, -1); // DB 업데이트: 좋아요 수 감소
-    }
-  } else {
-    routine.habit_likes += 1; // 1. 좋아요 수 +1
-    likesArray.value.push({
-      community_id: communityId,
-      habit_likes_id: currentId,
-    }); // 2. likesArray에 추가
-
-    updateHabitLikes(communityId, 1); // DB 업데이트: 좋아요 수 증가
+// props로 sortType 받기
+const props = defineProps({
+  sortType: {
+    type: String,
+    default: 'recent'  // 기본값으로 'recent'를 사용
   }
-}
+});
 
-function updateHabitLikes(communityId, value) {
-  // DB 업데이트 로직
-  // 1. '좋아요' 테이블에 community_id랑 habit_likes_id 현 사용자 id로 추가, 혹은 그 row를 삭제하기
-  // 2. '루틴 커뮤니티' 테이블의 '좋아요 수' 필드에 +1 혹은 -1 처리하기
-  console.log(`community_id: ${communityId}, like 변화: ${value}`);
-}
-
-// // 이미지 경로를 import하여 사용할 수 있음 (빌드 과정에서 경로 처리)
-// const fullLikeImg = require('@/assets/icons/fullLike.png');
-// const emptyLikeImg = require('@/assets/icons/emptyLike.png');
-
-// 우측 필터링
-
-// 오른쪽 필터 상태, 최신순이 기본값
-const selectedOtherFilter = ref('recent');
-
-// 2. 나의 좋아요만 필터링
-// currentId 현재 사용자 id로 판단
-
-// const isMyLikesFilterActive = ref(false); // 나의 좋아요 필터 상태 저장
-
-function checkMyLike() {
-  // currentId 사용자가 좋아요한 community_id 리스트 추출
-  const likedCommunityIds = likesArray.value
-    .filter((like) => like.habit_likes_id === currentId)
-    .map((like) => like.community_id);
-
-  // routineCommunityArray에서 해당 community_id를 가진 루틴만 필터링
-  const likedRoutines = routineCommunityArray.value.filter((routine) =>
-    likedCommunityIds.includes(routine.community_id)
-  );
-
-  // 필터링된 결과가 없을 경우
-  // if (likedCommunityIds.length === 0) {
-  //     return []; // 또는 전체 루틴을 반환하거나 원하는 값을 반환
-  // }
-
-  return likedRoutines;
-}
-
-// // 3. 좋아요순
-// function filterByMostLiked() {
-//     return routineCommunityArray.value.slice().sort((a, b) => b.habit_likes - a.habit_likes);
-// }
-
-// // 4. 최신순
-// function filterByRecent() {
-//     return routineCommunityArray.value.slice().sort((a, b) => new Date(b.update_date) - new Date(a.update_date));
-// }
-
-// // 5. 참여자순
-// function filterByMostParticipants() {
-//     return routineCommunityArray.value.slice().sort((a, b) => b.participants - a.participants);
-// }
-
-// // 6. 달성자순
-// function filterByMostCompletions() {
-//     return routineCommunityArray.value.slice().sort((a, b) => b.complete - a.complete);
-// }
-
-// ******** 오른쪽 필터 처리
-function handleFilterChange(event) {
-  selectedOtherFilter.value = event.target.value;
-  applyFilters(); // 필터가 변경될 때마다 필터를 적용
-}
-
-// 카테고리 필터링
-
-// 카테고리 필터 상태, 디폴트는 전체 카테고리
-const selectedCategory = ref('all');
-
-// 카테고리 맵 (카테고리 필터와 데이터의 매칭)
-const categoryMap = {
+// **카테고리명을 한국어로 변환하는 매핑 테이블**  <!-- 추가된 부분 -->
+const categoryTranslations = {
   food: '식비',
   dessert: '카페/간식',
+  online_shopping: '온라인쇼핑',
+  fashion_shopping: '패션/쇼핑',
+  culture_leisure: '문화/여가',
+  alcohol_entertainment: '술/유흥',
+  education: '교육',
+  health_medical: '의료/건강',
+  living: '생활',
+  housing_utilities: '주거/공과금',
+  travel: '여행',
+  automobile: '자동차',
+  pet: '반려동물',
   beauty: '뷰티',
+  finance: '금융',
+  transportation: '교통',
+  event_fees: '경조사/회비'
 };
 
-// ******** 카테고리 필터 처리
+// sortType을 상태로 관리할 변수 선언
+const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
+const routineCommunityArray = ref([]);
+const selectedCategory = ref('all');  // 카테고리 필터
+const likesArray = ref([]);
+
+// 카테고리 타이틀을 한국어로 변환하는 함수
+const translatedRoutines = computed(() => { 
+  return routineCommunityArray.value.map(routine => ({
+    ...routine,
+    categoryTitle: categoryTranslations[routine.categoryTitle] || routine.categoryTitle 
+  }));  // map 함수의 닫는 괄호 위치 수정
+});
+
+// 데이터를 가져오는 함수
+const fetchSortedRoutines = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8080/routine-community/sort/${currentSortType.value}`, {
+      params: {
+        categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,  // '전체'는 필터 해제
+      },
+    });
+    routineCommunityArray.value = response.data;  // 데이터를 저장
+    console.log('Fetched sorted routines successfully:', response.data);
+    console.log("Selected category: ", selectedCategory.value);
+    console.log('SortType:', currentSortType.value);
+  } catch (error) {
+    console.error('Error fetching sorted routines:', error);
+  }
+};
+
+// 필터가 변경되면 sortType 업데이트 후 데이터 요청
+function handleFilterChange(event) {
+  currentSortType.value = event.target.value;  // 읽기 전용인 props.sortType 대신 상태로 관리되는 currentSortType을 변경
+  console.log("Selected sortType: ", currentSortType.value);
+  fetchSortedRoutines();  // 업데이트된 sortType으로 데이터를 가져옴
+}
+
+// 카테고리 필터 변경 시
 function handleCategoryFilterChange(event) {
   selectedCategory.value = event.target.value;
-  applyFilters(); // 필터가 변경될 때마다 필터를 적용
+  fetchSortedRoutines(); // 기본 정렬로 카테고리 필터 적용
 }
 
-// 최종 필터 - 카테고리 필터 + 오른쪽 필터
-function applyFilters() {
-  let result = [...routineCommunityArray.value];
+// 페이지 로드 시 기본 정렬된 데이터를 가져오기
+onMounted(() => {
+  fetchSortedRoutines();
+});
 
-  // 1. '카테고리 필터' 적용
-  if (selectedCategory.value !== 'all') {
-    result = result.filter(
-      (routine) =>
-        routine.category_title === categoryMap[selectedCategory.value]
+// 좋아요 버튼 클릭 시 동작
+async function toggleLike(communityId) {
+  const routine = routineCommunityArray.value.find(
+    (r) => r.communityId === communityId
+  );
+
+  // 현재 사용자의 ID (로그인된 사용자 정보를 활용)
+  const userId = 1;   // 실제 로그인된 사용자 ID로 대체
+
+  // 좋아요 취소 (이미 좋아요를 누른 상태)
+  if (isLiked(communityId)) {
+    routine.habitLikes -= 1;
+    likesArray.value = likesArray.value.filter(
+      (like) => like.communityId !== communityId
     );
-    // 루틴 데이터의 카테고리 타이틀이 '식비', selectedCategory가 select form의 value (food) (이벤트니까)
-  }
 
-  // 2. '오른쪽 필터' 적용
-  if (selectedOtherFilter.value === 'myLikes') {
-    result = result.filter((routine) => checkMyLike().includes(routine));
-  } else if (selectedOtherFilter.value === 'manyLikes') {
-    result = result.sort((a, b) => b.habit_likes - a.habit_likes);
-  } else if (selectedOtherFilter.value === 'recent') {
-    result = result.sort(
-      (a, b) => new Date(b.update_date) - new Date(a.update_date)
-    );
-  } else if (selectedOtherFilter.value === 'manyParticipants') {
-    result = result.sort((a, b) => b.participants - a.participants);
-  } else if (selectedOtherFilter.value === 'manyCompletions') {
-    result = result.sort((a, b) => b.complete - a.complete);
+    // 좋아요 취소 API 호출 (DELETE)
+    try {
+      await axios({
+        method: 'delete',
+        url: 'http://localhost:8080/routine-community/like',
+        data: { userId, communityId }, // `DELETE`에서 `data`를 사용하려면 명시적 형식으로 사용
+        headers: {
+          'Content-Type': 'application/json', // JSON 형식 명시
+        },
+      });
+      console.log('좋아요 취소 성공');
+    } catch (error) {
+      console.error('좋아요 취소 실패', error);
+      routine.habitLikes += 1;  // 실패 시 복구
+    }
   }
+  // 좋아요 추가 (아직 좋아요를 누르지 않은 상태)
+  else {
+    routine.habitLikes += 1;
+    likesArray.value.push({ communityId });
 
-  // 필터링된 결과를 `filteredRoutines`에 할당
-  filteredRoutines.value = result;
+    // 좋아요 추가 API 호출 (POST)
+    try {
+      await axios.post('http://localhost:8080/routine-community/like', {
+        userId,
+        communityId,
+      });
+      console.log('좋아요 추가 성공');
+    } catch (error) {
+      console.error('좋아요 추가 실패', error);
+      routine.habitLikes -= 1;  // 실패 시 복구
+    }
+  }
 }
 
-// ****** 다 모아져있는 '오른쪽 필터' 핸들러
-// function handleFilterChange(event) {
-//     const filterValue = event.target.value;
+// 좋아요 여부 확인 함수
+function isLiked(communityId) {
+  return likesArray.value.some((like) => like.communityId === communityId);
+}
 
-//     // 필터 상태에 따라 데이터 필터링
-//     if (filterValue === 'myLikes') { // 2. 나의 좋아요
-//         filteredRoutines.value = checkMyLike();
-//     } else if (filterValue === 'manyLikes') { // 3. 좋아요순
-//         filteredRoutines.value = filterByMostLiked();
-//     } else if (filterValue === 'recent') { // 4. 최신순
-//         filteredRoutines.value = filterByRecent();
-//     } else if (filterValue === 'manyParticipants') { // 5. 참여자순
-//         filteredRoutines.value = filterByMostParticipants();
-//     } else if (filterValue === 'manyCompletions') { // 6. 달성자순
-//         filteredRoutines.value = filterByMostCompletions();
-//     } else {
-//         // 기본값으로 전체 데이터
-//         filteredRoutines.value = [...routineCommunityArray.value]; // 전체 데이터를 복사
-//     }
-// }
+async function addHabitToMyHabit(communityId) {
+  const userId = 2;  // 실제 로그인된 사용자 ID로 변경
+
+  try {
+    // POST 요청에서 params를 통해 userId와 habitId 전달
+    await axios.post('http://localhost:8080/routine-community/challenge', null, {
+      params: {
+        userId: userId,
+        habitId: communityId,  // communityId를 habitId로 전달
+      }
+    });
+    console.log('습관이 MyHabit에 추가되었습니다.');
+    alert('습관이 MyHabit에 추가되었습니다.');  // 성공 시 알림 표시
+  } catch (error) {
+    console.error('MyHabit 추가 중 오류 발생:', error);
+  }
+}
+
 </script>
 
 <style scoped>
