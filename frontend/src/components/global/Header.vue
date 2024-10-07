@@ -43,7 +43,7 @@
         <div class="auth-buttons">
             <template v-if="isLoggedIn">
                 <span>반갑습니다 {{ userName }}님!</span>
-                <router-link to="/myedit"><button class="auth-button">Mypage</button></router-link>
+                <router-link to="/myreward"><button class="auth-button">Mypage</button></router-link>
                 <button class="auth-button" @click="logout">Log out</button>
             </template>
             <template v-else>
@@ -97,8 +97,6 @@ onMounted(() => {
     });
 
     // 로그아웃 기능
-
-
 });
 
 const checkLoginStatus = () => {
