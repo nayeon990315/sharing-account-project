@@ -15,12 +15,11 @@ import MyPage from '@/pages/Mypage/MyPage.vue';
 import Register from '@/pages/Login&SignUp/Register.vue';
 
 
-
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomePage
+    component: HomePage,
   },
   {
     path: '/login',
@@ -40,7 +39,7 @@ const routes = [
   {
     path: '/myroutine',
     name: 'MyRoutine',
-    component: MyRoutine
+    component: MyRoutine,
   },
   {
     path: '/myroutine/edit',
@@ -50,12 +49,12 @@ const routes = [
   {
     path: '/versus',
     name: 'MeVersus',
-    component: MeVersusPage
+    component: MeVersusPage,
   },
   {
     path: '/routine-community',
     name: 'routineCommunity',
-    component: RoutineCommunity
+    component: RoutineCommunity,
   },
   {
     path: '/post-community',
@@ -85,6 +84,7 @@ const routes = [
     component: MyPage,
   },
 ]
+
 
 const router = createRouter({
   history: createWebHistory(),
