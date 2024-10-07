@@ -1,9 +1,5 @@
 <template>
   <div id="post-community">
-    <header>
-      <div class="logo">LOGO</div>
-      <input type="text" placeholder="#Search" />
-    </header>
     <div class="content">
       <aside>
         <router-link to="/post-community/explore">Explore</router-link>
@@ -23,7 +19,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 body,
 html {
   margin: 0;
@@ -39,59 +35,29 @@ html {
   height: 100vh;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #f0f4f8;
-}
-
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-}
-
 .content {
   display: flex;
-  flex-grow: 1;
 }
 
 aside {
   width: 200px;
-  background-color: #e0e4e8;
+  background-color: #f0f4f8; /* 배경 색상 */
   padding: 20px;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 }
 
 aside a {
   display: block;
   margin-bottom: 10px;
-  text-decoration: none;
-  color: #2c3e50;
+  color: #333; /* 링크 색상 */
+  text-decoration: none; /* 밑줄 제거 */
 }
 
-aside a.router-link-active {
-  color: #42b983;
+aside a:hover {
+  color: #007bff; /* 호버 시 링크 색상 */
 }
 
 main {
   flex-grow: 1;
-}
-
-.hashtags {
-  margin: 20px;
-}
-
-.hashtags button {
-  margin: 5px;
-  padding: 10px;
-  border-radius: 20px;
-  border: none;
-  background-color: #e0e4e8;
-  color: black; /* 기본 글자색을 검정으로 설정 */
-}
-
-.hashtags button:hover {
-  background-color: #42b983;
 }
 </style>

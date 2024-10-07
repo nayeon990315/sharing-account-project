@@ -18,6 +18,7 @@
         Delete
       </button>
     </div>
+
     <div class="comment-input">
       <textarea v-model="newComment" placeholder="Add a comment..."></textarea>
       <button class="comment-submit-button" @click="addComment">
@@ -33,6 +34,7 @@ export default {
     return {
       comments: [],
       newComment: '',
+      currentUser: 'user123', // Replace with actual logic to get the current user
     };
   },
   methods: {
@@ -40,7 +42,7 @@ export default {
       if (this.newComment.trim()) {
         this.comments.push({
           id: this.comments.length + 1,
-          user: 'current_user', // Replace with actual user
+          user: this.currentUser, // Use the current user's ID
           text: this.newComment,
           isEditing: false,
         });
@@ -58,9 +60,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .comment-section {
   margin-top: 20px;
+}
+
+.comment-item {
+  margin-bottom: 20px;
 }
 
 .comment-item {

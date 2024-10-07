@@ -9,27 +9,26 @@ import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
 import MyRoutine from '@/pages/MyRoutine/MyRoutine.vue';
 import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
 
-
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomePage
+    component: HomePage,
   },
   {
     path: '/myroutine',
     name: 'MyRoutine',
-    component: MyRoutine
+    component: MyRoutine,
   },
   {
     path: '/versus',
     name: 'MeVersus',
-    component: MeVersusPage
+    component: MeVersusPage,
   },
   {
     path: '/routine-community',
     name: 'routineCommunity',
-    component: RoutineCommunity
+    component: RoutineCommunity,
   },
   {
     path: '/post-community',
@@ -53,7 +52,7 @@ const routes = [
       },
     ],
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(),

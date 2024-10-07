@@ -17,25 +17,23 @@ const isTodoListVisible = ref(false);
 const toggleTodoList = () => {
   isTodoListVisible.value = !isTodoListVisible.value;
 };
-
-
 </script>
 
 <template>
   <!-- <Header :key="headerKey" /> -->
   <!-- <Header :key="headerKey" /> -->
-  <Header/>
+  <Header />
   <router-view :key="routeKey"></router-view>
   <router-view>
     <!-- To-Do 아이콘 -->
-  <button class="btn btn-primary floating-button" @click="toggleTodoList">
-    Check<br>List
-    <!-- <i class="bi bi-check2"></i>  -->
-  </button>
+    <button class="btn btn-primary floating-button" @click="toggleTodoList">
+      Check<br />List
+      <!-- <i class="bi bi-check2"></i>  -->
+    </button>
 
-  <!-- To-Do List 컴포넌트 -->
-  <TodoList :show="isTodoListVisible" @close="toggleTodoList" />
-</router-view>
+    <!-- To-Do List 컴포넌트 -->
+    <TodoList :show="isTodoListVisible" @close="toggleTodoList" />
+  </router-view>
 
   <!-- <Footer /> -->
 </template>
@@ -61,7 +59,6 @@ article {
   height: 90%;
   float: left;
   overflow: auto;
-
 }
 
 aside {
