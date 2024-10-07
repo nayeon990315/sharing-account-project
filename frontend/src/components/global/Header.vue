@@ -43,12 +43,14 @@
         <div class="auth-buttons">
             <template v-if="isLoggedIn">
                 <span>반갑습니다 {{ userName }}님!</span>
+                <router-link to="/mypage"><button class="auth-button">Mypage</button></router-link>
                 <button class="auth-button" @click="logout">Log out</button>
             </template>
             <template v-else>
                 <router-link to="/login"><button class="auth-button">Log in</button></router-link>
                 <router-link to="/register"><button class="auth-button">Join</button></router-link>
             </template>
+
         </div>
     </header>
 </template>

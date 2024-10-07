@@ -11,7 +11,9 @@ import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
 import MyRoutineEdit from '@/pages/MyRoutine/MyRoutineEdit.vue';
 import Login from '../pages/Login&SignUp/Login.vue'
 import SignUp from '@/pages/Login&SignUp/SignUp.vue';
+import MyPage from '@/pages/Mypage/MyPage.vue';
 import Register from '@/pages/Login&SignUp/Register.vue';
+
 
 
 const routes = [
@@ -76,6 +78,11 @@ const routes = [
         component: Upload,
       },
     ],
+  },
+  {
+    path: '/mypage',
+    name: 'mypage',
+    component: MyPage,
   },
 ]
 
