@@ -68,8 +68,7 @@
             루틴 추가하기
         </button>
         <br>
-        <button type="button" class="btn btn-dark mt-5 "
-            @click="updateRoutineState">
+        <button type="button" class="btn btn-dark mt-5 " @click="updateRoutineState">
             상태 업데이트
         </button>
     </div>
@@ -181,9 +180,7 @@
 <script>
 import draggable from "vuedraggable";
 import axios from 'axios';
-import { ref } from 'vue';
 
-let id = 7;
 export default {
     name: "TaskManager",
     components: {
@@ -221,7 +218,7 @@ export default {
                 { value: "경조사/회비", label: "경조사/회비 (Events/Fees)" }
             ],
             waitingList: [],
-            inProgressList: []
+            inProgressList: [],
             // waitingList: [
             //     { id: 1, name: "구독 서비스 점검하기", category: "생활" },
             //     { id: 2, name: "반려동물 수제 장난감 만들기", category: "반려동물" },
@@ -324,6 +321,16 @@ export default {
             }
         },
         async getHabitList() {
+            // this.routineStore.routineList.forEach(habit => {
+            //     if (habit.state === "대기") {
+            //         this.waitingList.push(habit);
+            //     } else if (habit.state === "진행") {
+            //         this.inProgressList.push(habit);
+            //     }
+            // })
+            //      console.log("대기 리스트:", this.waitingList);
+            //     console.log("진행중 리스트:", this.inProgressList);
+
             try {
                 const response = await axios.get('http://localhost:8080/habits/', {
                     params: {

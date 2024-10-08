@@ -10,7 +10,8 @@ import VueCookies from 'vue-cookies';
 
 
 const app = createApp(App)
+const pinia = createPinia();
 app.use(router)
 app.use(VueCookies);
-app.use(createPinia());
+app.use(pinia);
 app.mount('#app')
