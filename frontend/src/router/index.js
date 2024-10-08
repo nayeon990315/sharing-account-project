@@ -11,16 +11,15 @@ import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
 import MyRoutineEdit from '@/pages/MyRoutine/MyRoutineEdit.vue';
 import Login from '../pages/Login&SignUp/Login.vue'
 import SignUp from '@/pages/Login&SignUp/SignUp.vue';
-import MyPage from '@/pages/Mypage/MyPage.vue';
+import MyPageEdit from '@/pages/Mypage/MyPageEdit.vue';
 import Register from '@/pages/Login&SignUp/Register.vue';
-
-
+import MyPageReward from '@/pages/Mypage/MyPageReward.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomePage
+    component: HomePage,
   },
   {
     path: '/login',
@@ -40,7 +39,7 @@ const routes = [
   {
     path: '/myroutine',
     name: 'MyRoutine',
-    component: MyRoutine
+    component: MyRoutine,
   },
   {
     path: '/myroutine/edit',
@@ -50,12 +49,12 @@ const routes = [
   {
     path: '/versus',
     name: 'MeVersus',
-    component: MeVersusPage
+    component: MeVersusPage,
   },
   {
     path: '/routine-community',
     name: 'routineCommunity',
-    component: RoutineCommunity
+    component: RoutineCommunity,
   },
   {
     path: '/post-community',
@@ -80,11 +79,17 @@ const routes = [
     ],
   },
   {
-    path: '/mypage',
-    name: 'mypage',
-    component: MyPage,
+    path: '/myedit',
+    name: 'myedit',
+    component: MyPageEdit,
+  },
+  {
+    path: '/myreward',
+    name: 'myreward',
+    component: MyPageReward,
   },
 ]
+
 
 const router = createRouter({
   history: createWebHistory(),

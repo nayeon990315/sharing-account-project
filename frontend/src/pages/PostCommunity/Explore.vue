@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <h1>Explore</h1>
     <div class="category-tags">
       <button
@@ -8,7 +8,7 @@
         @click="handleCategoryFilterChange(category)"
         :class="{ active: selectedCategory === category }"
       >
-        #{{ category }}
+        {{ category === '참여루틴' ? category : `#${category}` }}
       </button>
     </div>
     <div v-for="post in filteredPosts" :key="post.id" class="post">
@@ -58,7 +58,7 @@ const commentCounts = ref({}); // 게시물별 댓글 수 저장
 const selectedCategory = ref('전체');
 
 const categoryOptions = [
-  '전체',
+  '참여루틴',
   '식비',
   '카페/간식',
   '쇼핑',
@@ -163,6 +163,21 @@ onMounted(() => {
 </script>
 
 <style scoped>
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+
+.container {
+  max-width: 1200px; /* Set a maximum width */
+  margin: 0 auto; /* Center the container */
+  padding: 0 20px; /* Add horizontal padding */
+}
+
 .category-tags {
   display: flex;
   flex-wrap: wrap;
@@ -179,7 +194,11 @@ onMounted(() => {
 }
 
 .category-tags button.active {
-  background-color: #007bff;
+  background-color: #71b5fe;
+}
+
+.category-tags button:nth-child(1) {
+  background-color: #fcf5ab; /* Light yellow for 참여루틴 */
 }
 
 .post {

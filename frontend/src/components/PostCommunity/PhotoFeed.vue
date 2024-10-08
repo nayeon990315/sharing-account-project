@@ -23,7 +23,6 @@ export default {
       photos: [
         {
           username: 'Money.java',
-          level: 'LV3. 절약 고수',
           src: require('@/assets/POST PNG (1).png'),
           alt: 'Coffee',
           caption: '출근 전 모닝커피! 스타벅스 대신 저렴한 커피로 마셔봐요.',

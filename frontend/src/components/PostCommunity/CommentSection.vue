@@ -29,6 +29,7 @@
         Cancel
       </button>
     </div>
+
     <div class="comment-input">
       <textarea v-model="newComment" placeholder="Add a comment..."></textarea>
       <button class="comment-submit-button" @click="submitComment">
@@ -54,6 +55,7 @@ export default {
       newComment: '',
       currentUser: localStorage.getItem('nickname'), // 현재 로그인한 사용자 닉네임 가져오기
       // commentCounts: {}, // 게시물별 댓글 수 저장
+
     };
   },
   mounted() {
@@ -93,6 +95,7 @@ export default {
       const commentWriter = this.currentUser;
 
       if (this.newComment.trim()) {
+
         console.log('commentWriter:', commentWriter); // commentWriter 확인하기 ok 
 
         axios.post(`http://localhost:8080/post-community/posts/${this.postId}/comments`, {
@@ -212,9 +215,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .comment-section {
   margin-top: 20px;
+}
+
+.comment-item {
+  margin-bottom: 20px;
 }
 
 .comment-item {
