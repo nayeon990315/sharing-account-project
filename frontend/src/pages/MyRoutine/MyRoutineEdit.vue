@@ -7,8 +7,8 @@
                     <i class="fa fa-circle px-2" style="font-size:16px; color:red;" aria-hidden="true"></i>
                     대기
                 </h4>
-                <draggable class="dragArea list-group" :list="waitingList" group="tasks" item-key="habitId"
-                    @start="handleDragStart">
+                <draggable class="dragArea list-group" :list="waitingList" group="tasks" item-key="myHabitId"
+                    @start="handleDragStart" @end="onDragEnd('inProgress')">
                     <template #item="{ element }">
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
@@ -18,10 +18,12 @@
                                 <span class="task-name mx-3">{{ element.habitTitle }}</span>
                             </div>
                             <div class="d-flex bd-highlight">
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="editItem(element)">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal"
+                                    @click="editItem(element)">
                                     <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                 </button>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="removeItem('waiting', element.id)">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
+                                    @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
                                     <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -37,7 +39,8 @@
                     <i class="fa fa-circle px-2" style="font-size:16px; color:green;" aria-hidden="true"></i>
                     진행중
                 </h4>
-                <draggable class="dragArea list-group" :list="inProgressList" group="tasks" item-key="habitId">
+                <draggable class="dragArea list-group" :list="inProgressList" group="tasks" item-key="myHabitId"
+                    @end="onDragEnd('waiting')">
                     <template #item="{ element }">
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
@@ -47,10 +50,12 @@
                                 <span class="task-name mx-3">{{ element.habitTitle }}</span>
                             </div>
                             <div class="d-flex bd-highlight">
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="editItem(element)">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal"
+                                    @click="editItem(element)">
                                     <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                 </button>
-                                <button class="btn" @click="removeItem('inProgress', element.habitId)">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
+                                    @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
                                     <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -60,7 +65,12 @@
             </div>
         </div>
         <button type="button" class="btn btn-dark mt-5 " data-bs-toggle="modal" data-bs-target="#myModal">
-            습관 추가하기
+            루틴 추가하기
+        </button>
+        <br>
+        <button type="button" class="btn btn-dark mt-5 "
+            @click="updateRoutineState">
+            상태 업데이트
         </button>
     </div>
 
@@ -104,7 +114,7 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- 루틴 수정 Modal -->
     <div class="modal fade" id="editModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -131,22 +141,47 @@
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
-                    <button class="btn" data-bs-dismiss="modal" :class="isEditFormValid ? 'btn-dark' : 'btn-secondary'" @click="editHabbit(element)"
-                        :disabled="!isEditFormValid">
+                    <button class="btn" data-bs-dismiss="modal" :class="isEditFormValid ? 'btn-dark' : 'btn-secondary'"
+                        @click="editHabbit(element)" :disabled="!isEditFormValid">
                         수정하기
                     </button>
                 </div>
             </div>
         </div>
-
     </div>
+
+    <!-- 삭제 확인 모달 -->
+    <div class="modal fade" id="removeModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">루틴 삭제하기</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    "{{ deleteHabitTitle }}" 루틴을 삭제하시겠습니까?
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button class="btn btn-danger" @click="removeItem" data-bs-dismiss="modal">삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </template>
 
 <script>
 import draggable from "vuedraggable";
 import axios from 'axios';
-import {ref} from 'vue';
+import { ref } from 'vue';
 
 let id = 7;
 export default {
@@ -163,6 +198,9 @@ export default {
             editHabitCategory: "",
             editHabitName: "",
             editHabbitId: 0,
+            deleteListType: "",  // 삭제할 리스트 타입 저장
+            deleteMyHabitId: "",
+            deleteHabitTitle: "",   // 삭제할 루틴의 ID 저장
             categories: [
                 { value: "식비", label: "식비 (Food)" },
                 { value: "카페/간식", label: "카페/간식 (Cafe/Snacks)" },
@@ -195,7 +233,7 @@ export default {
             // ],
         };
     },
-    mounted(){
+    mounted() {
         this.getHabitList();
     },
     computed: {
@@ -212,17 +250,28 @@ export default {
         handleDragStart(evt) {
             console.log("Drag started:", evt);
         },
-        removeItem(listType, id) {
-            if (listType === "waiting") {
-                this.waitingList = this.waitingList.filter(item => item.id !== id);
-            } else if (listType === "inProgress") {
-                this.inProgressList = this.inProgressList.filter(item => item.id !== id);
+        onDragEnd(listType) {
+            console.log("Drag Ended for:", listType);
+            try {
+                // 드래그 완료 시 상태 업데이트
+                if (listType === 'waiting') {
+                    this.waitingList.forEach(habit => {
+                        habit.state = '대기';
+                    });
+                } else if (listType === 'inProgress') {
+                    this.inProgressList.forEach(habit => {
+                        habit.state = '진행';
+                    });
+                }
+
+            } catch (error) {
+                console.error("드래그 후 상태 업데이트 중 오류 발생:", error);
             }
         },
         // removeItem('inProgress', element.id)
         editItem(element) {
             // const id = element.id
-            
+
             // let tempList;
             // if (listType === "waiting") {
             //     tempList = this.waitingList.filter(item => item.id === id);
@@ -281,8 +330,20 @@ export default {
                         userId: localStorage.getItem("userId")
                     }
                 });
-                this.inProgressList = response.data; // ref 대신 바로 할당
-                console.log(this.inProgressList);
+                this.waitingList = [];
+                this.inProgressList = [];
+
+                response.data.forEach(habit => {
+                    if (habit.state === "대기") {
+                        this.waitingList.push(habit);
+                    } else if (habit.state === "진행") {
+                        this.inProgressList.push(habit);
+                    }
+                });
+
+                console.log("대기 리스트:", this.waitingList);
+                console.log("진행중 리스트:", this.inProgressList);
+
             } catch (error) {
                 console.error("습관 가져오기 중 오류 발생:", error);
                 alert("습관 가져오기 중 오류가 발생했습니다.");
@@ -297,9 +358,9 @@ export default {
                     categoryTitle: this.newHabitCategory,   // 카테고리 제목
                     saveAmount: this.newHabitSaveAmount,    // 금액 저장
                     certification: this.newHabitCertification, // 달성 조건
-                    state: "waiting"  // 상태를 대기로 설정
+                    state: "대기"  // 상태를 대기로 설정
                 };
-                
+
                 // 서버로 POST 요청 전송
                 const response = await axios.post('http://localhost:8080/habits/add/my', request, {
                     headers: {
@@ -317,9 +378,11 @@ export default {
 
                 // 대기 목록에 새 항목 추가
                 this.waitingList.push({
-                    id: response.data.myHabitId, // 서버에서 반환된 ID 사용
-                    name: data.habitTitle,
-                    category: data.categoryTitle
+                    myHabitId: response.data.myHabitId,
+                    habitId: response.data.habitId, // 서버에서 반환된 ID 사용
+                    habitTitle: request.habitTitle,
+                    userId: localStorage.getItem("userId"),
+                    categoryTitle: request.categoryTitle
                 });
 
             } catch (error) {
@@ -332,7 +395,7 @@ export default {
             if (!habit) {
                 habit = this.inProgressList.find(item => item.id === this.editHabbitId);
             }
-            
+
             if (habit) {
                 habit.category = this.editHabitCategory;
                 habit.name = this.editHabitName;
@@ -341,10 +404,67 @@ export default {
                 this.editHabitName = "";
                 this.editHabbitId = 0;
             }
-        }
+        },
+        async updateRoutineState() {
+            try {
+                // waitingList와 inProgressList를 합침
+                const combinedList = [...this.waitingList, ...this.inProgressList];
 
+                // 사용자 ID 가져오기
+                const userId = localStorage.getItem("userId");
+
+                // 서버로 PUT 요청 전송
+                const response = await axios.put("http://localhost:8080/habits/update/state", combinedList, {
+                    params: {
+                        userId: userId
+                    },
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                console.log("응답 받음:", response.data);
+                alert("루틴 상태가 성공적으로 업데이트되었습니다!");
+
+            } catch (error) {
+                console.error("루틴 상태 업데이트 중 오류 발생:", error);
+                alert("루틴 상태 업데이트 중 오류가 발생했습니다.");
+            }
+        },
+        confirmRemove(listType, myHabitId, habitTitle) {
+            this.deleteListType = listType;  // 삭제할 리스트 타입 설정
+            this.deleteHabitId = myHabitId;
+            this.deleteHabitTitle = habitTitle;  // 삭제할 항목의 ID 저장
+        },
+        async removeItem() {
+            try {
+
+                // 백엔드에서 습관 제거 (예시 URL)
+                const response = await axios.delete("http://localhost:8080/habits/delete", {
+                    params: {
+                        myHabitId: this.deleteHabitId
+                    },
+                });
+                console.log(response);
+                // 로컬 리스트에서 제거
+                if (this.deleteListType === "waiting") {
+                    this.waitingList = this.waitingList.filter(item => item.myHabitId !== this.deleteHabitId);
+                } else if (this.deleteListType === "inProgress") {
+                    this.inProgressList = this.inProgressList.filter(item => item.myHabitId !== this.deleteHabitId);
+                }
+
+                alert("습관이 성공적으로 삭제되었습니다!");
+            } catch (error) {
+                console.error("습관 삭제 중 오류 발생:", error);
+                alert("습관 삭제 중 오류가 발생했습니다.");
+            }
+
+            // 삭제 후 모달 닫기
+            this.deleteListType = null;
+            this.deleteHabitId = null;
+            this.deleteHabitTitle = null;
+        },
     }
-};
+}
 </script>
 
 <style scoped>
