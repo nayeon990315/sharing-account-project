@@ -2,7 +2,8 @@
   <div class="my-page">
     <h1>My Page</h1>
     <div class="profile-section">
-      <img src="profile-image.jpg" alt="Profile" class="profile-image" />
+
+       <img src="https://beeroutine.s3.ap-northeast-2.amazonaws.com/3805ea90-1a9a-49be-8c8a-a5ca667b6ae8.png" alt="Profile" class="profile-image" />
       <div class="profile-info">
         <h2>김벌꿀 님</h2>
         <p>오늘도 한 꿀씩 쌓아볼까요?</p>

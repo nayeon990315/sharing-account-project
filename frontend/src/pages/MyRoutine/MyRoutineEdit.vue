@@ -7,15 +7,15 @@
                     <i class="fa fa-circle px-2" style="font-size:16px; color:red;" aria-hidden="true"></i>
                     대기
                 </h4>
-                <draggable class="dragArea list-group" :list="waitingList" group="tasks" item-key="id"
+                <draggable class="dragArea list-group" :list="waitingList" group="tasks" item-key="habitId"
                     @start="handleDragStart">
                     <template #item="{ element }">
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <span class="category-badge" :class="getCategoryClass(element.category)">
-                                    {{ element.category }}
+                                <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
+                                    {{ element.categoryTitle }}
                                 </span>
-                                <span class="task-name mx-3">{{ element.name }}</span>
+                                <span class="task-name mx-3">{{ element.habitTitle }}</span>
                             </div>
                             <div class="d-flex bd-highlight">
                                 <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="editItem(element)">
@@ -37,20 +37,20 @@
                     <i class="fa fa-circle px-2" style="font-size:16px; color:green;" aria-hidden="true"></i>
                     진행중
                 </h4>
-                <draggable class="dragArea list-group" :list="inProgressList" group="tasks" item-key="id">
+                <draggable class="dragArea list-group" :list="inProgressList" group="tasks" item-key="habitId">
                     <template #item="{ element }">
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <span class="category-badge" :class="getCategoryClass(element.category)">
-                                    {{ element.category }}
+                                <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
+                                    {{ element.categoryTitle }}
                                 </span>
-                                <span class="task-name mx-3">{{ element.name }}</span>
+                                <span class="task-name mx-3">{{ element.habitTitle }}</span>
                             </div>
                             <div class="d-flex bd-highlight">
                                 <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal" @click="editItem(element)">
                                     <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                 </button>
-                                <button class="btn" @click="removeItem('inProgress', element.id)">
+                                <button class="btn" @click="removeItem('inProgress', element.habitId)">
                                     <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -87,6 +87,10 @@
                     </select>
                     <label>이름</label>
                     <input v-model="newHabitName" type="text" class="form-control" placeholder="이름 입력">
+                    <label>금액</label>
+                    <input v-model="newHabitSaveAmount" type="text" class="form-control" placeholder="금액 입력">
+                    <label>달성 조건</label>
+                    <input v-model="newHabitCertification" type="text" class="form-control" placeholder="달성 조건 입력">
                 </div>
 
                 <!-- Modal footer -->
@@ -142,6 +146,7 @@
 <script>
 import draggable from "vuedraggable";
 import axios from 'axios';
+import {ref} from 'vue';
 
 let id = 7;
 export default {
@@ -153,6 +158,8 @@ export default {
         return {
             newHabitCategory: "",
             newHabitName: "",
+            newHabitSaveAmount: "",
+            newHabitCertification: "",
             editHabitCategory: "",
             editHabitName: "",
             editHabbitId: 0,
@@ -175,16 +182,21 @@ export default {
                 { value: "여행", label: "여행 (Travel)" },
                 { value: "경조사/회비", label: "경조사/회비 (Events/Fees)" }
             ],
-            waitingList: [
-                { id: 1, name: "구독 서비스 점검하기", category: "생활" },
-                { id: 2, name: "반려동물 수제 장난감 만들기", category: "반려동물" },
-                { id: 3, name: "퇴근길에 택시 말고 버스 타기", category: "교통" },
-            ],
-            inProgressList: [
-                { id: 4, name: "커피 텀블러에 담아가기", category: "카페/간식" },
-                { id: 5, name: "헌혈하고 영화 보기", category: "문화/여가" },
-            ],
+            waitingList: [],
+            inProgressList: []
+            // waitingList: [
+            //     { id: 1, name: "구독 서비스 점검하기", category: "생활" },
+            //     { id: 2, name: "반려동물 수제 장난감 만들기", category: "반려동물" },
+            //     { id: 3, name: "퇴근길에 택시 말고 버스 타기", category: "교통" },
+            // ],
+            // inProgressList: [
+            //     { id: 4, name: "커피 텀블러에 담아가기", category: "카페/간식" },
+            //     { id: 5, name: "헌혈하고 영화 보기", category: "문화/여가" },
+            // ],
         };
+    },
+    mounted(){
+        this.getHabitList();
     },
     computed: {
         isAddFormValid() {
@@ -262,16 +274,58 @@ export default {
                     return "badge-default";
             }
         },
-        addHabit() {
-            this.waitingList.push({
-                category: this.newHabitCategory,
-                name: this.newHabitName,
-                id: id++
-            });
-            // 입력 필드 초기화
-            this.newHabitCategory = "";
-            this.newHabitName = "";
-            
+        async getHabitList() {
+            try {
+                const response = await axios.get('http://localhost:8080/habits/', {
+                    params: {
+                        userId: localStorage.getItem("userId")
+                    }
+                });
+                this.inProgressList = response.data; // ref 대신 바로 할당
+                console.log(this.inProgressList);
+            } catch (error) {
+                console.error("습관 가져오기 중 오류 발생:", error);
+                alert("습관 가져오기 중 오류가 발생했습니다.");
+            }
+        },
+        async addHabit() {
+            try {
+                // 데이터 구성
+                const request = {
+                    userId: localStorage.getItem("userId"), // 사용자 ID는 localStorage에서 가져옴
+                    habitTitle: this.newHabitName,          // 습관 제목
+                    categoryTitle: this.newHabitCategory,   // 카테고리 제목
+                    saveAmount: this.newHabitSaveAmount,    // 금액 저장
+                    certification: this.newHabitCertification, // 달성 조건
+                    state: "waiting"  // 상태를 대기로 설정
+                };
+                
+                // 서버로 POST 요청 전송
+                const response = await axios.post('http://localhost:8080/habits/add/my', request, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                console.log("응답 받음:", response.data);
+                alert("루틴이 성공적으로 추가되었습니다!");
+                console.log(request);
+                // 입력 필드 초기화
+                this.newHabitCategory = "";
+                this.newHabitName = "";
+                this.newHabitSaveAmount = "";
+                this.newHabitCertification = "";
+
+                // 대기 목록에 새 항목 추가
+                this.waitingList.push({
+                    id: response.data.myHabitId, // 서버에서 반환된 ID 사용
+                    name: data.habitTitle,
+                    category: data.categoryTitle
+                });
+
+            } catch (error) {
+                console.error("습관 추가 중 오류 발생:", error);
+                alert("습관 추가 중 오류가 발생했습니다.");
+            }
         },
         editHabbit() {
             let habit = this.waitingList.find(item => item.id === this.editHabbitId);
