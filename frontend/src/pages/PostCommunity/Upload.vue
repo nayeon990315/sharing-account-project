@@ -5,7 +5,13 @@
 
       <!-- User ID 입력 -->
       <div class="mb-3">
-        <label for="userId" class="form-label">User ID</label>
+        <label for="userId" class="form-label">User ID(테스트용)</label>
+        <input type="text" v-model="formData.userId" id="userId" class="form-control" required />
+      </div>
+
+      <!-- User ID 입력 -->
+      <div class="mb-3">
+        <label for="userId" class="form-label">My Habit ID(테스트용)</label>
         <input type="text" v-model="formData.userId" id="userId" class="form-control" required />
       </div>
 
@@ -66,6 +72,7 @@ const habits = [
 
 // reactive 데이터: 폼 데이터 저장
 const formData = reactive({
+  myHabitId: '1',
   userId: '',
   habitId: null,
   content: '',
@@ -93,6 +100,7 @@ const handleImageUpload = (event) => {
 const submitForm = async () => {
   // FormData 객체를 생성하여 multipart/form-data 요청 준비
   const data = new FormData();
+  data.append('myHabitId', formData.myHabitId)
   data.append('userId', formData.userId);
   data.append('habitId', formData.habitId);
   data.append('content', formData.content);
