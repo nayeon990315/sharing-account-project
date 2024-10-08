@@ -17,7 +17,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        // changeOrigin: true,
+        changeOrigin: true,
       },
       // S3 버킷에 대한 프록시 설정
       "/s3-bucket": {
