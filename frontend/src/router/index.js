@@ -15,7 +15,6 @@ import MyPageEdit from '@/pages/Mypage/MyPageEdit.vue';
 import Register from '@/pages/Login&SignUp/Register.vue';
 import MyPageReward from '@/pages/Mypage/MyPageReward.vue';
 
-
 const routes = [
   {
     path: '/',
@@ -82,6 +81,11 @@ const routes = [
   {
     path: '/myedit',
     name: 'myedit',
+    component: MyPageReward,
+  },
+  {
+    path: '/myreward',
+    name: 'myreward',
     component: MyPageReward,
   },
 ]

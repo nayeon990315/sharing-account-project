@@ -19,7 +19,6 @@
 
     <div v-else>
       <h2>회원 정보 수정</h2>
-      <label><strong>Profile Picture:</strong></label>
       <div class="profile-picture" @click="triggerFileInput">
         <img :src="profileImageUrl" alt="Profile Picture" v-if="profileImageUrl" />
         <p v-else>No profile picture</p>
@@ -51,13 +50,18 @@
 <script>
 import profileImage from '@/assets/profile.jpg';
 
+import axios from 'axios';
+
+
 export default {
   data() {
     return {
       user: {
-        name: 'user1',
-        nickname: 'nick1', 
-        email: 'email1@example.com',
+
+        name: 'John Doe',
+        nickname: 'Johnny',
+        email: 'john.doe@example.com',
+
         phone: '010-1234-5678',
       },
       profileImageUrl: profileImage,
@@ -88,7 +92,34 @@ export default {
     },
     triggerFileInput() {
       this.$refs.fileInput.click();
+    },
+    async getUserIdFromToken() {
+            const jwtToken = this.$cookies.get('jwtToken');
+            if (!jwtToken) {
+                alert('로그인이 필요합니다!');
+                this.$router.push('/login');
+                return;
+            }
+            console.log(jwtToken); 
+            try {
+              
+                const response = await axios.post('http://localhost:8080/users/findId', {}, {
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}` 
+                    }
+                });
+                console.log(response.data)
+            } catch (error) {
+                console.error('사용자 정보를 가져오지 못했습니다:', error);
+                if (error.response && error.response.status === 401) {
+                    alert('인증 오류: 로그인이 필요합니다.');
+                    this.$router.push('/login');
+                }
+            }
     }
+  },
+  mounted() {
+        this.getUserIdFromToken();
   }
 };
 </script>
