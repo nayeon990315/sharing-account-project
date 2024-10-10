@@ -8,14 +8,13 @@
     </div>
     <ul>
         <li v-for="(habit, index) in activeHabits" :key="habit.myHabitId">
-            {{ habit.habitTitle }}
         <span :class="{ checked: habit.isCheckedToday }">{{ habit.habitTitle }}</span>
         <button
             v-if="!habit.isCheckedToday"
             @click="goToUpload(habit)"
             class="btn btn-primary"
         >
-            인증하러가기 {{ habit.myHabitId }}
+            인증하러가기
         </button>
         </li>
     </ul>
