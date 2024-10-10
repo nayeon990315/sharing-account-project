@@ -9,11 +9,12 @@ import MeVersusPage from '@/pages/Versus/MeVersusPage.vue';
 import MyRoutine from '@/pages/MyRoutine/MyRoutine.vue';
 import RoutineCommunity from '../pages/RoutineCommunity/RoutineCommunity.vue';
 import MyRoutineEdit from '@/pages/MyRoutine/MyRoutineEdit.vue';
-import Login from '../pages/Login&SignUp/Login.vue'
+import Login from '../pages/Login&SignUp/Login.vue';
 import SignUp from '@/pages/Login&SignUp/SignUp.vue';
 import MyPageEdit from '@/pages/Mypage/MyPageEdit.vue';
 import Register from '@/pages/Login&SignUp/Register.vue';
 import MyPageReward from '@/pages/Mypage/MyPageReward.vue';
+import ExpenseChart from '@/components/ExpenseChart.vue';
 
 const routes = [
   {
@@ -24,17 +25,17 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: Login
+    component: Login,
   },
   {
     path: '/signup',
     name: 'signup',
-    component: SignUp
+    component: SignUp,
   },
   {
     path: '/register',
     name: 'register',
-    component: Register
+    component: Register,
   },
   {
     path: '/myroutine',
@@ -44,7 +45,7 @@ const routes = [
   {
     path: '/myroutine/edit',
     name: 'MyRoutineEdit',
-    component: MyRoutineEdit
+    component: MyRoutineEdit,
   },
   {
     path: '/versus',
@@ -55,6 +56,11 @@ const routes = [
     path: '/routine-community',
     name: 'routineCommunity',
     component: RoutineCommunity,
+  },
+  {
+    path: '/expense-chart',
+    name: 'expenseChart',
+    component: ExpenseChart,
   },
   {
     path: '/post-community',
@@ -88,8 +94,7 @@ const routes = [
     name: 'myreward',
     component: MyPageReward,
   },
-]
-
+];
 
 const router = createRouter({
   history: createWebHistory(),
