@@ -1,69 +1,91 @@
 <!-- TodoList.vue -->
 <template>
     <div v-if="show" class="todo-list">
+
         <div class="todo-header">
-            <h5 class="">오늘의 할 일</h5>
-            <button @click="closeTodoList" class="close-btn">&times;</button>
-        </div>
-        <ul>
-            <li v-for="(task, index) in tasks" :key="index">
-                <input type="checkbox" v-model="task.done" /> {{ task.title }}
-            </li>
-        </ul>
+        <h5>오늘의 할 일</h5>
+        <button @click="closeTodoList" class="close-btn">&times;</button>
+    </div>
+    <ul>
+        <li v-for="(habit, index) in activeHabits" :key="habit.myHabitId">
+            {{ habit.habitTitle }}
+        <span :class="{ checked: habit.isCheckedToday }">{{ habit.habitTitle }}</span>
+        <button
+            v-if="!habit.isCheckedToday"
+            @click="goToUpload(habit)"
+            class="btn btn-primary"
+        >
+            인증하러가기 {{ habit.myHabitId }}
+        </button>
+        </li>
+    </ul>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-// import { defineProps, defineEmits } from 'vue';
-
-// props와 emit을 정의합니다.
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useHabitStore } from '@/stores/habitStore';
 const props = defineProps({
-    show: Boolean
+show: Boolean,
 });
 const emit = defineEmits(['close']);
 
-// 할 일 목록을 ref로 정의
-const tasks = ref([
-    { title: '아침 식사 준비', done: false },
-    { title: '저녁 외식', done: false },
-    { title: '아침 커피 한 잔', done: false },
-    { title: '오후 간식 타임', done: false },
-    { title: '월간 필수 아이템 구매', done: false },
-    { title: '할인 쿠폰으로 쇼핑', done: false },
-    { title: '화장품 꼭 필요한 것만 사기', done: false }
-]);
+// 라우터 사용
+const router = useRouter();
 
-// 할 일 목록을 닫는 함수
+// 습관 스토어 가져오기
+const habitStore = useHabitStore();
+
+// 진행 중인 습관만 필터링
+const activeHabits = computed(() => {
+return habitStore.habits.filter(habit => habit.state === '진행');
+});
+
+// 모달 닫는 함수
 const closeTodoList = () => {
-    emit('close');
+emit('close');
+}; 
+
+// Upload.vue로 이동
+const goToUpload = (habit) => {
+habitStore.selectedMyHabitId = habit.myHabitId
+console.log("selected", habit.myHabitId)
+router.push({
+    name: 'upload',
+    state: { selectedMyHabitId: habit.myHabitId },
+});
 };
 </script>
 
-<style>
+<style scoped>
 .todo-list {
-    position: fixed;
-    bottom: 80px;
-    right: 60px;
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 1001;
-    width: 25%;
+position: fixed;
+bottom: 80px;
+right: 60px;
+background-color: white;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+padding: 20px;
+border-radius: 10px;
+z-index: 1001;
+width: 25%;
 }
 
 .todo-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.checked {
+text-decoration: line-through;
+color: gray;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding-bottom: 15px;
+background: none;
+border: none;
+font-size: 1.5rem;
+cursor: pointer;
 }
 </style>

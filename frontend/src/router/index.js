@@ -76,6 +76,11 @@ const routes = [
         name: 'upload',
         component: Upload,
       },
+      {
+        path: '/post-community/upload',
+        name: 'upload',
+        component: Upload,
+      },
     ],
   },
   {

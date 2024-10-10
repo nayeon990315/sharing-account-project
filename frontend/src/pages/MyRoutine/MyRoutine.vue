@@ -42,8 +42,18 @@
 
 <script>
 import axios from 'axios';
+import { useHabitStore } from '@/stores/habitStore';
 
 export default {
+    setup() {
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUserId) {
+            const habitStore = useHabitStore()
+            habitStore.getHabitsFromServer(storedUserId);
+        }
+
+        
+    },
     data() {
         return {
             routinesArray: [
