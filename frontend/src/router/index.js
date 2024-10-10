@@ -81,7 +81,7 @@ const routes = [
   {
     path: '/myedit',
     name: 'myedit',
-    component: MyPageEdit,
+    component: MyPageReward,
   },
   {
     path: '/myreward',
