@@ -5,7 +5,7 @@
       <div class="profile-info">
         <div class="nickname-container">
           <h2 id="nickname"><strong>{{ user.nickname }}</strong>님</h2>
-          <button id="changeProfile" @click="openModal('profileEdit')">✎</button>
+          <button id="changeProfile" @click="openModal()">✎</button>
         </div>
         <p>오늘도 한 꿀씩 쌓아볼까요?</p>
       </div>
@@ -18,7 +18,7 @@
       </div>
       <div class="stat">
         <p>지금까지 이행한 루틴은</p>
-        <h3 @click="openModal('secondModal')"><strong>{{ user.completedRoutines }}</strong>건</h3>
+        <h3><strong>{{ user.completedRoutines }}</strong>건</h3>
       </div>
       <div class="stat">
         <p>지금까지 절약한 금액은</p>
@@ -30,20 +30,19 @@
       <div class="modal-content">
         <h4 id="modal-title"><strong>프로필 수정</strong></h4>
         <div class="image-upload">
-          <img :src="profileImageUrl" 
+          <img :src="tempProfileImageUrl" 
                alt="Profile" 
                :class="{'modal-profile-image border-blue': user.avatar, 'modal-profile-image': !user.avatar}" 
                @click="triggerFileInput" />
           <input type="file" ref="fileInput" accept="image/*" @change="handleFileUpload" style="display: none;" />
           <img :src="profileImageUrl2" 
                alt="Profile Picture" 
-               v-if="profileImageUrl2" 
                :class="{'default-profile-image border-blue': !user.avatar, 'default-profile-image': user.avatar}" 
-               @click="submitForm('delete')" />
+               @click="updateImage('delete')" />
         </div>
         <div class="nickname-edit">
           <label for="nickname"></label>
-          <input type="text" v-model="user.nickname" id="nickname" class="nickname-input" />
+          <input type="text" v-model="tempNickname" id="nickname" class="nickname-input" />
         </div>
 
         <div class="modal-actions">
@@ -52,241 +51,207 @@
         </div>
       </div>
     </div>
-
-    <div>
-
     <div class="content">
       <h5 id="modal-title"><strong>지금까지 이행한 루틴 및 절약 내역</strong></h5>
       <ul>
         <li v-for="(item, index) in routine.title" :key="index">
-          <hr>({{ routine.date[index] }})&nbsp;&nbsp; {{ item }}&nbsp; -&nbsp; {{ routine.save[index] }}원 절약
+          <hr>({{ routine.date[index] }})&nbsp;&nbsp; {{ item }}&nbsp; - {{ routine.save[index] }}원 절약
         </li>
       </ul>
-  </div>
-</div>
-
+    </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import defaultProfileImage from '@/assets/profile.png'; // 기본 이미지
-import profileImage from '@/assets/profile.png';
+import defaultProfileImage from '@/assets/profile.png'; 
+import profileImage from '@/assets/profile.png'; 
 
-export default {
-  data() {
-    return {
-      user: {
-        nickname: '',
-        reward: 0,
-        completedRoutines: 0,
-        savedAmount: 0,
-        avatar: '',
-      },
-      routine: {
-        date: [],
-        title: [],
-        save: [],
-      },
-      profileImageUrl: defaultProfileImage,
-      profileImageUrl2: profileImage,
-      userId: null,
-      isModalOpen: false,
-      isSecondModalOpen: false,  
-      image: null,
-    };
-  },
-  methods: {
-    async getUserIdFromToken() {
-      const jwtToken = this.$cookies.get('jwtToken');
-      if (!jwtToken) {
-        alert('로그인이 필요합니다.');
-        this.$router.push('/login');
-        return;
-      }
-      try {
-        const response = await axios.post('http://localhost:8080/users/findId', {}, {
-          headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-          },
-        });
-        this.userId = response.data.userId;
-        this.getUserInfo();  
-        await this.getCheckedHabitCount(); 
-        this.getCheckedHabitMoney();
-        this.getCheckedHabit();
-      } catch (error) {
-        console.error('사용자 정보를 가져오지 못했습니다:', error);
-        if (error.response && error.response.status === 401) {
-          alert('인증 오류: 로그인이 필요합니다.');
-          this.$router.push('/login');
-        }
-      }
-    },
+const API_URL = 'http://localhost:8080';
 
-    async getUserInfo() {
-      if (!this.userId) {
-        console.error('userId가 존재하지 않습니다.');
-        return;
-      }
-      try {
-        const response = await axios.get(`http://localhost:8080/users/mypage?userId=${this.userId}`);
-        this.user = response.data;  
+const user = ref({
+  nickname: '',
+  reward: 0,
+  completedRoutines: 0,
+  savedAmount: 0,
+  avatar: '',
+});
 
-        if (this.user.avatar) {
-          this.profileImageUrl = this.user.avatar;
-        } else {
-          this.profileImageUrl = defaultProfileImage;  
-        }
-        console.log('아이디로 사용자 정보를 가져왔습니다.');
-      } catch (error) {
-        console.error('사용자 정보 요청 중 오류 발생:', error);
-      }
-    },
+const routine = ref({
+  date: [],
+  title: [],
+  save: [],
+});
 
-    openModal(modalType) {
-      if (modalType === 'profileEdit') {
-        this.isModalOpen = true;
-      } else if (modalType === 'secondModal') {
-        this.getCheckedHabit();
-        this.isSecondModalOpen = true;
-      }
-    },
+const profileImageUrl = ref(defaultProfileImage);
+const profileImageUrl2 = ref(profileImage);
+const userId = ref(null);
+const isModalOpen = ref(false);
+const image = ref(null);
+const tempNickname = ref('');
+const tempProfileImageUrl = ref(null);
 
-    closeModal() {
-      this.isModalOpen = false;
-    },
+const getUserIdFromLocal = async () => {
+  userId.value = localStorage.getItem('userId');
+  
+  if (!userId.value) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
 
-    closeSecondModal() {
-      this.isSecondModalOpen = false;
-    },
-
-    async saveProfile() {
-      await this.saveNickname();
-      await this.submitForm();
-      this.closeModal(); 
-    },
-
-    saveNickname() {
-      return axios.put(`http://localhost:8080/users/updateNickname`, null, {
-        params: {
-          nickname: this.user.nickname,
-          userId: this.userId,
-        }
-      })
-      .then(response => {
-        console.log('닉네임이 업데이트되었습니다:', response.data);
-      })
-      .catch(error => {
-        console.error('닉네임 업데이트 중 오류 발생:', error);
-      });
-    },
-
-    async submitForm(action) {
-      const jwtToken = this.$cookies.get('jwtToken');
-      if (!jwtToken) {
-        alert('로그인이 필요합니다.');
-        this.$router.push('/login');
-        return;
-      }
-
-      const formData = new FormData();
-      
-      if (action === 'delete') {
-        formData.append('avatar', null);  
-        this.profileImageUrl = defaultProfileImage;  
-        this.image = null;  
-      } else if (this.image) {
-        formData.append('image', this.image);
-      }
-
-      try {
-        const response = await axios.post('http://localhost:8080/users/updateImage', formData, {
-          headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-
-        console.log('Profile updated:', response.data);
-        if (action !== 'delete') {
-          alert('프로필 수정이 완료되었습니다.');
-        }
-        this.getUserInfo();  
-      } catch (error) {
-        console.error('Error updating profile:', error);
-        alert('프로필 수정 중 오류가 발생했습니다.');
-      }
-    },
-
-    triggerFileInput() {
-      this.$refs.fileInput.click();
-    },
-
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.image = file;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.profileImageUrl = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-
-    async getCheckedHabitCount() {
-      try {
-        const response = await axios.get(`http://localhost:8080/habits/count/checked?userId=${this.userId}`);
-        this.user.completedRoutines = response.data;
-        console.log('인증한 습관 개수:', this.user.completedRoutines);
-      } catch (error) {
-        console.error('습관 개수 조회 중 오류 발생:', error);
-      }
-    },
-
-    async getCheckedHabitMoney() {
-      try {
-        const response = await axios.get(`http://localhost:8080/habits/money/checked?userId=${this.userId}`);
-        this.user.savedAmount = response.data;
-        console.log('인증한 습관 금액:', this.user.savedAmount);
-      } catch (error) {
-        console.error('습관 금액 조회 중 오류 발생:', error);
-      }
-    },
-
-    async getCheckedHabit() {
-      try {
-        const response = await axios.get(`http://localhost:8080/habits/checked/all?userId=${this.userId}`);
-        const habits = response.data;
-
-        this.routine.date = [];
-        this.routine.title = [];
-        this.routine.save = [];
-
-        habits.forEach(habit => {
-          const checkDate = new Date(habit.checkDate);  
-          const formattedDate = checkDate.toISOString().split('T')[0];
-          this.routine.date.push(formattedDate);
-          this.routine.title.push(habit.habitTitle);
-          this.routine.save.push(habit.saveAmount);
-        });
-
-        console.log('날짜:', this.routine.date);
-        console.log('날짜:', this.routine.title);
-        console.log('금액:', this.routine.save);
-
-      } catch (error) {
-        console.error('습관 조회 중 오류 발생:', error);
-      }
-    },
-  },
-
-  mounted() {
-    this.getUserIdFromToken(); 
-  },
+  await getUserInfo();
+  await getCheckedHabitData();    
+  await getCheckedHabit();         
 };
+
+const getUserInfo = async () => {
+  if (!userId.value) {
+    console.error('userId가 존재하지 않습니다.');
+    return;
+  }
+  
+  try {
+    const response = await axios.get(`${API_URL}/users/mypage?userId=${userId.value}`);
+    Object.assign(user.value, response.data);  
+    tempNickname.value = user.value.nickname;
+    profileImageUrl.value = user.value.avatar || defaultProfileImage;  
+    console.log('아이디로 사용자 정보를 가져왔습니다.');
+  } catch (error) {
+    console.error('사용자 정보 요청 중 오류 발생:', error);
+  }
+};
+
+const openModal = () => {
+  isModalOpen.value = true;
+  tempNickname.value = user.value.nickname;
+  tempProfileImageUrl.value = profileImageUrl.value;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
+const saveProfile = async (action) => {
+  const updateNicknamePromise = tempNickname.value !== user.value.nickname ? updateNickname() : Promise.resolve();
+  const updateImagePromise = (image.value || action === 'delete') ? updateImage(action) : Promise.resolve();
+
+  try {
+    await Promise.all([updateNicknamePromise, updateImagePromise]);
+    await getUserInfo(); 
+
+    alert('프로필 수정이 완료되었습니다.');
+    closeModal();
+  } catch (error) {
+    console.error('프로필 수정 중 오류가 발생했습니다:', error);
+    alert('프로필 수정 중 오류가 발생했습니다.');
+  }
+};
+
+const updateNickname = async () => {
+  try {
+    await axios.put(`${API_URL}/users/updateNickname`, null, {
+      params: {
+        nickname: tempNickname.value,
+        userId: userId.value,
+      }
+    });
+    console.log('닉네임 수정이 완료되었습니다.');
+  } catch (error) {
+    console.error('닉네임 업데이트 중 오류 발생:', error);
+  }
+};
+
+const updateImage = async (action) => {
+  const formData = new FormData();
+
+  if (action === 'delete') {
+    formData.append('avatar', null);  
+    tempProfileImageUrl.value = defaultProfileImage;
+    image.value = null;  
+  } else if (image.value) {
+    formData.append('image', image.value);
+    if (tempProfileImageUrl.value) {
+      tempProfileImageUrl.value = tempProfileImageUrl.value;
+    }
+  }
+
+  try {
+    await axios.post(`${API_URL}/users/updateImage`, formData, {
+      headers: {
+        'userId': userId.value,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log('이미지 수정이 완료되었습니다.');
+  } catch (error) {
+    console.error('이미지 수정 중 오류가 발생했습니다:', error);
+    throw error;
+  }
+};
+
+const triggerFileInput = () => {
+  document.querySelector('input[type=file]').click(); 
+};
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    image.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      tempProfileImageUrl.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const getCheckedHabitData = async () => {
+  try {
+    const [countResponse, moneyResponse] = await Promise.all([
+      axios.get(`${API_URL}/habits/count/checked?userId=${userId.value}`),
+      axios.get(`${API_URL}/habits/money/checked?userId=${userId.value}`)
+    ]);
+
+    user.value.completedRoutines = countResponse.data;
+    user.value.savedAmount = moneyResponse.data;
+
+    console.log('인증한 습관 개수:', user.value.completedRoutines);
+    console.log('인증한 습관 금액:', user.value.savedAmount);
+  } catch (error) {
+    console.error('습관 데이터 조회 중 오류 발생:', error);
+  }
+};
+
+const getCheckedHabit = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8080/habits/checked/all?userId=${userId.value}`);
+    const habits = response.data;
+
+    routine.value.date = [];
+    routine.value.title = [];
+    routine.value.save = [];
+
+    habits.forEach(habit => {
+      const checkDate = new Date(habit.checkDate);
+      const formattedDate = checkDate.toISOString().split('T')[0];
+      routine.value.date.push(formattedDate);
+      routine.value.title.push(habit.habitTitle);
+      routine.value.save.push(habit.saveAmount);
+    });
+
+    console.log('날짜:', routine.value.date);
+    console.log('제목:', routine.value.title);
+    console.log('금액:', routine.value.save);
+
+  } catch (error) {
+    console.error('습관 조회 중 오류 발생:', error);
+  }
+};
+
+onMounted(getUserIdFromLocal);
 </script>
+
 
 <style scoped>
 .my-page {

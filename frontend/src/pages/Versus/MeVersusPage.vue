@@ -53,30 +53,81 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
 import BarChart from './BarChart.vue';
 import RoutinesList from './RoutinesList.vue';
-import Datepicker from '@vuepic/vue-datepicker'; // 달력 라이브러리 import
-import '@vuepic/vue-datepicker/dist/main.css'; // 달력 스타일 import
+import Datepicker from '@vuepic/vue-datepicker';  // 달력 라이브러리 import
+import '@vuepic/vue-datepicker/dist/main.css';    // 달력 스타일 import
+
+const API_URL = 'http://localhost:8080';
 
 export default {
     name: 'MeVersusPage',
     components: { BarChart, RoutinesList, Datepicker },
     setup() {
+        const userId = ref(null);
+        const checkDate = ref(null);
+        const checkedHabits = ref([]);
+
+        const routinesToday = ref([]);   // 오늘 달성한 루틴
+        const routinesPast = ref([]);    // 과거 달성한 루틴
+
         const today = new Date();
         const targetDate = ref(new Date());
         const selectedDate = ref(new Date());
-        //오늘의 루틴
-        //habit check
-        const routinesToday = ref([
-            { "routine_name": "아침 식사 준비", "category": "식비" },
-            { "routine_name": "저녁 외식", "category": "식비" },
-            { "routine_name": "아침 커피 한 잔", "category": "카페/간식" },
-            { "routine_name": "오후 간식 타임", "category": "카페/간식" },
-            { "routine_name": "월간 필수 아이템 구매", "category": "온라인쇼핑" },
-            { "routine_name": "할인 쿠폰으로 쇼핑하기", "category": "온라인쇼핑" },
-            { "routine_name": "화장품 꼭 필요한 것만 사기", "category": "뷰티" }
-        ]);
+
+        // 로컬스토리지에서 사용자 아이디 가져오기
+        const getUserIdFromLocal = async () => {
+            userId.value = localStorage.getItem('userId');
+  
+            if (!userId.value) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+            getRoutinesToday();
+            getPastData();
+        };
+
+        // 오늘 달성한 루틴
+        const getRoutinesToday = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/habits/checked`, {
+                    params: {
+                        userId: userId.value,
+                        checkDate: checkDate.value,
+                    },
+                });
+                console.log("오늘 Response data:", response.data);
+                routinesToday.value = response.data.map(item => ({
+                    routine_name: item.habitTitle, 
+                    category: item.categoryTitle 
+                }));
+            } catch (error) {
+                console.error("Error fetching checked habits:", error);
+            }
+        };
+
+        const getPastData = async (date) => {
+            try {
+                const response = await axios.get(`${API_URL}/habits/checked`, {
+                    params: {
+                        userId: userId.value,
+                        checkDate: checkDate.value,
+                    },
+                });
+                console.log("과거 Response data:", response.data);
+                console.log("날짜 : ", checkDate.value);
+                routinesPast.value = response.data.map(item => ({
+                    routine_name: item.habitTitle, 
+                    category: item.categoryTitle 
+                }));
+            } catch (error) {
+                console.error("Error fetching past data:", error);
+            }
+        };
+        
+
         //오늘의 소비
         //내역
         const expensesToday = ref([
@@ -176,8 +227,7 @@ export default {
             }
         });
 
-        //과거의 루틴
-        const routinesPast = ref([]);
+        
         //과거의 소비
         const expensesPast = ref([]);
 
@@ -185,113 +235,40 @@ export default {
         const computedExpensesPast = computed(()=>expensesPast.value);
 
         //날짜 포맷팅 메소드 ex)2024-09-24
-        const formatDate = (date) => {
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            return year + '-' + month + '-' + day;
-        }
-
         const selectYesterday = () => {
-            expensesPast.value = expensesPastDay;
-            computedExpensesPast.value = computed(() => expensesPast.value);
-            routinesPast.value = routinesPastDay;
-
-            console.log(expensesPast.value);
-
             const yesterday = new Date();
             yesterday.setDate(today.getDate() - 1);
-            targetDate.value = formatDate(yesterday);
-            console.log(targetDate.value);
+            checkDate.value = formatDate(yesterday);
+            getPastData(); // 선택한 날짜에 대한 데이터 가져오기
         };
 
         const selectMonthAgo = () => {
-            expensesPast.value = expensesPastMonth;
-            routinesPast.value = routinesPastMonth;
-
             const monthAgo = new Date();
             monthAgo.setMonth(today.getMonth() - 1);
-            targetDate.value = formatDate(monthAgo);
-            console.log(targetDate.value);
+            checkDate.value = formatDate(monthAgo);
+            getPastData(); // 선택한 날짜에 대한 데이터 가져오기
         };
+
         const selectYearAgo = () => {
-            expensesPast.value = expensesPastYear;
-            routinesPast.value = routinesPastYear;
             const yearAgo = new Date();
-            yearAgo.setFullYear(today.getFullYear() - 1)
-            targetDate.value = formatDate(yearAgo);
-            console.log(targetDate.value);
+            yearAgo.setFullYear(today.getFullYear() - 1);
+            checkDate.value = formatDate(yearAgo);
+            getPastData(); // 선택한 날짜에 대한 데이터 가져오기
         };
+
         const selectCalender = () => {
-            let formatedDate = formatDate(selectedDate.value);
-            targetDate.value = formatedDate;
-            console.log(targetDate.value);
-        }
+            checkDate.value = formatDate(selectedDate.value);
+            getPastData(); // 선택한 날짜에 대한 데이터 가져오기
+        };
 
+        // 날짜 포맷팅 메소드
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 월 두 자리로 포맷
+            const day = date.getDate().toString().padStart(2, '0'); // 일 두 자리로 포맷
+            return `${year}-${month}-${day}`;
+        };
 
-
-        //현재는 더미데이터로 두었지만, 백엔드 구현 시 api로 바꿀 예정
-        const routinesPastDay = [
-            { "routine_name": "아침 식사 준비", "category": "식비" },
-            { "routine_name": "저녁 외식", "category": "식비" },
-            { "routine_name": "아침 커피 한 잔", "category": "카페/간식" },
-            { "routine_name": "오후 간식 타임", "category": "카페/간식" },
-            { "routine_name": "월간 필수 아이템 구매", "category": "온라인쇼핑" },
-            { "routine_name": "할인 쿠폰으로 쇼핑하기", "category": "온라인쇼핑" },
-            { "routine_name": "화장품 꼭 필요한 것만 사기", "category": "뷰티" }
-        ];
-        const routinesPastMonth = [
-            {
-                "routine_name": "점심 도시락 준비",
-                "category": "식비"
-            },
-            {
-                "routine_name": "헬스장 운동",
-                "category": "운동"
-            },
-            {
-                "routine_name": "퇴근 후 카페 방문",
-                "category": "카페/간식"
-            },
-            {
-                "routine_name": "온라인 쇼핑몰 할인받기",
-                "category": "온라인쇼핑"
-            },
-            {
-                "routine_name": "주말 영화 관람",
-                "category": "영화/문화"
-            },
-            {
-                "routine_name": "아침 스트레칭",
-                "category": "운동"
-            }
-        ];
-
-        const routinesPastYear = [
-            {
-                "routine_name": "저녁 요리하기",
-                "category": "식비"
-            },
-            {
-                "routine_name": "아침 러닝",
-                "category": "운동"
-            },
-            {
-                "routine_name": "도서관에서 독서",
-                "category": "취미/여가"
-            },
-            {
-                "routine_name": "친구와 점심 약속",
-                "category": "식비"
-            },
-            { "routine_name": "아침 식사 준비", "category": "식비" },
-            { "routine_name": "저녁 외식", "category": "식비" },
-            { "routine_name": "아침 커피 한 잔", "category": "카페/간식" },
-            { "routine_name": "오후 간식 타임", "category": "카페/간식" },
-            { "routine_name": "월간 필수 아이템 구매", "category": "온라인쇼핑" },
-            { "routine_name": "할인 쿠폰으로 쇼핑하기", "category": "온라인쇼핑" },
-            { "routine_name": "화장품 꼭 필요한 것만 사기", "category": "뷰티" }
-        ];
         const expensesPastDay = [
             {
                 transactionDate: "2024-09-21T10:15",
@@ -379,6 +356,11 @@ export default {
                 balance: 42400
             }
         ];
+
+        onMounted(() => {
+            getUserIdFromLocal();
+        });
+
         return {
             routinesToday,
             routinesPast,
@@ -393,7 +375,10 @@ export default {
             totalToday,
             totalPast,
             winnerMessage,
-            targetDate
+            targetDate,
+            checkedHabits,
+            getRoutinesToday,
+            getUserIdFromLocal
         };
     }
 };
