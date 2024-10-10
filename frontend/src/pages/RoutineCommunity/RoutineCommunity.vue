@@ -1,12 +1,20 @@
 <template>
     <!-- 루틴 커뮤니티 -->
-    <div class="intro">
-      <h3>Routine Share Community</h3>
-      <p>
-        나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로 만들어보세요!
-      </p>
-    </div>
-
+ <div class="intro">
+  <div class="introLeft">
+    <h3>Routine Share Community</h3>
+    <p>
+      나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로 만들어보세요!
+    </p>
+  </div>
+  
+  <!-- 검색창 -->
+  <div class="search-routine">
+    <input type="text" v-model="displayedQuery" placeholder="검색어를 입력하세요" />
+    <button @click="performSearch">검색</button>
+  </div>
+</div>
+   
 
   <nav class="filter">
     <div class="categoryFilter">
@@ -17,10 +25,25 @@
           id="category"
           @change="handleCategoryFilterChange"
         >
-          <option value="all">전체</option>
+        <option value="all">전체</option>
           <option value="food">식비</option>
           <option value="dessert">카페/간식</option>
+          <option value="online_shopping">온라인쇼핑</option>
+          <option value="fashion_shopping">패션/쇼핑</option>
+          <option value="culture_leisure">문화/여가</option>
+          <option value="alcohol_entertainment">술/유흥</option>
+          <option value="education">교육</option>
+          <option value="health_medical">의료/건강</option>
+          <option value="living">생활</option>
+          <option value="housing_utilities">주거/공과금</option>
+          <option value="travel">여행</option>
+          <option value="automobile">자동차</option>
+          <option value="pet">반려동물</option>
           <option value="beauty">뷰티</option>
+          <option value="finance">금융</option>
+          <option value="transportation">교통</option>
+          <option value="event_fees">경조사/회비</option>
+
         </select>
       </form>
     </div>
@@ -31,6 +54,7 @@
           type="radio"
           name="otherFilter"
           value="recent"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         최신 순
@@ -38,14 +62,15 @@
           type="radio"
           name="otherFilter"
           value="manyLikes"
+          v-model="currentSortType"
           @change="handleFilterChange"
-           checked="checked"
         />
         좋아요 순
         <input
           type="radio"
           name="otherFilter"
           value="manyParticipants"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         참여자 순
@@ -53,6 +78,7 @@
           type="radio"
           name="otherFilter"
           value="manyCompletions"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         달성자 순
@@ -60,6 +86,7 @@
           type="radio"
           name="otherFilter"
           value="myLikes"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         나의 좋아요
@@ -78,9 +105,9 @@
         <!-- <h4 v-if="selectedHabitTitle">{{ selectedHabitTitle }}</h4> -->
 
         <div class="row gx-0 gy-0"> <!-- 열과 행 간의 간격을 없앰 -->
-        <div class="col-6 col-md-6" v-for="shot in filteredPosts" :key="shot.post_id">
+        <div class="col-6 col-md-6" v-for="shot in previewPosts" :key="shot.post_id" @click="logImageUrl(shot.imageUrl)">
             <div class="card h-100"> <!-- 카드 높이를 100%로 설정 -->
-                <img :src="shot.imageUrl" class="card-img-top img-fluid">
+                <img :src="shot.imageUrl" class="card-img-top img-fluid">                
             </div>
         </div>
     </div>
@@ -95,57 +122,62 @@
       <!-- <div class="col" v-for="routine in routineCommunityArray" :key="routine.community_id"> -->
       <div
         class="col"
-        v-for="routine in filteredRoutines"
-        :key="routine.community_id"
+        v-for="routine in translatedRoutines"
+        :key="routine.communityId"
       >
         <!-- <div class="card h-100 "> -->
-        <div class="card h-100" @click="selectHabit(routine.habit_id)">
+        <div class="card h-100" @click="selectHabit(routine.habitId)">
           <div class="card-body">
             <div class="subtitle">
               <span class="type card-subtitle">
-                {{ routine.category_title }}
+                {{ routine.categoryTitle }}
               </span>
               <span class="date card-subtitle">
-                {{ routine.update_date }}
+                {{ routine.uploadDate }}
               </span>
               <!-- mb-2 text-body-secondary -->
             </div>
-
-            <h5 class="card-title">{{routine.habit_title}}</h5>
+            <h5 class="card-title">{{ routine.habitTitle }}</h5>
           <div class="card-text">
             <div class="writer">
-                <img class="avatar" src="@/assets/images/sample.jpg">
-                <span class="writerName">{{routine.user_id}}</span>
+                <!-- <img class="avatar" src="@/assets/images/sample.jpg"> -->
+                <img class="avatar" :src="routine.avatar || defaultAvatar" />
+                <span class="writerName">{{ routine.nickname }}</span>
             </div>
             <div class="likeContainer">
-              <button class="likeButton" @click.stop="toggleLike(routine.community_id)">
-
+                <button class="likeButton" @click="toggleLike(routine.communityId)">
                   <img
                     class="likeImg"
-                    :src="isLiked(routine.community_id) ? fullLike : emptyLike"
+                    :src="isLiked(routine.communityId) ? fullLike : emptyLike"
                     alt="like"
                   />
                 </button>
-                <!-- <span class="likeComment" v-if="isLiked">{{routine.habit_likes + (isLiked(routine.community_id) ? 1 : 0)}}</span> -->
-                <span class="likeComment">{{ routine.habit_likes }}</span>
+                <span class="likeComment">{{ routine.habitLikes }}</span>
               </div>
             </div>
 
             <div class="challengeContainer">
               <p class="challengeComment">
                 {{ routine.participants }}명의 루티너 중<br />
-                오늘 {{ routine.complete }}명이 목표를 달성했어요. <br />
-                <!-- {{routine.complete + 1}}번째 주인공이 되어보세요! -->
+                오늘 {{ routine.complete }}명이 목표를 달성했어요.
               </p>
-              <a href="#" class="challengeButton btn btn-primary">
+              <!-- <a href="#" class="challengeButton btn btn-primary">
                 <img
                   class="challengeIcon"
                   src="@/assets/icons/together_invertColor.png"
                 />
-                <span class="challengeButtonText"
-                  >내 루틴에 담고 함께 도전하기</span
-                >
-              </a>
+                <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
+              </a> -->
+              <button
+                @click="addHabitToMyHabit(routine.communityId)"
+                class="challengeButton btn btn-primary"
+              >
+                <img
+                  class="challengeIcon"
+                  src="@/assets/icons/together_invertColor.png"
+                />
+                <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
+              </button>
             </div>
           </div>
         </div>
@@ -156,507 +188,364 @@
     <!-- 좋아요한 루틴이 없을 때 표시할 메시지 -->
     <!-- <p v-else>좋아요한 루틴이 없습니다.</p>  -->
   </div>
+  <!-- 페이지네이션 컴포넌트 -->
+   
+  <paginate
+    :page-count="totalPages"
+    :click-handler="changePage"
+    :prev-text="'Prev'"
+    :next-text="'Next'"
+    :container-class="'pagination'"
+    :page-class="'page-item'"
+    :page-link-class="'page-link'"
+    :prev-link-class="'page-link-prev'"
+    :next-link-class="'page-link-next'"
+    :active-class="'active'"
+/>
+
+
 </template>
 
 <script setup>
-import Header from '@/components/global/Header.vue';
-import Footer from '@/components/Footer.vue';
-import { ref, reactive, onMounted, computed } from 'vue';
-
+import { ref, onMounted, watch ,computed} from 'vue';
+import axios from 'axios';
 import fullLike from '@/assets/icons/fullLike.png';
 import emptyLike from '@/assets/icons/emptyLike.png';
 import coffeeImg from '@/assets/images/coffee_sample.png';
 import coffeeImg2 from '@/assets/images/coffee_sample2.jpg';
 import foodImg from '@/assets/images/food_sample.jpg';
 import foodImg2 from '@/assets/images/food_sample2.jpg';
+import defaultAvatarImg from '@/assets/images/sample.jpg';
+import Paginate from 'vuejs-paginate-next';
 
-// routineCommunityArray 데이터
-const routineCommunityArray = ref([
-  {
-    community_id: 1,
-    habit_title: '커피 텀블러에 담아서 출근하기',
-    habit_id: 2,
-    category_title: '카페/간식',
-    user_id: 'Money.java',
-    habit_likes: 9, // 좋아요 누른 사용자 수
-    participants: 1784,
-    complete: 512,
-    update_date: '2024-09-24T14:48:00Z',
-  },
-  {
-    community_id: 2,
-    habit_title: '하루 외식값 25000원 넘지 않기',
-    habit_id: 1,
-    category_title: '식비',
-    user_id: 'user456',
-    habit_likes: 5,
-    participants: 980,
-    complete: 350,
-    update_date: '2024-09-23T09:12:00Z',
-  },
-  {
-    community_id: 3,
-    habit_title: '수제 모델링팩 만들기',
-    habit_id: 3,
-    category_title: '뷰티',
-    user_id: 'beautylover',
-    habit_likes: 6,
-    participants: 620,
-    complete: 420,
-    update_date: '2024-09-22T16:20:00Z',
-  },
-  {
-    community_id: 4,
-    habit_title: '하루 커피 1잔 이하로 줄이기',
-    habit_id: 4,
-    category_title: '카페/간식',
-    user_id: 'coffeelover',
-    habit_likes: 9,
-    participants: 1400,
-    complete: 920,
-    update_date: '2024-09-21T11:30:00Z',
-  },
-  {
-    community_id: 5,
-    habit_title: '아침 식사는 집에서 해결하기',
-    habit_id: 5,
-    category_title: '식비',
-    user_id: 'user321',
-    habit_likes: 7,
-    participants: 740,
-    complete: 520,
-    update_date: '2024-09-20T10:15:00Z',
-  },
-  {
-    community_id: 6,
-    habit_title: '마스크팩 자주 하지 않고 필요한 날만 하기',
-    habit_id: 6,
-    category_title: '뷰티',
-    user_id: 'skincareguru',
-    habit_likes: 9,
-    participants: 550,
-    complete: 320,
-    update_date: '2024-09-19T15:05:00Z',
-  },
-  {
-    community_id: 7,
-    habit_title: '카페 대신 집에서 차 마시기',
-    habit_id: 7,
-    category_title: '카페/간식',
-    user_id: 'user654',
-    habit_likes: 11,
-    participants: 600,
-    complete: 400,
-    update_date: '2024-09-18T12:48:00Z',
-  },
-  {
-    community_id: 8,
-    habit_title: '하루에 필요한 만큼만 장보기',
-    habit_id: 8,
-    category_title: '식비',
-    user_id: 'user543',
-    habit_likes: 12,
-    participants: 820,
-    complete: 580,
-    update_date: '2024-09-17T13:20:00Z',
-  },
-  {
-    community_id: 9,
-    habit_title: '화장품 꼭 필요한 것만 사기',
-    habit_id: 9,
-    category_title: '뷰티',
-    user_id: 'makeupminimalist',
-    habit_likes: 11,
-    participants: 500,
-    complete: 300,
-    update_date: '2024-09-16T14:00:00Z',
-  },
-  {
-    community_id: 10,
-    habit_title: '디저트 대신 과일로 간식 해결하기',
-    habit_id: 10,
-    category_title: '카페/간식',
-    user_id: 'user432',
-    habit_likes: 15,
-    participants: 640,
-    complete: 420,
-    update_date: '2024-09-15T11:30:00Z',
-  },
-]);
+const defaultAvatar = defaultAvatarImg;
 
-// likesArray 데이터
-const likesArray = ref([
-  { community_id: 1, habit_likes_id: 'Money.java' },
-  { community_id: 1, habit_likes_id: 'user123' },
-  { community_id: 1, habit_likes_id: 'user432' },
-  { community_id: 1, habit_likes_id: 'user567' },
-  { community_id: 1, habit_likes_id: 'user789' },
-  { community_id: 1, habit_likes_id: 'user101' },
-  { community_id: 1, habit_likes_id: 'user234' },
-  { community_id: 1, habit_likes_id: 'user345' },
-  { community_id: 1, habit_likes_id: 'user456' },
-
-  { community_id: 2, habit_likes_id: 'Money.java' },
-  { community_id: 2, habit_likes_id: 'user789' },
-  { community_id: 2, habit_likes_id: 'user111' },
-  { community_id: 2, habit_likes_id: 'user222' },
-  { community_id: 2, habit_likes_id: 'user333' },
-
-  { community_id: 3, habit_likes_id: 'beautylover' },
-  { community_id: 3, habit_likes_id: 'user987' },
-  { community_id: 3, habit_likes_id: 'user543' },
-  { community_id: 3, habit_likes_id: 'user654' },
-  { community_id: 3, habit_likes_id: 'user765' },
-  { community_id: 3, habit_likes_id: 'user876' },
-
-  { community_id: 4, habit_likes_id: 'coffeelover' },
-  { community_id: 4, habit_likes_id: 'user567' },
-  { community_id: 4, habit_likes_id: 'user876' },
-  { community_id: 4, habit_likes_id: 'user999' },
-  { community_id: 4, habit_likes_id: 'user111' },
-  { community_id: 4, habit_likes_id: 'user222' },
-  { community_id: 4, habit_likes_id: 'user333' },
-  { community_id: 4, habit_likes_id: 'user444' },
-  { community_id: 4, habit_likes_id: 'user555' },
-
-  { community_id: 5, habit_likes_id: 'user321' },
-  { community_id: 5, habit_likes_id: 'user654' },
-  { community_id: 5, habit_likes_id: 'user123' },
-  { community_id: 5, habit_likes_id: 'user345' },
-  { community_id: 5, habit_likes_id: 'user567' },
-  { community_id: 5, habit_likes_id: 'user789' },
-  { community_id: 5, habit_likes_id: 'user101' },
-
-  { community_id: 6, habit_likes_id: 'skincareguru' },
-  { community_id: 6, habit_likes_id: 'user876' },
-  { community_id: 6, habit_likes_id: 'user543' },
-  { community_id: 6, habit_likes_id: 'user654' },
-  { community_id: 6, habit_likes_id: 'user321' },
-  { community_id: 6, habit_likes_id: 'user987' },
-  { community_id: 6, habit_likes_id: 'user123' },
-  { community_id: 6, habit_likes_id: 'user111' },
-  { community_id: 6, habit_likes_id: 'user555' },
-
-  { community_id: 7, habit_likes_id: 'user654' },
-  { community_id: 7, habit_likes_id: 'user123' },
-  { community_id: 7, habit_likes_id: 'user789' },
-  { community_id: 7, habit_likes_id: 'user101' },
-  { community_id: 7, habit_likes_id: 'user234' },
-  { community_id: 7, habit_likes_id: 'user345' },
-  { community_id: 7, habit_likes_id: 'user456' },
-  { community_id: 7, habit_likes_id: 'user567' },
-  { community_id: 7, habit_likes_id: 'user876' },
-  { community_id: 7, habit_likes_id: 'user543' },
-  { community_id: 7, habit_likes_id: 'user321' },
-
-  { community_id: 8, habit_likes_id: 'user543' },
-  { community_id: 8, habit_likes_id: 'user123' },
-  { community_id: 8, habit_likes_id: 'user456' },
-  { community_id: 8, habit_likes_id: 'user654' },
-  { community_id: 8, habit_likes_id: 'user101' },
-  { community_id: 8, habit_likes_id: 'user789' },
-  { community_id: 8, habit_likes_id: 'user111' },
-  { community_id: 8, habit_likes_id: 'user222' },
-  { community_id: 8, habit_likes_id: 'user333' },
-  { community_id: 8, habit_likes_id: 'user444' },
-  { community_id: 8, habit_likes_id: 'user555' },
-  { community_id: 8, habit_likes_id: 'user666' },
-
-  { community_id: 9, habit_likes_id: 'makeupminimalist' },
-  { community_id: 9, habit_likes_id: 'user999' },
-  { community_id: 9, habit_likes_id: 'user654' },
-  { community_id: 9, habit_likes_id: 'user321' },
-  { community_id: 9, habit_likes_id: 'user765' },
-  { community_id: 9, habit_likes_id: 'user987' },
-  { community_id: 9, habit_likes_id: 'user543' },
-  { community_id: 9, habit_likes_id: 'user876' },
-  { community_id: 9, habit_likes_id: 'user654' },
-  { community_id: 9, habit_likes_id: 'user123' },
-  { community_id: 9, habit_likes_id: 'user101' },
-
-  { community_id: 10, habit_likes_id: 'user432' },
-  { community_id: 10, habit_likes_id: 'user123' },
-  { community_id: 10, habit_likes_id: 'user987' },
-  { community_id: 10, habit_likes_id: 'user543' },
-  { community_id: 10, habit_likes_id: 'user111' },
-  { community_id: 10, habit_likes_id: 'user222' },
-  { community_id: 10, habit_likes_id: 'user333' },
-  { community_id: 10, habit_likes_id: 'user444' },
-  { community_id: 10, habit_likes_id: 'user555' },
-  { community_id: 10, habit_likes_id: 'user666' },
-  { community_id: 10, habit_likes_id: 'user777' },
-  { community_id: 10, habit_likes_id: 'user888' },
-  { community_id: 10, habit_likes_id: 'user999' },
-  { community_id: 10, habit_likes_id: 'user101' },
-  { community_id: 10, habit_likes_id: 'user234' },
-  { community_id: 10, habit_likes_id: 'user345' },
-]);
-
-const posts = ref([
-  {
-    post_id: 1,
-    habit_id: 1,
-    // user: {
-    //   name: 'Money.java',
-    // //   icon: userIcon,
-    // },
-    imageUrl: foodImg,
-    // description: '요즘에는 하루에 2번만 외식해도 3만원이 훌쩍 넘네요.. 생각보다 지키기 어려운 루틴 ㅠㅠ.',
-    // hashtags: ['#식비', '#외식', '#하루외식값25000원넘지않기', '#가끔은도시락'],
-    // likes: 131,
-    // comments: 27,
-    // isLiked: false,
-    // showComments: false, // 댓글 표시 여부
-  },
-  {
-    post_id: 2,
-    habit_id: 2,
-    imageUrl: coffeeImg,
-  },
-  {
-    post_id: 3,
-    habit_id: 1,
-    imageUrl: foodImg2,
-  },
-  {
-    post_id: 4,
-    habit_id: 2,
-    imageUrl: coffeeImg2,
-  },
-]);
-
-
-
-// 필터링된 데이터
-const filteredRoutines = ref([...routineCommunityArray.value]); // 기본값으로 전체 데이터
-
-// 선택된 habit post만 담을 데이터
-// const filteredPosts = ref([...posts.value]);
-
-
-
-
-// 페이지가 처음 렌더링될 때 필터를 적용하는 onMounted 훅 추가
-onMounted(() => {
-  applyFilters(); // 기본으로 좋아요 순 필터 적용
+// props로 sortType 받기
+const props = defineProps({
+  sortType: {
+    type: String,
+    default: 'recent'  // 기본값으로 'recent'를 사용
+  }
 });
 
-// 각종 메소드
-
-// 1. 좋아요 버튼 누르는 로직
-
-// 현재 사용자 id를 임의로 Money.java로 해놓겠음
-const currentId = 'Money.java';
-
-function isLiked(communityId) {
-  return likesArray.value.some(
-    (like) =>
-      like.community_id === communityId && like.habit_likes_id === currentId
-  );
-}
-
-function toggleLike(communityId) {
-  const routine = routineCommunityArray.value.find(
-    (r) => r.community_id === communityId
-  );
-
-  if (isLiked(communityId)) {
-    // 좋아요를 눌러놓은 상태면
-    // 좋아요 취소
-    const index = likesArray.value.findIndex(
-      (like) =>
-        like.community_id === communityId && like.habit_likes_id === currentId
-    );
-    if (index !== -1) {
-      // index가 있는지 확인차 한번더 체크
-      routine.habit_likes -= 1; // 1. routineCommunityArray에서 좋아요 수 -1
-      likesArray.value.splice(index, 1); // 2. likesArray에서 삭제
-
-      updateHabitLikes(communityId, -1); // DB 업데이트: 좋아요 수 감소
-    }
-  } else {
-    routine.habit_likes += 1; // 1. 좋아요 수 +1
-    likesArray.value.push({
-      community_id: communityId,
-      habit_likes_id: currentId,
-    }); // 2. likesArray에 추가
-
-    updateHabitLikes(communityId, 1); // DB 업데이트: 좋아요 수 증가
-  }
-}
-
-function updateHabitLikes(communityId, value) {
-  // DB 업데이트 로직
-  // 1. '좋아요' 테이블에 community_id랑 habit_likes_id 현 사용자 id로 추가, 혹은 그 row를 삭제하기
-  // 2. '루틴 커뮤니티' 테이블의 '좋아요 수' 필드에 +1 혹은 -1 처리하기
-  console.log(`community_id: ${communityId}, like 변화: ${value}`);
-}
-
-// // 이미지 경로를 import하여 사용할 수 있음 (빌드 과정에서 경로 처리)
-// const fullLikeImg = require('@/assets/icons/fullLike.png');
-// const emptyLikeImg = require('@/assets/icons/emptyLike.png');
-
-// 우측 필터링
-
-// 오른쪽 필터 상태, 최신순이 기본값
-const selectedOtherFilter = ref('manyLikes');
-
-// 2. 나의 좋아요만 필터링
-// currentId 현재 사용자 id로 판단
-
-// const isMyLikesFilterActive = ref(false); // 나의 좋아요 필터 상태 저장
-
-function checkMyLike() {
-  // currentId 사용자가 좋아요한 community_id 리스트 추출
-  const likedCommunityIds = likesArray.value
-    .filter((like) => like.habit_likes_id === currentId)
-    .map((like) => like.community_id);
-
-  // routineCommunityArray에서 해당 community_id를 가진 루틴만 필터링
-  const likedRoutines = routineCommunityArray.value.filter((routine) =>
-    likedCommunityIds.includes(routine.community_id)
-  );
-
-  // 필터링된 결과가 없을 경우
-  // if (likedCommunityIds.length === 0) {
-  //     return []; // 또는 전체 루틴을 반환하거나 원하는 값을 반환
-  // }
-
-  return likedRoutines;
-}
-
-// // 3. 좋아요순
-// function filterByMostLiked() {
-//     return routineCommunityArray.value.slice().sort((a, b) => b.habit_likes - a.habit_likes);
-// }
-
-// // 4. 최신순
-// function filterByRecent() {
-//     return routineCommunityArray.value.slice().sort((a, b) => new Date(b.update_date) - new Date(a.update_date));
-// }
-
-// // 5. 참여자순
-// function filterByMostParticipants() {
-//     return routineCommunityArray.value.slice().sort((a, b) => b.participants - a.participants);
-// }
-
-// // 6. 달성자순
-// function filterByMostCompletions() {
-//     return routineCommunityArray.value.slice().sort((a, b) => b.complete - a.complete);
-// }
-
-// ******** 오른쪽 필터 처리
-function handleFilterChange(event) {
-  selectedOtherFilter.value = event.target.value;
-  applyFilters(); // 필터가 변경될 때마다 필터를 적용
-}
-
-// 카테고리 필터링
-
-// 카테고리 필터 상태, 디폴트는 전체 카테고리
-const selectedCategory = ref('all');
-
-// 카테고리 맵 (카테고리 필터와 데이터의 매칭)
-const categoryMap = {
+// **카테고리명을 한국어로 변환하는 매핑 테이블**  <!-- 추가된 부분 -->
+const categoryTranslations = {
   food: '식비',
   dessert: '카페/간식',
+  online_shopping: '온라인쇼핑',
+  fashion_shopping: '패션/쇼핑',
+  culture_leisure: '문화/여가',
+  alcohol_entertainment: '술/유흥',
+  education: '교육',
+  health_medical: '의료/건강',
+  living: '생활',
+  housing_utilities: '주거/공과금',
+  travel: '여행',
+  automobile: '자동차',
+  pet: '반려동물',
   beauty: '뷰티',
+  finance: '금융',
+  transportation: '교통',
+  event_fees: '경조사/회비'
 };
 
-// ******** 카테고리 필터 처리
+// sortType을 상태로 관리할 변수 선언
+const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
+const routineCommunityArray = ref([]);
+const selectedCategory = ref('all');  // 카테고리 필터
+const likesArray = ref([]);
+
+// 카테고리 타이틀을 한국어로 변환하는 함수
+const translatedRoutines = computed(() => { 
+  return routineCommunityArray.value.map(routine => ({
+    ...routine,
+    categoryTitle: categoryTranslations[routine.categoryTitle] || routine.categoryTitle 
+  }));  // map 함수의 닫는 괄호 위치 수정
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SHOT PREVIEW
+const previewPosts = ref([]); // 인증 사진을 저장할 변수
+
+// 페이지 로드시 SHOT PREVIEW에 1번째, 2번째, 3번째 루틴의 인증 사진을 표시하는 함수
+const fetchPreviewPosts = async (habitIds) => {
+  try {
+    const promises = habitIds.map(habitId => axios.get(`http://localhost:8080/routine-community/posts/${habitId}`));
+    const responses = await Promise.all(promises);
+    const posts = responses.flatMap(response => response.data);
+    
+    // 중복되지 않게 최대 8개의 사진만 저장
+   previewPosts.value = posts.map(post => ({
+      post_id: post.postId,
+      habit_id: post.habitId,
+      imageUrl: post.imageURL ? post.imageURL : post.imageUrl // imageURL을 imageUrl로 일관성 있게 처리
+    })).slice(0, 8);
+    console.log('Fetched initial preview posts:', previewPosts.value);
+  } catch (error) {
+    console.error('Error fetching initial preview posts:', error);
+  }
+};
+
+
+const currentPage = ref(1);  // 현재 페이지 번호
+const totalPages = ref(1);  // 총 페이지 수
+const pageSize = ref(12);  // 한 페이지에 표시할 데이터 수
+
+const changePage = (page) => {
+    currentPage.value = page;
+    fetchRoutines();  // 페이지 변경 시 루틴 목록 다시 가져오기
+};
+
+// 루틴 데이터를 가져오는 함수 (검색, 정렬, 필터를 모두 처리)
+const fetchRoutines = async (keyword = '') => {
+  try {
+    // const authStore = useAuthStore()
+    // const userId = authStore.userId // Pinia에서 userId 가져오기
+    const userId = localStorage.getItem('userId');
+
+    const params = {
+      keyword: keyword || null,
+      categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,
+      sortType: currentSortType.value || 'recent',
+      page: currentPage.value,
+      size: pageSize.value,
+    }
+
+    // '나의 좋아요' 필터가 선택된 경우 userId 추가
+    if (currentSortType.value === 'myLikes' && userId) {
+      params.userId = userId
+    }
+
+    const response = await axios.get('http://localhost:8080/routine-community/search-or-sort', {
+      params: params,
+    })
+
+    routineCommunityArray.value = response.data.communities;
+    totalPages.value = response.data.totalPages;  // 서버에서 총 페이지 수를 받아와서 설정
+
+    // 페이지 로드시 첫 번째, 두 번째, 세 번째 루틴의 habit_id를 이용해 인증 사진을 가져옴
+    if (routineCommunityArray.value.length >= 3) {
+      const habitIds = [
+        routineCommunityArray.value[0].habitId,
+        routineCommunityArray.value[1].habitId,
+        routineCommunityArray.value[2].habitId,
+      ]
+      fetchPreviewPosts(habitIds) // 인증 사진을 미리 가져오는 함수 호출
+    }
+  } catch (error) {
+    console.error('루틴 데이터 가져오는 중 오류 발생:', error)
+  }
+};
+
+// 페이지 변경 함수
+// const changePage = (newPage) => {
+//   if (newPage >= 1 && newPage <= totalPages.value) {
+//     currentPage.value = newPage;
+//     fetchRoutines();  // 페이지 변경 시 데이터를 다시 로드
+//   }
+// };
+
+const searchQuery = ref('');  // 검색어를 저장할 변수
+const displayedQuery = ref('');  // 화면에 보여질 검색어 상태
+
+const performSearch = () => {
+  console.log('Search button clicked. Keyword:', searchQuery.value);
+  searchQuery.value = displayedQuery.value;  // 실제 검색어는 유지
+  fetchRoutines(searchQuery.value);  // 검색어를 기반으로 데이터를 가져옴
+  displayedQuery.value = "";  // 화면에 표시되는 검색어는 비움
+};
+
+
+// 필터가 변경되면 sortType 업데이트 후 데이터 요청
+// 오른쪽 필터 (ex: 최신순, 좋아요 순, 참여자 순, 달성자 순, 나의 좋아요)
+function handleFilterChange(event) {
+  currentSortType.value = event.target.value;  // 읽기 전용인 props.sortType 대신 상태로 관리되는 currentSortType을 변경
+  console.log("Selected sortType: ", currentSortType.value);
+  fetchRoutines(searchQuery.value);  // 업데이트된 sortType으로 데이터를 가져옴
+}
+
+// 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
 function handleCategoryFilterChange(event) {
   selectedCategory.value = event.target.value;
-  applyFilters(); // 필터가 변경될 때마다 필터를 적용
+  fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
 }
 
-// 최종 필터 - 카테고리 필터 + 오른쪽 필터
-function applyFilters() {
-  let result = [...routineCommunityArray.value];
+// 페이지 로드 시 기본 정렬된 데이터를 가져오기
+onMounted(() => {
+  fetchRoutines();
+});
 
-  // 1. '카테고리 필터' 적용
-  if (selectedCategory.value !== 'all') {
-    result = result.filter(
-      (routine) =>
-        routine.category_title === categoryMap[selectedCategory.value]
+// 좋아요 버튼 클릭 시 동작
+async function toggleLike(communityId) {
+  const routine = routineCommunityArray.value.find(
+    (r) => r.communityId === communityId
+  );
+
+  // 현재 사용자의 ID (로그인된 사용자 정보를 활용)
+  const userId = localStorage.getItem('userId');   // 실제 로그인된 사용자 ID로 대체
+
+  // 좋아요 취소 (이미 좋아요를 누른 상태)
+  if (isLiked(communityId)) {
+    routine.habitLikes -= 1;
+    likesArray.value = likesArray.value.filter(
+      (like) => like.communityId !== communityId
     );
-    // 루틴 데이터의 카테고리 타이틀이 '식비', selectedCategory가 select form의 value (food) (이벤트니까)
-  }
 
-  // 2. '오른쪽 필터' 적용
-  if (selectedOtherFilter.value === 'myLikes') {
-    result = result.filter((routine) => checkMyLike().includes(routine));
-  } else if (selectedOtherFilter.value === 'manyLikes') {
-    result = result.sort((a, b) => b.habit_likes - a.habit_likes);
-  } else if (selectedOtherFilter.value === 'recent') {
-    result = result.sort(
-      (a, b) => new Date(b.update_date) - new Date(a.update_date)
-    );
-  } else if (selectedOtherFilter.value === 'manyParticipants') {
-    result = result.sort((a, b) => b.participants - a.participants);
-  } else if (selectedOtherFilter.value === 'manyCompletions') {
-    result = result.sort((a, b) => b.complete - a.complete);
+    // 좋아요 취소 API 호출 (DELETE)
+    try {
+      await axios({
+        method: 'delete',
+        url: 'http://localhost:8080/routine-community/like',
+        data: { userId, communityId }, // `DELETE`에서 `data`를 사용하려면 명시적 형식으로 사용
+        headers: {
+          'Content-Type': 'application/json', // JSON 형식 명시
+        },
+      });
+      console.log('좋아요 취소 성공');
+    } catch (error) {
+      console.error('좋아요 취소 실패', error);
+      routine.habitLikes += 1;  // 실패 시 복구
+    }
   }
+  // 좋아요 추가 (아직 좋아요를 누르지 않은 상태)
+  else {
+    routine.habitLikes += 1;
+    likesArray.value.push({ communityId });
 
-  // 필터링된 결과를 `filteredRoutines`에 할당
-  filteredRoutines.value = result;
+    // 좋아요 추가 API 호출 (POST)
+    try {
+      await axios.post('http://localhost:8080/routine-community/like', {
+        userId,
+        communityId,
+      });
+      console.log('좋아요 추가 성공');
+    } catch (error) {
+      console.error('좋아요 추가 실패', error);
+      routine.habitLikes -= 1;  // 실패 시 복구
+    }
+  }
 }
 
-// ****** 다 모아져있는 '오른쪽 필터' 핸들러
-// function handleFilterChange(event) {
-//     const filterValue = event.target.value;
+// 좋아요 여부 확인 함수
+function isLiked(communityId) {
+  return likesArray.value.some((like) => like.communityId === communityId);
+}
 
-//     // 필터 상태에 따라 데이터 필터링
-//     if (filterValue === 'myLikes') { // 2. 나의 좋아요
-//         filteredRoutines.value = checkMyLike();
-//     } else if (filterValue === 'manyLikes') { // 3. 좋아요순
-//         filteredRoutines.value = filterByMostLiked();
-//     } else if (filterValue === 'recent') { // 4. 최신순
-//         filteredRoutines.value = filterByRecent();
-//     } else if (filterValue === 'manyParticipants') { // 5. 참여자순
-//         filteredRoutines.value = filterByMostParticipants();
-//     } else if (filterValue === 'manyCompletions') { // 6. 달성자순
-//         filteredRoutines.value = filterByMostCompletions();
-//     } else {
-//         // 기본값으로 전체 데이터
-//         filteredRoutines.value = [...routineCommunityArray.value]; // 전체 데이터를 복사
-//     }
-// }
+async function addHabitToMyHabit(communityId) {
+  const userId = localStorage.getItem('userId');  // 실제 로그인된 사용자 ID로 변경
 
-
-
-
+  try {
+    // POST 요청에서 params를 통해 userId와 habitId 전달
+    await axios.post('http://localhost:8080/routine-community/challenge', null, {
+      params: {
+        userId: userId,
+        habitId: communityId,  // communityId를 habitId로 전달
+      }
+    });
+    console.log('습관이 MyHabit에 추가되었습니다.');
+    alert('습관이 MyHabit에 추가되었습니다.');  // 성공 시 알림 표시
+  } catch (error) {
+    console.error('MyHabit 추가 중 오류 발생:', error);
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// SHOT PREVIEW
+// const posts = ref([]);
 
 // 선택된 habit_id 저장 변수 (아무것도 클릭하지 않았을 때는 null)
 const selectedHabitId = ref(null);
 
-// 특정 habit_id를 선택하는 함수
-function selectHabit(habitId) {
-  // 이미 선택된 habit을 클릭하면 전체 포스트를 다시 보여줌
+// // 특정 habit_id에 맞는 post 데이터를 가지고오는 함수
+// async function selectHabit(habitId) {
+//   console.log("Selected habitId:", habitId);  // habitId 값 로그 출력
+
+//   if (selectedHabitId.value === habitId) {
+//     selectedHabitId.value = null;
+//     posts.value = [];  // habit이 해제되면 posts 초기화
+//   } else {
+//     selectedHabitId.value = habitId;
+//     try {
+//       // const response = await axios.get(`http://localhost:8080/routine-community/search-or-sort`, 
+//       const response = await axios.get(`http://localhost:8080/routine-community/posts/${habitId}`);
+//       console.log("resoponseDATA",response.data);
+//       posts.value = response.data.map(post => ({
+//         post_id: post.postId,
+//         habit_id: post.habitId,
+//         imageUrl: post.imageURL
+//       }));
+
+//       //   // **여기서 이미지 URL 로그 확인**
+//       //   posts.value.forEach(post => {
+//       //   console.log("Image URL:", post.imageUrl);  // 이미지 URL 출력
+//       // });
+//       console.log('Fetched posts:', posts.value);
+//     } catch (error) {
+//       console.error('Error fetching posts:', error);
+//     }
+//   }
+// }
+// 루틴 클릭 시 SHOT PREVIEW에 해당 루틴의 사진만 보여줌
+async function selectHabit(habitId) {
+  console.log("Selected habitId:", habitId);
+  
   if (selectedHabitId.value === habitId) {
     selectedHabitId.value = null;
+    previewPosts.value = [];  // habit이 해제되면 posts 초기화
   } else {
     selectedHabitId.value = habitId;
+    try {
+      const response = await axios.get(`http://localhost:8080/routine-community/posts/${habitId}`);
+      previewPosts.value = response.data.map(post => ({
+        post_id: post.postId,
+        habit_id: post.habitId,
+        imageUrl: post.imageURL  // 백엔드에서 제공하는 imageURL 필드
+      })).slice(0, 8);
+      console.log('Fetched posts:', previewPosts.value);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
   }
 }
 
 
 // 선택된 habit_id에 맞는 포스트 필터링
-const filteredPosts = computed(() => {
-  if (selectedHabitId.value === null) {
-    // 아무 것도 선택되지 않았으면 전체 보여줌
-    return posts.value; // 전체 포스트를 반환
-  } else {
-    const filtered = posts.value.filter((post) => post.habit_id === selectedHabitId.value);
-    return filtered.length > 0 ? filtered : []; // 필터링 결과가 없으면 빈 배열 반환
-  }
-});
-// 선택된 루틴 이름
-// const selectedHabitTitle = ref(""); // 선택된 루틴 제목 저장
+// const filteredPosts = computed(() => {
+//   if (selectedHabitId.value === null) {
+//     // 아무 것도 선택되지 않았으면 전체 보여줌
+//     return posts.value; // 전체 포스트를 반환
+//   } else {
+//     const filtered = posts.value.filter((post) => post.habit_id === selectedHabitId.value);
+//     console.log("Filtered posts:", filtered);
+//     return filtered.length > 0 ? filtered : []; // 필터링 결과가 없으면 빈 배열 반환
+//   }
+// });
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// const selectHabit = (routine) => {
-//       // 선택된 루틴의 habit_title을 저장
-//       selectedHabitTitle.value = routine.habit_title;
-//     };
+
+
+// // 검색어로 루틴 데이터를 가져오는 함수
+// const searchRoutines = async (keyword) => {
+//   try {
+//     console.log('Search API called with:', keyword); // API 호출 전에 로그
+//     const response = await axios.get(`http://localhost:8080/routine-community/search`, {
+//       params: {
+//         keyword: keyword,
+//         categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,
+//         sortType: currentSortType.value || 'recent',
+//       },
+//     });
+    
+//     console.log('Received response from API:', response.data); // API 응답을 로그로 출력
+//     routineCommunityArray.value = response.data; // routineCommunityArray에 데이터 저장
+//     console.log('Updated routineCommunityArray:', routineCommunityArray.value); // 업데이트된 배열 확인
+//   } catch (error) {
+//     console.error('검색 중 오류 발생:', error); // 오류 발생 시 로그 출력
+//   }
+// };
+function logImageUrl(imageUrl) {
+  console.log("Image URL:", imageUrl);
+}
+
 </script>
 
 <style scoped>
@@ -723,8 +612,16 @@ const filteredPosts = computed(() => {
 .intro {
     margin: 3% 8%;
   grid-column: 1 / span 2; /* 소개는 두 열을 모두 차지 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
-
+.introLeft {
+  flex: 1;
+}
+.search-routine {
+  flex: 0.2;
+}
 /* .col {
     flex: 1 1 30%; 
     min-width: 200px; 
@@ -966,13 +863,39 @@ const filteredPosts = computed(() => {
     border-radius: 0;
 }
 
+
 /* 카드를 조밀하게 배치 */
 .shots .row .col {
     padding: 0; /* 여백 제거 */
     margin-bottom: 0; /* 행 간 여백 제거 */
 }
-
-
+.pagination {
+        margin:24px;
+    }
+    .pagination li {
+        min-width:32px;
+        padding:2px 6px;
+        text-align:center;
+        margin:0 3px;
+        border-radius: 6px;
+        border:1px solid #eee;
+        color:#666;
+    }
+    .pagination li:hover {
+        background: #E4DBD6;
+    }
+    .page-item a {
+        color:#666;
+        text-decoration: none;
+    }
+    .pagination li.active {
+        background-color : #E7AA8D;
+        color:#fff;
+    }
+    .pagination li.active a {
+        color:#fff;
+    }
 
 
 </style>
+
