@@ -14,6 +14,7 @@ export default defineConfig({
     }
   },
   server: {
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
@@ -33,6 +34,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/s3-bucket/, '')
+      },
+       // 이미지 파일 경로에 대한 프록시 설정
+       '/images': {
+        target: 'http://localhost:8080',  // 백엔드 서버
+        changeOrigin: true,
       },
     },
   }
