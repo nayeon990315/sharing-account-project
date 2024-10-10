@@ -1,12 +1,20 @@
 <template>
     <!-- 루틴 커뮤니티 -->
-    <div class="intro">
-      <h3>Routine Share Community</h3>
-      <p>
-        나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로 만들어보세요!
-      </p>
-    </div>
-
+ <div class="intro">
+  <div class="introLeft">
+    <h3>Routine Share Community</h3>
+    <p>
+      나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로 만들어보세요!
+    </p>
+  </div>
+  
+  <!-- 검색창 -->
+  <div class="search-routine">
+    <input type="text" v-model="displayedQuery" placeholder="검색어를 입력하세요" />
+    <button @click="performSearch">검색</button>
+  </div>
+</div>
+   
 
   <nav class="filter">
     <div class="categoryFilter">
@@ -46,6 +54,7 @@
           type="radio"
           name="otherFilter"
           value="recent"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         최신 순
@@ -53,14 +62,15 @@
           type="radio"
           name="otherFilter"
           value="manyLikes"
+          v-model="currentSortType"
           @change="handleFilterChange"
-           checked="checked"
         />
         좋아요 순
         <input
           type="radio"
           name="otherFilter"
           value="manyParticipants"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         참여자 순
@@ -68,6 +78,7 @@
           type="radio"
           name="otherFilter"
           value="manyCompletions"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         달성자 순
@@ -75,6 +86,7 @@
           type="radio"
           name="otherFilter"
           value="myLikes"
+          v-model="currentSortType"
           @change="handleFilterChange"
         />
         나의 좋아요
@@ -93,9 +105,9 @@
         <!-- <h4 v-if="selectedHabitTitle">{{ selectedHabitTitle }}</h4> -->
 
         <div class="row gx-0 gy-0"> <!-- 열과 행 간의 간격을 없앰 -->
-        <div class="col-6 col-md-6" v-for="shot in filteredPosts" :key="shot.post_id">
+        <div class="col-6 col-md-6" v-for="shot in previewPosts" :key="shot.post_id" @click="logImageUrl(shot.imageUrl)">
             <div class="card h-100"> <!-- 카드 높이를 100%로 설정 -->
-                <img :src="shot.imageUrl" class="card-img-top img-fluid">
+                <img :src="shot.imageUrl" class="card-img-top img-fluid">                
             </div>
         </div>
     </div>
@@ -114,7 +126,7 @@
         :key="routine.communityId"
       >
         <!-- <div class="card h-100 "> -->
-        <div class="card h-100" @click="selectHabit(routine.habit_id)">
+        <div class="card h-100" @click="selectHabit(routine.habitId)">
           <div class="card-body">
             <div class="subtitle">
               <span class="type card-subtitle">
@@ -128,7 +140,8 @@
             <h5 class="card-title">{{ routine.habitTitle }}</h5>
           <div class="card-text">
             <div class="writer">
-                <img class="avatar" src="@/assets/images/sample.jpg">
+                <!-- <img class="avatar" src="@/assets/images/sample.jpg"> -->
+                <img class="avatar" :src="routine.avatar || defaultAvatar" />
                 <span class="writerName">{{ routine.nickname }}</span>
             </div>
             <div class="likeContainer">
@@ -175,6 +188,22 @@
     <!-- 좋아요한 루틴이 없을 때 표시할 메시지 -->
     <!-- <p v-else>좋아요한 루틴이 없습니다.</p>  -->
   </div>
+  <!-- 페이지네이션 컴포넌트 -->
+   
+  <paginate
+    :page-count="totalPages"
+    :click-handler="changePage"
+    :prev-text="'Prev'"
+    :next-text="'Next'"
+    :container-class="'pagination'"
+    :page-class="'page-item'"
+    :page-link-class="'page-link'"
+    :prev-link-class="'page-link-prev'"
+    :next-link-class="'page-link-next'"
+    :active-class="'active'"
+/>
+
+
 </template>
 
 <script setup>
@@ -186,6 +215,10 @@ import coffeeImg from '@/assets/images/coffee_sample.png';
 import coffeeImg2 from '@/assets/images/coffee_sample2.jpg';
 import foodImg from '@/assets/images/food_sample.jpg';
 import foodImg2 from '@/assets/images/food_sample2.jpg';
+import defaultAvatarImg from '@/assets/images/sample.jpg';
+import Paginate from 'vuejs-paginate-next';
+
+const defaultAvatar = defaultAvatarImg;
 
 // props로 sortType 받기
 const props = defineProps({
@@ -230,39 +263,116 @@ const translatedRoutines = computed(() => {
   }));  // map 함수의 닫는 괄호 위치 수정
 });
 
-// 데이터를 가져오는 함수
-const fetchSortedRoutines = async () => {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SHOT PREVIEW
+const previewPosts = ref([]); // 인증 사진을 저장할 변수
+
+// 페이지 로드시 SHOT PREVIEW에 1번째, 2번째, 3번째 루틴의 인증 사진을 표시하는 함수
+const fetchPreviewPosts = async (habitIds) => {
   try {
-    const response = await axios.get(`http://localhost:8080/routine-community/sort/${currentSortType.value}`, {
-      params: {
-        categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,  // '전체'는 필터 해제
-      },
-    });
-    routineCommunityArray.value = response.data;  // 데이터를 저장
-    console.log('Fetched sorted routines successfully:', response.data);
-    console.log("Selected category: ", selectedCategory.value);
-    console.log('SortType:', currentSortType.value);
+    const promises = habitIds.map(habitId => axios.get(`http://localhost:8080/routine-community/posts/${habitId}`));
+    const responses = await Promise.all(promises);
+    const posts = responses.flatMap(response => response.data);
+    
+    // 중복되지 않게 최대 8개의 사진만 저장
+   previewPosts.value = posts.map(post => ({
+      post_id: post.postId,
+      habit_id: post.habitId,
+      imageUrl: post.imageURL ? post.imageURL : post.imageUrl // imageURL을 imageUrl로 일관성 있게 처리
+    })).slice(0, 8);
+    console.log('Fetched initial preview posts:', previewPosts.value);
   } catch (error) {
-    console.error('Error fetching sorted routines:', error);
+    console.error('Error fetching initial preview posts:', error);
   }
 };
 
+
+const currentPage = ref(1);  // 현재 페이지 번호
+const totalPages = ref(1);  // 총 페이지 수
+const pageSize = ref(12);  // 한 페이지에 표시할 데이터 수
+
+const changePage = (page) => {
+    currentPage.value = page;
+    fetchRoutines();  // 페이지 변경 시 루틴 목록 다시 가져오기
+};
+
+// 루틴 데이터를 가져오는 함수 (검색, 정렬, 필터를 모두 처리)
+const fetchRoutines = async (keyword = '') => {
+  try {
+    // const authStore = useAuthStore()
+    // const userId = authStore.userId // Pinia에서 userId 가져오기
+    const userId = localStorage.getItem('userId');
+
+    const params = {
+      keyword: keyword || null,
+      categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,
+      sortType: currentSortType.value || 'recent',
+      page: currentPage.value,
+      size: pageSize.value,
+    }
+
+    // '나의 좋아요' 필터가 선택된 경우 userId 추가
+    if (currentSortType.value === 'myLikes' && userId) {
+      params.userId = userId
+    }
+
+    const response = await axios.get('http://localhost:8080/routine-community/search-or-sort', {
+      params: params,
+    })
+
+    routineCommunityArray.value = response.data.communities;
+    totalPages.value = response.data.totalPages;  // 서버에서 총 페이지 수를 받아와서 설정
+
+    // 페이지 로드시 첫 번째, 두 번째, 세 번째 루틴의 habit_id를 이용해 인증 사진을 가져옴
+    if (routineCommunityArray.value.length >= 3) {
+      const habitIds = [
+        routineCommunityArray.value[0].habitId,
+        routineCommunityArray.value[1].habitId,
+        routineCommunityArray.value[2].habitId,
+      ]
+      fetchPreviewPosts(habitIds) // 인증 사진을 미리 가져오는 함수 호출
+    }
+  } catch (error) {
+    console.error('루틴 데이터 가져오는 중 오류 발생:', error)
+  }
+};
+
+// 페이지 변경 함수
+// const changePage = (newPage) => {
+//   if (newPage >= 1 && newPage <= totalPages.value) {
+//     currentPage.value = newPage;
+//     fetchRoutines();  // 페이지 변경 시 데이터를 다시 로드
+//   }
+// };
+
+const searchQuery = ref('');  // 검색어를 저장할 변수
+const displayedQuery = ref('');  // 화면에 보여질 검색어 상태
+
+const performSearch = () => {
+  console.log('Search button clicked. Keyword:', searchQuery.value);
+  searchQuery.value = displayedQuery.value;  // 실제 검색어는 유지
+  fetchRoutines(searchQuery.value);  // 검색어를 기반으로 데이터를 가져옴
+  displayedQuery.value = "";  // 화면에 표시되는 검색어는 비움
+};
+
+
 // 필터가 변경되면 sortType 업데이트 후 데이터 요청
+// 오른쪽 필터 (ex: 최신순, 좋아요 순, 참여자 순, 달성자 순, 나의 좋아요)
 function handleFilterChange(event) {
   currentSortType.value = event.target.value;  // 읽기 전용인 props.sortType 대신 상태로 관리되는 currentSortType을 변경
   console.log("Selected sortType: ", currentSortType.value);
-  fetchSortedRoutines();  // 업데이트된 sortType으로 데이터를 가져옴
+  fetchRoutines(searchQuery.value);  // 업데이트된 sortType으로 데이터를 가져옴
 }
 
-// 카테고리 필터 변경 시
+// 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
 function handleCategoryFilterChange(event) {
   selectedCategory.value = event.target.value;
-  fetchSortedRoutines(); // 기본 정렬로 카테고리 필터 적용
+  fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
 }
 
 // 페이지 로드 시 기본 정렬된 데이터를 가져오기
 onMounted(() => {
-  fetchSortedRoutines();
+  fetchRoutines();
 });
 
 // 좋아요 버튼 클릭 시 동작
@@ -272,7 +382,7 @@ async function toggleLike(communityId) {
   );
 
   // 현재 사용자의 ID (로그인된 사용자 정보를 활용)
-  const userId = 1;   // 실제 로그인된 사용자 ID로 대체
+  const userId = localStorage.getItem('userId');   // 실제 로그인된 사용자 ID로 대체
 
   // 좋아요 취소 (이미 좋아요를 누른 상태)
   if (isLiked(communityId)) {
@@ -322,7 +432,7 @@ function isLiked(communityId) {
 }
 
 async function addHabitToMyHabit(communityId) {
-  const userId = 2;  // 실제 로그인된 사용자 ID로 변경
+  const userId = localStorage.getItem('userId');  // 실제 로그인된 사용자 ID로 변경
 
   try {
     // POST 요청에서 params를 통해 userId와 habitId 전달
@@ -337,6 +447,103 @@ async function addHabitToMyHabit(communityId) {
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
   }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// SHOT PREVIEW
+// const posts = ref([]);
+
+// 선택된 habit_id 저장 변수 (아무것도 클릭하지 않았을 때는 null)
+const selectedHabitId = ref(null);
+
+// // 특정 habit_id에 맞는 post 데이터를 가지고오는 함수
+// async function selectHabit(habitId) {
+//   console.log("Selected habitId:", habitId);  // habitId 값 로그 출력
+
+//   if (selectedHabitId.value === habitId) {
+//     selectedHabitId.value = null;
+//     posts.value = [];  // habit이 해제되면 posts 초기화
+//   } else {
+//     selectedHabitId.value = habitId;
+//     try {
+//       // const response = await axios.get(`http://localhost:8080/routine-community/search-or-sort`, 
+//       const response = await axios.get(`http://localhost:8080/routine-community/posts/${habitId}`);
+//       console.log("resoponseDATA",response.data);
+//       posts.value = response.data.map(post => ({
+//         post_id: post.postId,
+//         habit_id: post.habitId,
+//         imageUrl: post.imageURL
+//       }));
+
+//       //   // **여기서 이미지 URL 로그 확인**
+//       //   posts.value.forEach(post => {
+//       //   console.log("Image URL:", post.imageUrl);  // 이미지 URL 출력
+//       // });
+//       console.log('Fetched posts:', posts.value);
+//     } catch (error) {
+//       console.error('Error fetching posts:', error);
+//     }
+//   }
+// }
+// 루틴 클릭 시 SHOT PREVIEW에 해당 루틴의 사진만 보여줌
+async function selectHabit(habitId) {
+  console.log("Selected habitId:", habitId);
+  
+  if (selectedHabitId.value === habitId) {
+    selectedHabitId.value = null;
+    previewPosts.value = [];  // habit이 해제되면 posts 초기화
+  } else {
+    selectedHabitId.value = habitId;
+    try {
+      const response = await axios.get(`http://localhost:8080/routine-community/posts/${habitId}`);
+      previewPosts.value = response.data.map(post => ({
+        post_id: post.postId,
+        habit_id: post.habitId,
+        imageUrl: post.imageURL  // 백엔드에서 제공하는 imageURL 필드
+      })).slice(0, 8);
+      console.log('Fetched posts:', previewPosts.value);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  }
+}
+
+
+// 선택된 habit_id에 맞는 포스트 필터링
+// const filteredPosts = computed(() => {
+//   if (selectedHabitId.value === null) {
+//     // 아무 것도 선택되지 않았으면 전체 보여줌
+//     return posts.value; // 전체 포스트를 반환
+//   } else {
+//     const filtered = posts.value.filter((post) => post.habit_id === selectedHabitId.value);
+//     console.log("Filtered posts:", filtered);
+//     return filtered.length > 0 ? filtered : []; // 필터링 결과가 없으면 빈 배열 반환
+//   }
+// });
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+// // 검색어로 루틴 데이터를 가져오는 함수
+// const searchRoutines = async (keyword) => {
+//   try {
+//     console.log('Search API called with:', keyword); // API 호출 전에 로그
+//     const response = await axios.get(`http://localhost:8080/routine-community/search`, {
+//       params: {
+//         keyword: keyword,
+//         categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,
+//         sortType: currentSortType.value || 'recent',
+//       },
+//     });
+    
+//     console.log('Received response from API:', response.data); // API 응답을 로그로 출력
+//     routineCommunityArray.value = response.data; // routineCommunityArray에 데이터 저장
+//     console.log('Updated routineCommunityArray:', routineCommunityArray.value); // 업데이트된 배열 확인
+//   } catch (error) {
+//     console.error('검색 중 오류 발생:', error); // 오류 발생 시 로그 출력
+//   }
+// };
+function logImageUrl(imageUrl) {
+  console.log("Image URL:", imageUrl);
 }
 
 </script>
@@ -405,8 +612,16 @@ async function addHabitToMyHabit(communityId) {
 .intro {
     margin: 3% 8%;
   grid-column: 1 / span 2; /* 소개는 두 열을 모두 차지 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
-
+.introLeft {
+  flex: 1;
+}
+.search-routine {
+  flex: 0.2;
+}
 /* .col {
     flex: 1 1 30%; 
     min-width: 200px; 
@@ -648,13 +863,39 @@ async function addHabitToMyHabit(communityId) {
     border-radius: 0;
 }
 
+
 /* 카드를 조밀하게 배치 */
 .shots .row .col {
     padding: 0; /* 여백 제거 */
     margin-bottom: 0; /* 행 간 여백 제거 */
 }
-
-
+.pagination {
+        margin:24px;
+    }
+    .pagination li {
+        min-width:32px;
+        padding:2px 6px;
+        text-align:center;
+        margin:0 3px;
+        border-radius: 6px;
+        border:1px solid #eee;
+        color:#666;
+    }
+    .pagination li:hover {
+        background: #E4DBD6;
+    }
+    .page-item a {
+        color:#666;
+        text-decoration: none;
+    }
+    .pagination li.active {
+        background-color : #E7AA8D;
+        color:#fff;
+    }
+    .pagination li.active a {
+        color:#fff;
+    }
 
 
 </style>
+
