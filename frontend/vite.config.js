@@ -21,6 +21,13 @@ export default defineConfig({
         changeOrigin: true,
         pathRewrite: { '^/api': '' },
       },
+      '/my-today-info': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/my-today-info/, ''),
+      },
+      '/habits': 'http://localhost:8080',
+
       // S3 버킷에 대한 프록시 설정
       "/s3-bucket": {
         target: "https://beeroutine.s3.ap-northeast-2.amazonaws.com",
