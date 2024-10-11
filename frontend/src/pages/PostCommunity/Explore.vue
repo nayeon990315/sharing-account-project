@@ -22,7 +22,9 @@
         <p>{{ post.content }}</p>
         <p>{{ post.hashtag }}</p>
         <p>{{ new Date(post.createdAt).toLocaleDateString() }}</p>
-        <comment-section v-if="post.showComments"></comment-section>
+        <!-- 댓글 섹션 -->
+         <!-- 자식 comment-section import해서 전달받음  -->
+        <comment-section v-if="post.showComments" :post-id="post.id" @comment-change="handleCommentChange"></comment-section>
         <div class="interaction-buttons">
           <div class="like-button" @click="toggleLike(post)">
             <span :class="{ liked: post.isLiked }">{{
@@ -32,7 +34,7 @@
           </div>
           <div class="comment-button" @click="toggleComments(post)">
             <span class="comment-icon">💬</span>
-            {{ post.comments }}
+            {{ commentCounts[post.id] || 0 }}
           </div>
         </div>
       </div>
@@ -41,10 +43,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed,  onMounted } from 'vue';
+import axios from 'axios';
+
 import CommentSection from '@/components/PostCommunity/CommentSection.vue';
 import userIcon from '@/assets/icons8-user-64.png'; // 사용자 아이콘 불러오기
 import axios from 'axios';
+
+const existingPosts = ref([]); // 게시물 목록
+const commentCounts = ref({}); // 게시물별 댓글 수 저장
 
 const selectedCategory = ref('전체');
 
@@ -108,11 +115,43 @@ const toggleLike = (post) => {
 
 const toggleComments = (post) => {
   post.showComments = !post.showComments;
+}
+
+
+// 게시물별 댓글 수 가져오기 및 existingPosts 업데이트
+const fetchCommentCounts = () => {
+  axios.get('http://localhost:8080/post-community/posts/comments')
+    .then(response => {
+      commentCounts.value = response.data; // 댓글 수 업데이트
+
+      // 해시맵의 키로 existingPosts 업데이트
+      const postIds = Object.keys(commentCounts.value); // commentCounts의 키 값 (postId)
+      existingPosts.value = postIds.map(id => ({ id: Number(id) })); // id만 가진 객체 배열로 변환
+    })
+    .catch(error => {
+      console.error('Error fetching comment counts:', error);
+    });
 };
 
+// 자식 컴포넌트에서 댓글 변경 이벤트를 받으면 댓글 수 다시 불러오기
+const handleCommentChange = (postId) => {
+  // 특정 게시물에 대한 댓글 수만 가져오기
+  axios.get(`http://localhost:8080/post-community/posts/${postId}/comments/count`)
+    .then(response => {
+      // 해당 게시물의 댓글 수만 업데이트
+      commentCounts.value[postId] = response.data; // 댓글 수 업데이트
+    })
+    .catch(error => {
+      console.error('Error fetching comment count:', error);
+    });
+};
+
+// 컴포넌트가 마운트될 때 호출
 onMounted(() => {
   getAllPost();
+  fetchCommentCounts();
 });
+
 </script>
 
 <style scoped>

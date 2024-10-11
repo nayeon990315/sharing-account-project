@@ -82,12 +82,17 @@ const routes = [
         name: 'upload',
         component: Upload,
       },
+      {
+        path: '/post-community/upload',
+        name: 'upload',
+        component: Upload,
+      },
     ],
   },
   {
     path: '/myedit',
     name: 'myedit',
-    component: MyPageEdit,
+    component: MyPageReward,
   },
   {
     path: '/myreward',
