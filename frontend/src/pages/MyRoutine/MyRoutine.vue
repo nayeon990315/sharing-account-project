@@ -107,7 +107,8 @@ export default {
                 return acc;
             }, {});
         },
-        methods: {
+    },
+    methods: {
             renderExpenseChart() {
                 const ctx = document.getElementById('expenseChart').getContext('2d');
                 if (!ctx) return;
@@ -210,7 +211,6 @@ export default {
                 }
             }
         },
-    }
 }
 </script>
 
