@@ -3,58 +3,12 @@
     <!-- 카테고리 선택 버튼들 -->
     <div class="category-tags">
       <button
-        @click="selectCategory('coffee')"
-        :class="{ active: selectedCategory === 'coffee' }"
+        v-for="category in categories"
+        :key="category.value"
+        @click="selectCategory(category.value)"
+        :class="{ active: selectedCategory === category.value }"
       >
-        참여루틴
-      </button>
-      <button
-        @click="selectCategory('cafe')"
-        :class="{ active: selectedCategory === 'cafe' }"
-      >
-        #카페/간식
-      </button>
-      <button
-        @click="selectCategory('shopping')"
-        :class="{ active: selectedCategory === 'shopping' }"
-      >
-        #쇼핑
-      </button>
-      <button
-        @click="selectCategory('transport')"
-        :class="{ active: selectedCategory === 'transport' }"
-      >
-        #교통
-      </button>
-      <button
-        @click="selectCategory('food')"
-        :class="{ active: selectedCategory === 'food' }"
-      >
-        #식비
-      </button>
-      <button
-        @click="selectCategory('culture')"
-        :class="{ active: selectedCategory === 'culture' }"
-      >
-        #문화/여가
-      </button>
-      <button
-        @click="selectCategory('alcohol')"
-        :class="{ active: selectedCategory === 'alcohol' }"
-      >
-        #술/유흥
-      </button>
-      <button
-        @click="selectCategory('housing')"
-        :class="{ active: selectedCategory === 'housing' }"
-      >
-        #주거/공과금
-      </button>
-      <button
-        @click="selectCategory('other')"
-        :class="{ active: selectedCategory === 'other' }"
-      >
-        #기타
+        {{ category.label }}
       </button>
     </div>
 
@@ -76,16 +30,16 @@
       </div>
     </div>
 
-    <!-- Routine Section 2 (Duplicate) -->
-    <div class="routine-calendar">
-      <div :class="['routine-header', selectedCategory]">
-        {{ currentRoutine }}
+    <!-- Routine Section 2 -->
+    <div class="routine-calendar second-routine">
+      <div :class="['routine-header', selectedCategory, 'second-routine']">
+        {{ secondRoutine }}
       </div>
       <h3 class="month-label">{{ currentMonth }}</h3>
       <div class="calendar-grid">
         <div
           v-for="day in days"
-          :key="'duplicate-routine-' + day"
+          :key="'second-routine-' + day"
           class="day-tile"
         >
           <img
@@ -106,8 +60,20 @@ export default {
     return {
       days: Array.from({ length: 31 }, (_, i) => i + 1),
       currentRoutine: '텀블러에 커피 담아가기',
+      secondRoutine: '커피 마시고 잔 반납하기',
       currentMonth: '9월',
       selectedCategory: 'coffee',
+      categories: [
+        { value: 'coffee', label: '참여루틴' },
+        { value: 'cafe', label: '#카페/간식' },
+        { value: 'shopping', label: '#쇼핑' },
+        { value: 'transport', label: '#교통' },
+        { value: 'food', label: '#식비' },
+        { value: 'culture', label: '#문화/여가' },
+        { value: 'alcohol', label: '#술/유흥' },
+        { value: 'housing', label: '#주거/공과금' },
+        { value: 'other', label: '#기타' },
+      ],
       shots: {
         coffee: {
           1: 'https://example.com/coffee1.jpg',
@@ -123,6 +89,17 @@ export default {
         housing: {},
         other: {},
       },
+      routineNames: {
+        coffee: ['텀블러에 커피 담아가기', '커피 마시고 잔 반납하기'],
+        cafe: ['카페/간식 루틴 1', '카페/간식 루틴 2'],
+        shopping: ['쇼핑 루틴 1', '쇼핑 루틴 2'],
+        transport: ['교통 루틴 1', '교통 루틴 2'],
+        food: ['식비 루틴 1', '식비 루틴 2'],
+        culture: ['문화/여가 루틴 1', '문화/여가 루틴 2'],
+        alcohol: ['술/유흥 루틴 1', '술/유흥 루틴 2'],
+        housing: ['주거/공과금 루틴 1', '주거/공과금 루틴 2'],
+        other: ['기타 루틴 1', '기타 루틴 2'],
+      },
     };
   },
   computed: {
@@ -133,22 +110,64 @@ export default {
   methods: {
     selectCategory(category) {
       this.selectedCategory = category;
-
-      // Update routine name based on category
-      const routineNames = {
-        coffee: '텀블러에 커피 담아가기',
-        cafe: '카페/간식 루틴',
-        shopping: '쇼핑 루틴',
-        transport: '교통 루틴',
-        food: '식비 루틴',
-        culture: '문화/여가 루틴',
-        alcohol: '술/유흥 루틴',
-        housing: '주거/공과금 루틴',
-        other: '기타 루틴',
-      };
-
-      this.currentRoutine = routineNames[category] || '';
+      this.currentRoutine = this.routineNames[category][0] || '';
+      this.secondRoutine = this.routineNames[category][1] || '';
     },
+    generateRoutineStyles() {
+      const categories = [
+        'coffee',
+        'cafe',
+        'shopping',
+        'transport',
+        'food',
+        'culture',
+        'alcohol',
+        'housing',
+        'other',
+      ];
+      const colors = [
+        '#ffcedc',
+        '#c8b3a3',
+        '#fabcbc',
+        '#c4f1fd',
+        '#dffba7',
+        '#d8dbfd',
+        '#ffcbd9',
+        '#ffe0d2',
+        '#ffe4b5',
+      ];
+      let styles = '';
+
+      categories.forEach((category, index) => {
+        styles += `.routine-header.${category} { background-color: ${colors[index]}; }\n`;
+        styles += `.routine-header.${category}.second-routine { background-color: ${this.darkenColor(
+          colors[index],
+          20
+        )}; }\n`;
+      });
+
+      return styles;
+    },
+    darkenColor(color, percent) {
+      const num = parseInt(color.replace('#', ''), 16),
+        amt = Math.round(2.55 * percent),
+        R = (num >> 16) - amt,
+        G = ((num >> 8) & 0x00ff) - amt,
+        B = (num & 0x0000ff) - amt;
+      return `#${(
+        (1 << 24) |
+        ((R < 255 ? (R < 1 ? 0 : R) : 255) << 16) |
+        ((G < 255 ? (G < 1 ? 0 : G) : 255) << 8) |
+        (B < 255 ? (B < 1 ? 0 : B) : 255)
+      )
+        .toString(16)
+        .slice(1)}`;
+    },
+  },
+  created() {
+    const style = document.createElement('style');
+    style.textContent = this.generateRoutineStyles();
+    document.head.appendChild(style);
   },
 };
 </script>
@@ -174,91 +193,62 @@ export default {
 }
 
 .category-tags button.active {
-  background-color: #71b5fe; /* Active button color */
+  background-color: #71b5fe;
 }
 
 .category-tags button:nth-child(1) {
-  background-color: #fcf5ab; /* Light yellow for 참여루틴 */
+  background-color: #fcf5ab;
 }
 
 .routine-calendar {
   background-color: #f9f9f9;
   padding: 20px;
+  margin-bottom: 20px;
 }
 
 .routine-header {
   padding: 10px;
-  border-radius: 10px 10px 0 0; /* Rounded top corners */
-  width: calc(100% / 3); /* One-third width */
+  border-radius: 10px 10px 0 0;
+  width: calc(100% / 3);
   position: relative;
-  top: -10px; /* Move the index slightly up */
-}
-
-/* Category-specific colors */
-.routine-header.coffee {
-  background-color: #ffcedc; /* Color for coffee routine */
-}
-
-.routine-header.cafe {
-  background-color: #c8b3a3; /* Light yellow for cafe */
-}
-
-.routine-header.shopping {
-  background-color: #fabcbc; /* Soft red for shopping */
-}
-
-.routine-header.transport {
-  background-color: #c4f1fd; /* Light blue for transport */
-}
-
-.routine-header.food {
-  background-color: #dffba7; /* Light khaki for food */
-}
-
-.routine-header.culture {
-  background-color: #d8dbfd; /* Light lavender for culture */
-}
-
-.routine-header.alcohol {
-  background-color: #ffcbd9; /* Light coral for alcohol */
-}
-
-.routine-header.housing {
-  background-color: #ffe0d2; /* Light green for housing */
-}
-
-.routine-header.other {
-  background-color: #ffe4b5; /* Light lemon chiffon for other */
+  top: -10px;
 }
 
 .month-label,
 .routine-header,
 .hashtags button {
-  font-weight: bold; /* Bold font */
+  font-weight: bold;
 }
 
 .month-label {
-  font-size: smaller; /* Smaller font size for the month label */
+  font-size: smaller;
 }
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(
-    7,
-    minmax(0, 1fr)
-  ); /* Seven columns for a week */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
 }
 
 .day-tile {
   width: auto;
-  aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
+  aspect-ratio: 1 / 1;
   position: relative;
-  border-radius: 10px; /* Rounded corners */
-  background-color: #e0e0e0; /* Light gray background */
+  border-radius: 10px;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-.day-tile img,
+.day-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .day-tile span {
+  font-size: 14px;
 }
 </style>
