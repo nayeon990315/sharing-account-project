@@ -51,13 +51,20 @@
         </div>
       </div>
     </div>
+
     <div class="content">
       <h5 id="modal-title"><strong>지금까지 이행한 루틴 및 절약 내역</strong></h5>
-      <ul>
-        <li v-for="(item, index) in routine.title" :key="index">
-          <hr>({{ routine.date[index] }})&nbsp;&nbsp; {{ item }}&nbsp; - {{ routine.save[index] }}원 절약
-        </li>
-      </ul>
+      <div class="routine-content">
+        <ul>
+          <li v-for="(item, index) in routine.title" :key="index">
+           <hr>({{ routine.date[index] }})&nbsp;&nbsp; {{ item }}&nbsp; - {{ routine.save[index] }}원 절약
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="calendar-section">
+      <Calendar :events="calendarEvents" />
     </div>
   </div>
 </template>
@@ -67,6 +74,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import defaultProfileImage from '@/assets/profile.png'; 
 import profileImage from '@/assets/profile.png'; 
+import Calendar from '@/components/Calendar.vue'; // 달력 컴포넌트 import
 
 const API_URL = 'http://localhost:8080';
 
@@ -84,6 +92,7 @@ const routine = ref({
   save: [],
 });
 
+const calendarEvents = ref([]); // 달력 이벤트 데이터
 const profileImageUrl = ref(defaultProfileImage);
 const profileImageUrl2 = ref(profileImage);
 const userId = ref(null);
@@ -210,7 +219,7 @@ const getCheckedHabitData = async () => {
   try {
     const [countResponse, moneyResponse] = await Promise.all([
       axios.get(`${API_URL}/habits/count/checked?userId=${userId.value}`),
-      axios.get(`${API_URL}/habits/money/checked?userId=${userId.value}`)
+      axios.get(`${API_URL}/habits/money/checked/all?userId=${userId.value}`)
     ]);
 
     user.value.completedRoutines = countResponse.data;
@@ -225,33 +234,39 @@ const getCheckedHabitData = async () => {
 
 const getCheckedHabit = async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/habits/checked/all?userId=${userId.value}`);
+    const response = await axios.get(`${API_URL}/habits/checked/all?userId=${userId.value}`);
     const habits = response.data;
 
+    // 이전 데이터 초기화
     routine.value.date = [];
     routine.value.title = [];
     routine.value.save = [];
+    calendarEvents.value = []; // 달력 이벤트 초기화
 
     habits.forEach(habit => {
       const checkDate = new Date(habit.checkDate);
-      const formattedDate = checkDate.toISOString().split('T')[0];
+      const formattedDate = checkDate.toISOString().split('T')[0]; // YYYY-MM-DD 형식
       routine.value.date.push(formattedDate);
       routine.value.title.push(habit.habitTitle);
       routine.value.save.push(habit.saveAmount);
+
+      // 달력 이벤트 추가 (checkDate 사용)
+      calendarEvents.value.push({
+        date: checkDate, // Date 객체로 추가
+        title: habit.habitTitle,
+        save: habit.saveAmount,
+      });
     });
 
-    console.log('날짜:', routine.value.date);
-    console.log('제목:', routine.value.title);
-    console.log('금액:', routine.value.save);
-
+    console.log('인증한 습관 내역:', routine.value);
+    console.log('달력 이벤트:', calendarEvents.value); // 이벤트 확인
   } catch (error) {
-    console.error('습관 조회 중 오류 발생:', error);
+    console.error('습관 내역 조회 중 오류 발생:', error);
   }
 };
 
 onMounted(getUserIdFromLocal);
 </script>
-
 
 <style scoped>
 .my-page {
@@ -343,19 +358,6 @@ onMounted(getUserIdFromLocal);
   text-align: center;
 }
 
-.modal-content2 {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 500px;
-  text-align: center;
-}
-
-.modal-content2 ul {
-  list-style-type: none; 
-}
-
 #modal-title{
   text-align: center;
   margin-top: 10px;
@@ -366,6 +368,12 @@ onMounted(getUserIdFromLocal);
   align-items: center;
   justify-content: center;
   margin-top: 10px;
+}
+
+.default-profile-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
 }
 
 .modal-profile-image {
@@ -442,4 +450,13 @@ onMounted(getUserIdFromLocal);
 .border-blue {
   border: 4px solid #a0983ccd; 
 }
-</style>/
+
+.routine-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.calendar-section {
+  margin-top: 20px;
+}
+</style>

@@ -1,31 +1,27 @@
 <template>
-  <div class="container my-5">
-    <div class="row">
-      <div id="present-routine" class="col-md-6 mb-4">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title text-center">오늘의 루틴</h3>
-            <ul class="list-group list-group-flush routine-list">
-              <!-- 오늘의 루틴 목록 표시 -->
-              <li v-for="(routine, index) in routinesToday" :key="index" class="list-group-item text-center">
-                {{ routine.routine_name }} <span class="badge bg-primary">{{ routine.category }}</span>
-              </li>
-            </ul>
-          </div>
+  <div id="routine" class="half">
+    <div id="present-routine" class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="card-title text-center">오늘의 루틴</h3>
+          <ul class="list-group list-group-flush routine-list">
+            <li v-for="(routine, index) in routinesToday" :key="index" class="list-group-item text-center">
+              {{ routine.routine_name }} <span class="badge bg-primary">{{ routine.category }}</span>
+            </li>
+          </ul>
         </div>
       </div>
+    </div>
 
-      <div id="past-routine" class="col-md-6 mb-4">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title text-center">과거의 루틴</h3>
-            <ul class="list-group list-group-flush routine-list">
-              <!-- 과거의 루틴 목록 표시 -->
-              <li v-for="(routine, index) in routinesPast" :key="index" class="list-group-item text-center">
-                {{ routine.routine_name }} <span class="badge bg-secondary">{{ routine.category }}</span>
-              </li>
-            </ul>
-          </div>
+    <div  id="past-routine" class="col-md-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="card-title text-center">과거의 루틴</h3>
+          <ul v-if="showPastRoutines" class="list-group list-group-flush routine-list">
+            <li v-for="(routine, index) in routinesPast" :key="index" class="list-group-item text-center">
+              {{ routine.routine_name }} <span class="badge bg-secondary">{{ routine.category }}</span><span></span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -37,7 +33,11 @@ export default {
   name: 'RoutinesList',
   props: {
       routinesToday: Array,
-      routinesPast: Array
+      routinesPast: Array,
+      showPastRoutines: {
+        type: Boolean,
+        default: false 
+    }
   }
 };
 </script>
@@ -55,8 +55,7 @@ export default {
 }
 
 .card-body {
-    max-height: 250px; /* 스크롤이 적용되는 본문의 최대 높이 확대 */
-    /* 스크롤바 활성화 */
+  min-height: 300px;
 }
 
 .list-group-item {
@@ -70,7 +69,7 @@ export default {
 }
 
 .routine-list {
-    max-height: 200px; /* 스크롤바 영역을 더 크게 확대 */
+    max-height: 200px;
     overflow-y: auto;
 }
 </style>
