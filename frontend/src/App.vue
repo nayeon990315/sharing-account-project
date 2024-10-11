@@ -17,7 +17,7 @@ import TodoList from './components/global/TodoList.vue';
 import Header from './components/global/Header.vue';
 
 const isTodoListVisible = ref(false);
-
+ 
 // To-Do List를 토글하는 함수
 const toggleTodoList = () => {
   isTodoListVisible.value = !isTodoListVisible.value;
@@ -35,9 +35,8 @@ const toggleTodoList = () => {
       Check<br />List
       <!-- <i class="bi bi-check2"></i>  -->
     </button>
-
     <!-- To-Do List 컴포넌트 -->
-    <TodoList :show="isTodoListVisible" @close="toggleTodoList" />
+    <TodoList :show="isTodoListVisible" @close="isTodoListVisible = false" />
   </router-view>
 
   <!-- <Footer /> -->
