@@ -50,10 +50,13 @@ emit('close');
 const goToUpload = (habit) => {
 habitStore.selectedMyHabitId = habit.myHabitId
 console.log("selected", habit.myHabitId)
+
 router.push({
     name: 'upload',
     state: { selectedMyHabitId: habit.myHabitId },
-});
+})
+
+emit('close')
 };
 </script>
 
