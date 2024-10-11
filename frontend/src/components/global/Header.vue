@@ -31,7 +31,7 @@
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
                     <li><a class="dropdown-item" href="/routine-community">습관 공유 커뮤니티</a></li>
-                    <li><a class="dropdown-item" href="/post-community">인증 커뮤니티</a></li>
+                    <li><a class="dropdown-item" href="/post-community/explore">인증 커뮤니티</a></li>
                 </ul>
             </div>
         </div>

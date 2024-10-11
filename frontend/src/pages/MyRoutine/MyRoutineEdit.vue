@@ -33,6 +33,9 @@
                                         <span class="task-name mx-3">{{ element.habitTitle }}</span>
                                     </div>
                                     <div class="d-flex bd-highlight">
+                                        <button class="btn" @click="confirmAddCommunity(element)">
+                                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                        </button>
                                         <button class="btn" @click="confirmEdit('waiting', element)">
                                             <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                         </button>
@@ -208,6 +211,31 @@
         </div>
     </div>
 
+    <!-- 공유 확인 모달 -->
+    <div class="modal fade" id="communityModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">루틴 공유하기</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    "{{ addCommunityHabitTitle }}" 루틴을 공유하시겠습니까?
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button class="btn btn-danger" @click="addCommunity" data-bs-dismiss="modal">공유</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </template>
 
@@ -230,11 +258,14 @@ export default {
         // Pinia에서 waitingList와 inProgressList를 가져오기
         const waitingList = computed(() => habitStore.habits.filter(habit => habit.state === '대기'));
         const inProgressList = computed(() => habitStore.habits.filter(habit => habit.state === '진행'));
+        const completedList = computed(() => habitStore.habits.filter(habit => habit.isCheckedToday === true));
 
         const newHabitCategory = ref("");
         const newHabitName = ref("");
         const newHabitSaveAmount = ref("");
         const newHabitCertification = ref("");
+        const addCommunityHabitId = ref("");
+        const addCommunityHabitTitle = ref("");
         const editHabitId = ref("");
         const editMyHabitId = ref("");
         const editHabitName = ref("");
@@ -472,6 +503,47 @@ export default {
             deleteMyHabitId.value = "";
             deleteHabitTitle.value = "";
         };
+        const confirmAddCommunity = async (element) => {
+            const storedUserId = localStorage.getItem('userId');
+            if (element.writerId != storedUserId) {
+                alert('루틴의 작성자가 아닙니다!');
+                return;  // 모달을 띄우지 않음
+            }
+            const response = await axios.get(`http://localhost:8080/routine-community/find/${element.habitId}`)
+            console.log(response.data);
+            if (response.data > 0) {
+                alert('이미 공유된 루틴입니다!')
+                return;
+            }
+            else {
+                addCommunityHabitId.value = element.habitId;
+                addCommunityHabitTitle.value = element.habitTitle;
+                // Bootstrap의 JavaScript API를 사용해 수동으로 모달을 띄움
+                const editModal = new Modal(document.getElementById('communityModal'));
+                editModal.show();
+            }
+        };
+        const addCommunity = async () => {
+            const request = {
+                habitId: addCommunityHabitId.value,
+                habitLikes: 0,
+                participants: 1,
+                complete: 0
+            }
+            try {
+                await axios.post("http://localhost:8080/routine-community/add",
+                    request,{
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                alert("루틴이 성공적으로 공유되었습니다!");
+            } catch (error) {
+                console.error("루틴 공유 중 오류 발생:", error);
+                alert("루틴 공유 중 오류가 발생했습니다.");
+            }
+
+            addCommunityHabitId.value ="";
+            addCommunityHabitTitle.value ="";
+        }
 
         // LifeCycle Hook
         // onMounted(() => {
@@ -483,6 +555,10 @@ export default {
             newHabitName,
             newHabitSaveAmount,
             newHabitCertification,
+            addCommunityHabitId,
+            addCommunityHabitTitle,
+            confirmAddCommunity,
+            addCommunity,
             editHabitCategory,
             editHabitName,
             editMyHabitId,
@@ -495,6 +571,7 @@ export default {
             categories,
             waitingList,
             inProgressList,
+            completedList,
             isAddFormValid,
             isEditFormValid,
             handleDragStart,

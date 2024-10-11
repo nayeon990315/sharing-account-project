@@ -49,6 +49,7 @@ import axios from 'axios';
 import CommentSection from '@/components/PostCommunity/CommentSection.vue';
 import userIcon from '@/assets/icons8-user-64.png'; // 사용자 아이콘 불러오기
 
+
 const existingPosts = ref([]); // 게시물 목록
 const commentCounts = ref({}); // 게시물별 댓글 수 저장
 

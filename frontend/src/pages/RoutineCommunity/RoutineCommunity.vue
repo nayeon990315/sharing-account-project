@@ -400,6 +400,15 @@ function isLiked(communityId) {
 async function addHabitToMyHabit(habitId) {
   const userId = localStorage.getItem('userId');  // 실제 로그인된 사용자 ID로 변경
 
+
+  // 먼저 habitStore에 해당 habitId가 이미 존재하는지 확인
+  const existingHabit = habitStore.habits.find(habit => habit.habitId === habitId);
+  
+  //이미 공유한 루틴인지 확인
+  if (existingHabit) {
+    alert('이미 추가한 루틴입니다!');
+    return; 
+  }
   try {
     // POST 요청에서 params를 통해 userId와 habitId 전달
     await axios.post('http://localhost:8080/routine-community/challenge', null, {
@@ -408,10 +417,14 @@ async function addHabitToMyHabit(habitId) {
         habitId: habitId,  // communityId를 habitId로 전달
       }
     });
-    console.log('습관이 MyHabit에 추가되었습니다.');
+    console.log('내 루틴에 추가되었습니다.');
 
-    const response = await axios.get(`http://localhost:8080/habits/${habitId}`)
-
+    const response = await axios.get(`http://localhost:8080/habits/find`, {
+      params: {
+        habitId: habitId
+      }
+    }
+    )
 
     habitStore.habits.push({
       myHabitId: response.data.myHabitId,
