@@ -188,20 +188,18 @@
     <!-- 좋아요한 루틴이 없을 때 표시할 메시지 -->
     <!-- <p v-else>좋아요한 루틴이 없습니다.</p>  -->
   </div>
+  
   <!-- 페이지네이션 컴포넌트 -->
-   
   <paginate
     :page-count="totalPages"
     :click-handler="changePage"
-    :prev-text="'Prev'"
-    :next-text="'Next'"
+    :prev-text="'<'"
+    :next-text="'>'"
     :container-class="'pagination'"
     :page-class="'page-item'"
     :page-link-class="'page-link'"
-    :prev-link-class="'page-link-prev'"
-    :next-link-class="'page-link-next'"
     :active-class="'active'"
-/>
+  />
 
 
 </template>
@@ -299,8 +297,6 @@ const changePage = (page) => {
 // 루틴 데이터를 가져오는 함수 (검색, 정렬, 필터를 모두 처리)
 const fetchRoutines = async (keyword = '') => {
   try {
-    // const authStore = useAuthStore()
-    // const userId = authStore.userId // Pinia에서 userId 가져오기
     const userId = localStorage.getItem('userId');
 
     const params = {
@@ -337,19 +333,26 @@ const fetchRoutines = async (keyword = '') => {
   }
 };
 
-// 페이지 변경 함수
-// const changePage = (newPage) => {
-//   if (newPage >= 1 && newPage <= totalPages.value) {
-//     currentPage.value = newPage;
-//     fetchRoutines();  // 페이지 변경 시 데이터를 다시 로드
-//   }
-// };
+// 사용자가 좋아요한 루틴을 가져오는 함수
+const fetchLikedRoutines = async () => {
+  const userId = localStorage.getItem('userId');
+  try {
+    const response = await axios.get(`http://localhost:8080/routine-community/liked`, {
+      params: { userId },
+    });
+    likesArray.value = response.data.map((routine) => routine.communityId);
+    console.log('사용자가 좋아요한 루틴 목록:', likesArray.value);
+  } catch (error) {
+    console.error('좋아요한 루틴을 가져오는 중 오류 발생:', error);
+  }
+};
 
 const searchQuery = ref('');  // 검색어를 저장할 변수
 const displayedQuery = ref('');  // 화면에 보여질 검색어 상태
 
 const performSearch = () => {
   console.log('Search button clicked. Keyword:', searchQuery.value);
+  currentPage.value = 1;  // 검색 시 페이지를 1로 초기화
   searchQuery.value = displayedQuery.value;  // 실제 검색어는 유지
   fetchRoutines(searchQuery.value);  // 검색어를 기반으로 데이터를 가져옴
   displayedQuery.value = "";  // 화면에 표시되는 검색어는 비움
@@ -372,6 +375,7 @@ function handleCategoryFilterChange(event) {
 
 // 페이지 로드 시 기본 정렬된 데이터를 가져오기
 onMounted(() => {
+  fetchLikedRoutines();
   fetchRoutines();
 });
 
@@ -381,14 +385,14 @@ async function toggleLike(communityId) {
     (r) => r.communityId === communityId
   );
 
-  // 현재 사용자의 ID (로그인된 사용자 정보를 활용)
-  const userId = localStorage.getItem('userId');   // 실제 로그인된 사용자 ID로 대체
+  // 현재 사용자의 ID
+  const userId = localStorage.getItem('userId'); // 실제 로그인된 사용자 ID로 대체
 
   // 좋아요 취소 (이미 좋아요를 누른 상태)
   if (isLiked(communityId)) {
     routine.habitLikes -= 1;
     likesArray.value = likesArray.value.filter(
-      (like) => like.communityId !== communityId
+      (like) => like !== communityId  // likesArray에서 제거
     );
 
     // 좋아요 취소 API 호출 (DELETE)
@@ -396,7 +400,7 @@ async function toggleLike(communityId) {
       await axios({
         method: 'delete',
         url: 'http://localhost:8080/routine-community/like',
-        data: { userId, communityId }, // `DELETE`에서 `data`를 사용하려면 명시적 형식으로 사용
+        data: { userId, communityId }, // DELETE에서 data를 명시적으로 전달
         headers: {
           'Content-Type': 'application/json', // JSON 형식 명시
         },
@@ -405,12 +409,13 @@ async function toggleLike(communityId) {
     } catch (error) {
       console.error('좋아요 취소 실패', error);
       routine.habitLikes += 1;  // 실패 시 복구
+      likesArray.value.push(communityId);  // 실패 시 다시 추가
     }
   }
   // 좋아요 추가 (아직 좋아요를 누르지 않은 상태)
   else {
     routine.habitLikes += 1;
-    likesArray.value.push({ communityId });
+    likesArray.value.push(communityId);
 
     // 좋아요 추가 API 호출 (POST)
     try {
@@ -421,14 +426,25 @@ async function toggleLike(communityId) {
       console.log('좋아요 추가 성공');
     } catch (error) {
       console.error('좋아요 추가 실패', error);
+      if (error.response && error.response.status === 400) {
+        alert('이미 좋아요한 루틴입니다!');
+      }
       routine.habitLikes -= 1;  // 실패 시 복구
+      likesArray.value = likesArray.value.filter(
+        (like) => like !== communityId  // 실패 시 likesArray에서 제거
+      );
     }
   }
 }
 
+
 // 좋아요 여부 확인 함수
+// function isLiked(communityId) {
+//   return likesArray.value.some((like) => like.communityId === communityId);
+// }
+
 function isLiked(communityId) {
-  return likesArray.value.some((like) => like.communityId === communityId);
+  return likesArray.value.includes(communityId);
 }
 
 async function addHabitToMyHabit(communityId) {
@@ -450,40 +466,10 @@ async function addHabitToMyHabit(communityId) {
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // SHOT PREVIEW
-// const posts = ref([]);
 
 // 선택된 habit_id 저장 변수 (아무것도 클릭하지 않았을 때는 null)
 const selectedHabitId = ref(null);
 
-// // 특정 habit_id에 맞는 post 데이터를 가지고오는 함수
-// async function selectHabit(habitId) {
-//   console.log("Selected habitId:", habitId);  // habitId 값 로그 출력
-
-//   if (selectedHabitId.value === habitId) {
-//     selectedHabitId.value = null;
-//     posts.value = [];  // habit이 해제되면 posts 초기화
-//   } else {
-//     selectedHabitId.value = habitId;
-//     try {
-//       // const response = await axios.get(`http://localhost:8080/routine-community/search-or-sort`, 
-//       const response = await axios.get(`http://localhost:8080/routine-community/posts/${habitId}`);
-//       console.log("resoponseDATA",response.data);
-//       posts.value = response.data.map(post => ({
-//         post_id: post.postId,
-//         habit_id: post.habitId,
-//         imageUrl: post.imageURL
-//       }));
-
-//       //   // **여기서 이미지 URL 로그 확인**
-//       //   posts.value.forEach(post => {
-//       //   console.log("Image URL:", post.imageUrl);  // 이미지 URL 출력
-//       // });
-//       console.log('Fetched posts:', posts.value);
-//     } catch (error) {
-//       console.error('Error fetching posts:', error);
-//     }
-//   }
-// }
 // 루틴 클릭 시 SHOT PREVIEW에 해당 루틴의 사진만 보여줌
 async function selectHabit(habitId) {
   console.log("Selected habitId:", habitId);
@@ -507,41 +493,6 @@ async function selectHabit(habitId) {
   }
 }
 
-
-// 선택된 habit_id에 맞는 포스트 필터링
-// const filteredPosts = computed(() => {
-//   if (selectedHabitId.value === null) {
-//     // 아무 것도 선택되지 않았으면 전체 보여줌
-//     return posts.value; // 전체 포스트를 반환
-//   } else {
-//     const filtered = posts.value.filter((post) => post.habit_id === selectedHabitId.value);
-//     console.log("Filtered posts:", filtered);
-//     return filtered.length > 0 ? filtered : []; // 필터링 결과가 없으면 빈 배열 반환
-//   }
-// });
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-// // 검색어로 루틴 데이터를 가져오는 함수
-// const searchRoutines = async (keyword) => {
-//   try {
-//     console.log('Search API called with:', keyword); // API 호출 전에 로그
-//     const response = await axios.get(`http://localhost:8080/routine-community/search`, {
-//       params: {
-//         keyword: keyword,
-//         categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,
-//         sortType: currentSortType.value || 'recent',
-//       },
-//     });
-    
-//     console.log('Received response from API:', response.data); // API 응답을 로그로 출력
-//     routineCommunityArray.value = response.data; // routineCommunityArray에 데이터 저장
-//     console.log('Updated routineCommunityArray:', routineCommunityArray.value); // 업데이트된 배열 확인
-//   } catch (error) {
-//     console.error('검색 중 오류 발생:', error); // 오류 발생 시 로그 출력
-//   }
-// };
 function logImageUrl(imageUrl) {
   console.log("Image URL:", imageUrl);
 }
@@ -870,31 +821,22 @@ function logImageUrl(imageUrl) {
     margin-bottom: 0; /* 행 간 여백 제거 */
 }
 .pagination {
-        margin:24px;
-    }
-    .pagination li {
-        min-width:32px;
+    margin: 24px;
+    display: flex; /* 페이지네이션을 가로로 배치 */
+    list-style: none; /* 기본 리스트 스타일 제거 */
+    justify-content: center; /* 중앙 정렬 */
+    padding-left: 0; /* 패딩 제거 */
+}
+
+.page-item{
+  min-width:32px;
         padding:2px 6px;
         text-align:center;
         margin:0 3px;
         border-radius: 6px;
         border:1px solid #eee;
         color:#666;
-    }
-    .pagination li:hover {
-        background: #E4DBD6;
-    }
-    .page-item a {
-        color:#666;
-        text-decoration: none;
-    }
-    .pagination li.active {
-        background-color : #E7AA8D;
-        color:#fff;
-    }
-    .pagination li.active a {
-        color:#fff;
-    }
+}
 
 
 </style>
