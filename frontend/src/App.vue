@@ -15,9 +15,11 @@ const routeKey = computed(() => route.fullPath);
 import { ref } from 'vue';
 import TodoList from './components/global/TodoList.vue';
 import Header from './components/global/Header.vue';
+// import isHomePagewhenLogin from '@/pages/HomePagewhenLogin.vue'
 
 const isTodoListVisible = ref(false);
- 
+const isHomePagewhenLogin = computed(() => route.name === 'HomePagewhenLogin');
+
 // To-Do List를 토글하는 함수
 const toggleTodoList = () => {
   isTodoListVisible.value = !isTodoListVisible.value;
@@ -27,7 +29,7 @@ const toggleTodoList = () => {
 <template>
   <!-- <Header :key="headerKey" /> -->
   <!-- <Header :key="headerKey" /> -->
-  <Header />
+  <Header v-if="!isHomePagewhenLogin"/>
   <router-view :key="routeKey"></router-view>
   <router-view>
     <!-- To-Do 아이콘 -->

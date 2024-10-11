@@ -15,12 +15,18 @@ import MyPageEdit from '@/pages/Mypage/MyPageEdit.vue';
 import Register from '@/pages/Login&SignUp/Register.vue';
 import MyPageReward from '@/pages/Mypage/MyPageReward.vue';
 import ExpenseChart from '@/components/ExpenseChart.vue';
+import HomePagewhenLogin from '@/pages/HomePagewhenLogin.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomePage,
+  },
+  {
+    path: '/loginHome',
+    name: 'HomePagewhenLogin',
+    component: HomePagewhenLogin,
   },
   {
     path: '/login',
