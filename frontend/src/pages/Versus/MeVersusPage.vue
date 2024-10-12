@@ -13,10 +13,24 @@
             <button class="btn btn-info mb-2" @click="selectCalender">기간설정</button>
         </div>
 
+        <!-- 승리 결과 -->
+        <div class="winner-result" v-if="showPastRoutines"
+            :class="{ 'today-win': winnerMessage === true, 'past-win': winnerMessage === false, 'draw': winnerMessage === '무승부!' }">
+            <template v-if="winnerMessage === true">
+                <p>오늘 더 많은 절약을 했습니다!</p>
+            </template>
+            <template v-else-if="winnerMessage === false">
+                <p>{{ targetDate }}에 더 많은 절약을 했습니다!</p>
+            </template>
+            <template v-else>
+                <p>{{ winnerMessage }}</p>
+            </template>
+        </div>
+
         <div class="container">
             <div class="left">
                 <div class="profile-section">
-                    <img :src="profileImageUrl" alt="Profile" class="profile-image1" :class="{ 'winner-border': winnerMessage === true }"/>
+                    <img :src="profileImageUrl" alt="Profile" class="profile-image1" :class="{ 'winner-border': winnerMessage === true && showPastRoutines == true}"/>
                 </div>
                 <div class="total">
                     <div class="stat">
@@ -36,7 +50,7 @@
             </div>
             <div class="right">
                 <div class="profile-section">
-                    <img :src="profileImageUrl" alt="Profile" class="profile-image2" :class="{ 'winner-border': winnerMessage === false }"/>
+                    <img :src="profileImageUrl" alt="Profile" class="profile-image2" :class="{ 'winner-border': winnerMessage === false}"/>
                 </div>
                 <div class="total">
                     <div class="stat">
@@ -58,20 +72,6 @@
                     <PastRoutinesList :routinesToday="routinesToday" :routinesPast="routinesPast" :showPastRoutines="showPastRoutines" />
                 </div>
             </div>  
-        </div>
-        
-        <!-- 승리 결과 -->
-        <div class="winner-result"
-            :class="{ 'today-win': winnerMessage === true, 'past-win': winnerMessage === false, 'draw': winnerMessage === '무승부!' }">
-            <template v-if="winnerMessage === true">
-                <p>오늘 더 적은 지출을 했습니다!</p>
-            </template>
-            <template v-else-if="winnerMessage === false">
-                <p>{{ targetDate }}에 더 적은 지출을 했습니다!</p>
-            </template>
-            <template v-else>
-                <p>{{ winnerMessage }}</p>
-            </template>
         </div>
     </div>
 </template>
@@ -240,9 +240,9 @@ const totalPast = computed(() => {
 });
 
 const winnerMessage = computed(() => {
-    if (totalToday.value < totalPast.value) {
+    if (habit.value.savedAmountToday > habit.value.savedAmountPast) {
         return true;
-    } else if (totalToday.value > totalPast.value) {
+    } else if (habit.value.savedAmountToday < habit.value.savedAmountPast) {
         return false;
     } else {
         return '무승부!';
@@ -420,14 +420,6 @@ onMounted(() => {
   text-align: center;
 }
 
-.today-win {
-    color: green;
-}
-
-.past-win {
-    color: red;
-}
-
 .draw {
     color: orange;
 }
@@ -452,6 +444,10 @@ onMounted(() => {
 .winner-border {
     border: 5px solid green; 
     animation: borderPulse 1s infinite;
+}
+
+.winner-result {
+    text-align: center;
 }
 
 @keyframes borderPulse {
