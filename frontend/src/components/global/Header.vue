@@ -68,7 +68,7 @@ const userName = ref('');  // 사용자 이름 상태
 const router = useRouter();
 
 // const hoverMenu = (menu) => {
-//     activeMenu.value = menu;
+//     activeMenu.value = menu;s
 // };
 
 // 드롭다운 메뉴가 호버 시 열리고 닫히도록 설정
