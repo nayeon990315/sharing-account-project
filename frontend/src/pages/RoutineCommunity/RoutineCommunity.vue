@@ -130,8 +130,14 @@
                 />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </a> -->
-              <button @click="addHabitToMyHabit(routine.habitId)" class="challengeButton btn btn-primary">
-                <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
+              <button
+                @click="addHabitToMyHabit(routine.habitId)"
+                class="challengeButton btn btn-primary"
+              >
+                <img
+                  class="challengeIcon"
+                  src="@/assets/icons/together_invertColor.png"
+                />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </button>
             </div>
