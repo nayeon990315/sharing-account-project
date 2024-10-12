@@ -3,26 +3,27 @@
     <div class="honeyBg">
         <Header/>
 
-        <div class="slogan">
-            <div class="image-container">
-                <img v-for="(img, index) in imageCount" :key="index" :src="sloganSrc" />
-            </div>
-        </div>
+        
 
         <div class="dailyBRTN">
             <div class="dailyComment">
-                <h1>오늘의 벌루틴</h1>
+                <h1>오늘의 벌루틴 모으기</h1>
                 <p>오늘의 꿀단지를 가득 채워보세요!</p>
-                <p>오늘, {{ todayActiveRoutinesCount }}개의 루틴에 대한 달성률은 {{ todayPercent }}%입니다.</p>
+
+                <!-- <img class = "boxImg" src="@/assets/images/bee/box.png" > -->
+                <!-- <p>오늘, {{ todayActiveRoutinesCount }}개의 루틴에 대한 달성률은 {{ todayPercent }}%입니다.</p>
                 <p></p>
-                <p>{{ totalSavedToday }}원을 절약할 수 있었어요!</p>
-                <div>
-                    <p>{{formattedDate}}의 벌루틴</p>
+                <p>{{ totalSavedToday }}원을 절약할 수 있었어요!</p> -->
+                <div class="boxDiv">
+                    <!-- <h4>{{formattedDate}}의 벌루틴</h4> -->
+                    <h4>"조금만 더 힘내보세요!"</h4>
                     <ul>
                         <li v-for="(habit, index) in todayActiveRoutines" :key="index">
-                        <span :style="{ textDecoration: habit.isCheckedToday ? 'line-through' : 'none' }">
-                            {{ habit.habitTitle }}
-                        </span>
+                            <img v-if="habit.isCheckedToday" src="@/assets/images/check/true.png" alt="Checked">
+                            <img v-else src="@/assets/images/check/false.png" alt="Unchecked">
+                            <span :style="{ textDecoration: habit.isCheckedToday ? 'line-through' : 'none' }">
+                                {{ habit.habitTitle }}
+                            </span>
                         </li>
                     </ul>
                     
@@ -30,15 +31,19 @@
             </div>
             
             <div class="potBeeContainer">
-                <img class="beeImg" src="@/assets/images/bee/bee1.png">
+                <img class="beeImg" src="@/assets/images/bee/bee_update.png">
                 <img class="pot" :src="getImageForPercent">
+                <div class="potComment">
+                    <p class="date">{{month}}월 {{ day }}일</p>
+                    <!-- <p>{{ todayCheckedRoutinesCount }} / {{ todayActiveRoutinesCount }}개 달성</p> -->
+                    <p class="percent">{{ todayPercent }}% 달성</p>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="monthlyBRTN">
-        <!-- 그라데이션 사각형 -->
-        <img class="gradation" src="@/assets/images/honeycomb/gradation.png">
+        
 
         <!-- 달 선택 -->
         <select name="month" id="month" v-model="selectedMonth" @change="handleMonthChange">
@@ -55,6 +60,8 @@
             <option value="nov">11월</option>
             <option value="dec">12월</option>
         </select>
+        <!-- 그라데이션 사각형 -->
+        <img class="gradation" src="@/assets/images/honeycomb/gradation2.png">
 
         <!-- 벌집 -->
         <!-- <div class="honeycomb" v-show="!isLoading" > -->
@@ -70,17 +77,55 @@
             </div>
         </div>
         <div class="monthlyComment">
-            <h1>이달의 벌루틴</h1>
+            <h1>이달의 벌루틴 모으기</h1>
             <p>이번 한달의 벌집은 얼마나 채워졌을까요?</p>    
         </div>
     </div>
 
-    <div>
-        <h1>많이 찾는 벌루틴에 참여해보세요</h1>
-        <div>
-            
-
+    <div class="slogan">
+            <div class="image-container">
+                <img v-for="(img, index) in imageCount" :key="index" :src="sloganSrc" />
+            </div>
         </div>
+
+    <div class="community">
+        <h1>많이 찾는 벌루틴에 참여해보세요</h1>
+        <div class="top-likes-section">
+    <h3>Top 3 Most Liked Routines</h3>
+    <div class="grid-container">
+      <!-- 좋아요 많은 순서대로 상위 3개 루틴 표시 -->
+        <div class="grid-item" v-for="routine in topLikedRoutines" :key="routine.communityId">
+            <div class="card h-100">
+            <div class="card-body">
+                <div class="subtitle">
+                <span class="type card-subtitle">{{ routine.categoryTitle }}</span>
+                <span class="date card-subtitle">{{ routine.uploadDate }}</span>
+                </div>
+                <h5 class="card-title">{{ routine.habitTitle }}</h5>
+                <div class="card-text">
+                <div class="writer">
+                    <img class="avatar" :src="routine.avatar || defaultAvatar" />
+                    <span class="writerName">{{ routine.nickname }}</span>
+                </div>
+                <div class="likeContainer">
+                    <button class="likeButton" @click="toggleLike(routine.communityId)">
+                    <img class="likeImg" :src="isLiked(routine.communityId) ? fullLike : emptyLike" alt="like" />
+                    </button>
+                    <span class="likeComment">{{ routine.habitLikes }}</span>
+                </div>
+                </div>
+                <div class="challengeContainer">
+                <p class="challengeComment">{{ routine.participants }}명이 루틴에 참여 중</p>
+                <button @click="addHabitToMyHabit(routine.communityId)" class="challengeButton btn btn-primary">
+                    <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
+                    <span class="challengeButtonText">함께 도전하기</span>
+                </button>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
     </div>
 </template>
 
@@ -99,6 +144,8 @@ const isLoading = ref(true); // 로딩 상태 관리
 
 const todayChecked = ref(0);
 const formattedDate = `${new Date().getMonth() + 1}/${new Date().getDate()}`;
+const month = new Date().getMonth() + 1;
+const day = new Date().getDate();
 
 const imageSources = ref([]);
 const getImageForRoutine = (completedRoutines) => {
@@ -130,7 +177,7 @@ onMounted(() => {
 
   const storedUserId = localStorage.getItem('userId');
   if (storedUserId) {
-    fetchRoutineData(year, month, 1)
+    fetchRoutineData(year, month, storedUserId)
 
   }
 
@@ -145,7 +192,7 @@ const fetchRoutineData = async (year, month, userId) => {
         isLoading.value = true; // 로딩 시작
         const response = await axios.get(`http://localhost:8080/habits/habit-checks/${year}/${month}`, {
             params: {
-                userId: 1 // 꼭 바꿔야 됨 !!!!!
+                userId: userId // 꼭 바꿔야 됨 !!!!!
             }
         });
 
@@ -211,7 +258,7 @@ const handleMonthChange = (event) => {
     
     const year = new Date().getFullYear(); // 현재 연도
     const month = monthMapping[selectedMonth]; // 선택된 달에 해당하는 숫자 (1 ~ 12)
-    const userId = 1; // 예시 userId
+    const userId = localStorage.getItem('userId'); 
 
     // 선택된 달과 유저 ID에 맞춰 루틴 데이터 로드
     fetchRoutineData(year, month, userId);
@@ -227,10 +274,12 @@ import { useHabitStore } from '@/stores/habitStore'; // pinia
 
 const habitStore = useHabitStore();
 const todayActiveRoutines = habitStore.activeHabits;
-const todayActiveRoutinesCount = ref(todayActiveRoutines.length); // 개수
+const todayActiveRoutinesCount = ref(todayActiveRoutines.length); // 오늘 진행 중인 루틴 개수
+const todayCheckedRoutinesCount = todayActiveRoutines.filter(habit => habit.isCheckedToday).length; // 오늘 달성한 루틴 개수 
+
 
 const todayPercent = computed(() => {
-  return todayActiveRoutinesCount > 0 ? (todayActiveRoutinesCount.value / todayActiveRoutinesCount) * 100 : 0;
+  return todayActiveRoutinesCount > 0 ? Math.floor((todayCheckedRoutinesCount / todayActiveRoutinesCount) * 100) : 0;
 });
 
 onMounted(async () => {
@@ -250,16 +299,19 @@ const totalSavedToday = computed(() => {
 
 
 
+
+
 // 꿀단지 바꾸기
 // 달성률에 따른 이미지 변경 로직
 const getImageForPercent = computed(() => {
   const percent = todayPercent.value;
 
-  if (percent === 0) return new URL('@/assets/images/pot/0.png', import.meta.url).href;
-  else if (percent > 0 && percent <= 20) return new URL('@/assets/images/pot/20.png', import.meta.url).href;
-  else if (percent > 20 && percent <= 40) return new URL('@/assets/images/pot/40.png', import.meta.url).href;
-  else if (percent > 40 && percent <= 60) return new URL('@/assets/images/pot/60.png', import.meta.url).href;
-  else if (percent > 60 && percent <= 80) return new URL('@/assets/images/pot/80.png', import.meta.url).href;
+  if (percent === 0) return new URL('@/assets/images/pot/0_update2.png', import.meta.url).href;
+  else if (percent > 0 && percent < 30) return new URL('@/assets/images/pot/20~30.png', import.meta.url).href;
+  else if (percent >= 30 && percent < 50) return new URL('@/assets/images/pot/31~49.png', import.meta.url).href;
+  else if (percent >= 50 && percent < 60) return new URL('@/assets/images/pot/50~59.png', import.meta.url).href;
+  else if (percent >= 60 && percent < 70) return new URL('@/assets/images/pot/60~70.png', import.meta.url).href;
+  else if (percent >= 70 && percent < 100) return new URL('@/assets/images/pot/71~99.png', import.meta.url).href;
   else return new URL('@/assets/images/pot/100.png', import.meta.url).href;
 });
 
@@ -271,6 +323,78 @@ const imageCount = 10;
 const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.meta.url).href;
 
 
+
+
+
+// 커뮤니티 섹션
+import fullLike from '@/assets/icons/fullLike.png';
+import emptyLike from '@/assets/icons/emptyLike.png';
+import defaultAvatarImg from '@/assets/images/sample.jpg';
+
+const defaultAvatar = defaultAvatarImg;
+
+const topLikedRoutines = ref([]); // 상위 3개의 루틴 저장
+
+// 컴포넌트 로드 시 좋아요가 많은 루틴 상위 3개를 가져옴
+const fetchTopLikedRoutines = async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/routine-community/top-liked', {
+      params: { limit: 3 }, // 상위 3개의 루틴을 가져옴
+    });
+    topLikedRoutines.value = response.data;
+  } catch (error) {
+    console.error('상위 루틴 가져오기 오류:', error);
+  }
+};
+
+// 좋아요 토글 함수
+async function toggleLike(communityId) {
+  const routine = topLikedRoutines.value.find(r => r.communityId === communityId);
+  const userId = localStorage.getItem('userId');
+  
+  if (isLiked(communityId)) {
+    routine.habitLikes -= 1;
+    topLikedRoutines.value = topLikedRoutines.value.filter(like => like.communityId !== communityId);
+    try {
+      await axios.delete('http://localhost:8080/routine-community/like', {
+        data: { userId, communityId },
+      });
+    } catch (error) {
+      routine.habitLikes += 1;
+      topLikedRoutines.value.push(communityId);
+    }
+  } else {
+    routine.habitLikes += 1;
+    topLikedRoutines.value.push(communityId);
+    try {
+      await axios.post('http://localhost:8080/routine-community/like', { userId, communityId });
+    } catch (error) {
+      routine.habitLikes -= 1;
+      topLikedRoutines.value = topLikedRoutines.value.filter(like => like.communityId !== communityId);
+    }
+  }
+}
+
+// 좋아요 여부 확인
+function isLiked(communityId) {
+  return topLikedRoutines.value.some(like => like.communityId === communityId);
+}
+
+async function addHabitToMyHabit(communityId) {
+  const userId = localStorage.getItem('userId');
+  try {
+    await axios.post('http://localhost:8080/routine-community/challenge', null, {
+      params: { userId, habitId: communityId },
+    });
+    alert('습관이 MyHabit에 추가되었습니다.');
+  } catch (error) {
+    console.error('MyHabit 추가 오류:', error);
+  }
+}
+
+onMounted(() => {
+  fetchTopLikedRoutines(); // 컴포넌트가 로드될 때 상위 3개 루틴을 가져옴
+});
 </script>
 
 
@@ -300,7 +424,8 @@ const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.met
 /* 꿀 배경화면 */
 .honeyBg {
     background: url('@/assets/images/background/background.png');
-    height: 1000px;
+    height: 800px;
+    width: 100%;
     background-size: cover;
 
 
@@ -310,9 +435,9 @@ const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.met
 /* 슬로건 마퀴효과 */
 .slogan {
     width: 100%; 
-    height: 100px; 
+    height: 30px; 
     margin-top: 30px;
-    margin-bottom: 50px;
+    margin-bottom: 0px;
     
     overflow: hidden; /* 넘치는 부분 숨김 */
     position: relative;
@@ -326,7 +451,7 @@ const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.met
 
 .slogan img {
     display: inline-block; 
-    height: 100px;
+    height: 30px;
     object-fit: contain; 
 }
 
@@ -339,10 +464,7 @@ const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.met
     }
 }
 
-/*벌 이미지 */
-.beeImg {
-    width: 150px;
-}
+
 
 /* 데일리 꿀단지 */
 .dailyBRTN {
@@ -351,15 +473,54 @@ const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.met
     justify-items: center;
     /* align-items: center; */
 
-    margin: 10% 8%;
+    margin: 6% 8%;
+    position: relative;
 }
 
 .dailyComment {
     grid-column: 1;
 }
 
-.dailyComment h1, .monthlyBRTN h1 {
+.dailyComment h1, .monthlyBRTN h1, .community h1 {
     font-weight: 900;
+}
+
+/* .boxImg {
+    width: 280px;
+    position: absolute;
+    ;
+} */
+
+.boxDiv {
+    width: 290px;
+    height: 305px;
+    background: url('@/assets/images/bee/box.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    padding-right: 30px;
+}
+
+.boxDiv h4 {
+    font-weight: 700;
+    padding-top: 40px;
+    padding-left: 30px;
+}
+
+.boxDiv ul {
+    margin-top: 30px;
+    margin-left: 20px;
+    list-style: none;
+}
+
+.boxDiv ul li span {
+    padding-left: 5px;
+    padding-right: 30px;
+}
+
+.boxDiv ul li img {
+    width: 15px;
 }
 
 .potBeeContainer {
@@ -367,10 +528,34 @@ const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.met
     display: flex;
     align-items: center;
     gap: -10px;
+    position: relative;
+}
+
+.beeImg {
+    width: 300px;
+    position: absolute; 
+    left: -250px; 
+    top: 60px; 
 }
 
 .pot {
-    width: 350px;
+    width: 320px;
+}
+
+.potComment {
+    position: absolute;
+    top: 280px;
+    left: 102px;
+    text-align: center;
+}
+
+.potComment .date {
+    font-weight: 600;
+}
+.potComment .percent {
+    margin-top: -10px;
+    font-weight: 800;
+    font-size: 20px;
 }
 
 
@@ -438,5 +623,74 @@ const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.met
 
 
 
+
+
+
+
+
+/* 커뮤니티 섹션 */
+.community {
+    margin: 80px 8%;
+}
+
+.top-likes-section {
+  margin: 3% 8%;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  border-radius: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-weight: 900;
+}
+
+.subtitle {
+  display: flex;
+  justify-content: space-between;
+}
+
+.avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.writerName {
+  margin-left: 5px;
+}
+
+.likeContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.likeButton {
+  border: none;
+  background-color: transparent;
+}
+
+.likeImg {
+  width: 22px;
+}
+
+.challengeButton {
+  background-color: rgb(0, 0, 0);
+  border: 0;
+  border-radius: 0;
+}
 </style>
 
