@@ -1,17 +1,15 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from 'node:url';
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-  ],
+  plugins: [vue()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
   },
   server: {
     port: 5173,
@@ -21,12 +19,19 @@ export default defineConfig({
         changeOrigin: true,
         pathRewrite: { '^/api': '' },
       },
+      '/my-today-info': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/my-today-info/, ''),
+      },
+      '/habits': 'http://localhost:8080',
+
       // S3 버킷에 대한 프록시 설정
       "/s3-bucket": {
         target: "https://beeroutine.s3.ap-northeast-2.amazonaws.com",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/s3-bucket/, '')
+        rewrite: (path) => path.replace(/^\/s3-bucket/, ''),
       },
        // 이미지 파일 경로에 대한 프록시 설정
        '/images': {
@@ -34,5 +39,5 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-  }
-})
+  },
+});

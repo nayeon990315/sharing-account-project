@@ -2,6 +2,7 @@
   <div id="my-shots">
     <!-- 카테고리 선택 버튼들 -->
     <div class="category-tags">
+
       <button @click="selectCategory('참여루틴')" :class="{ active: selectedCategory === null }" 
         >
         참여루틴
@@ -45,6 +46,7 @@
       <button @click="selectCategory('other')"
         :class="{ active: Array.isArray(selectedCategory) && selectedCategory.includes('other') }">
         #기타
+
       </button>
     </div>
 
@@ -276,7 +278,10 @@ onMounted(() => {
 
 .routine-header.other {
   background-color: #ffe4b5;
-  /* Light lemon chiffon for other */
+  /* Light lemon chiffon for other/////////////////////////// */
+  width: calc(100% / 3);
+  position: relative;
+  top: -10px;
 }
 
 .month-label,

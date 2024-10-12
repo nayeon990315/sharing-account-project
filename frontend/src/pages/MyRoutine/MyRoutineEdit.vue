@@ -33,8 +33,7 @@
                                         <span class="task-name mx-3">{{ element.habitTitle }}</span>
                                     </div>
                                     <div class="d-flex bd-highlight">
-                                        <button class="btn" data-bs-toggle="modal" data-bs-target="#editModal"
-                                            @click="confirmEdit('waiting', element)">
+                                        <button class="btn" @click="confirmEdit('waiting', element)">
                                             <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                         </button>
                                         <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
@@ -214,6 +213,8 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
+import { Modal } from 'bootstrap';
+import { useHabitStore } from '@/stores/habitStore';
 import draggable from "vuedraggable";
 import axios from 'axios';
 
@@ -224,6 +225,12 @@ export default {
     },
     setup() {
         // 상태
+        const habitStore = useHabitStore();
+
+        // Pinia에서 waitingList와 inProgressList를 가져오기
+        const waitingList = computed(() => habitStore.habits.filter(habit => habit.state === '대기'));
+        const inProgressList = computed(() => habitStore.habits.filter(habit => habit.state === '진행'));
+
         const newHabitCategory = ref("");
         const newHabitName = ref("");
         const newHabitSaveAmount = ref("");
@@ -237,8 +244,8 @@ export default {
         const deleteListType = ref("");
         const deleteMyHabitId = ref("");
         const deleteHabitTitle = ref("");
-        const waitingList = ref([]);
-        const inProgressList = ref([]);
+        // const waitingList = ref([]);
+        // const inProgressList = ref([]);
 
         const categories = ref([
             { value: "식비", label: "식비 (Food)" },
@@ -284,8 +291,8 @@ export default {
                     });
                 } else if (listType === 'inProgress') {
                     // inProgressList에 5개 이상이면 더 이상 추가하지 않음
-                    if (inProgressList.value.length >= 5) {
-                        alert("진행 목록에는 최대 5개의 항목만 추가할 수 있습니다.");
+                    if (inProgressList.value.length >= 6) {
+                        // alert("진행 목록에는 최대 5개의 항목만 추가할 수 있습니다.");
                         return;
                     }
                     else {
@@ -321,34 +328,6 @@ export default {
             };
             return classes[category] || "badge-default";
         };
-
-        const getHabitList = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/habits/', {
-                    params: {
-                        userId: localStorage.getItem("userId")
-                    }
-                });
-                waitingList.value = [];
-                inProgressList.value = [];
-
-                response.data.forEach(habit => {
-                    if (habit.state === "대기") {
-                        waitingList.value.push(habit);
-                    } else if (habit.state === "진행") {
-                        inProgressList.value.push(habit);
-                    }
-                });
-
-                console.log("대기 리스트:", waitingList.value);
-                console.log("진행중 리스트:", inProgressList.value);
-
-            } catch (error) {
-                console.error("습관 가져오기 중 오류 발생:", error);
-                alert("습관 가져오기 중 오류가 발생했습니다.");
-            }
-        };
-
         const addHabit = async () => {
             try {
                 const request = {
@@ -364,19 +343,23 @@ export default {
                     headers: { 'Content-Type': 'application/json' }
                 });
                 if (response.data === 'duplicate') {
-                    alert("이미 같은 이름의 루틴이 있습니다!");
+                    alert("이미 같은 이름의 루틴이 존재합니다!");
                     return;
                 }
                 alert("루틴이 성공적으로 추가되었습니다!");
 
-                waitingList.value.push({
+                habitStore.habits.push({
                     myHabitId: response.data.myHabitId,
                     habitId: response.data.habitId,
+                    writerId: localStorage.getItem("userId"),
                     habitTitle: request.habitTitle,
-                    userId: localStorage.getItem("userId"),
+                    categoryTitle: request.categoryTitle,
                     state: "대기",
-                    categoryTitle: request.categoryTitle
-                });
+                    saveAmount: request.saveAmount,
+                    certification: request.certification,
+                    isCheckedToday: false,
+                    checkDate: null
+                })
 
                 newHabitCategory.value = "";
                 newHabitName.value = "";
@@ -393,7 +376,15 @@ export default {
         const confirmEdit = (type, element) => {
             if (type === 'inProgress') {
                 alert('진행중인 루틴은 수정할 수 없습니다!');
+                return;
             }
+
+            const storedUserId = localStorage.getItem('userId');
+            if (element.writerId != storedUserId) {
+                alert('루틴의 작성자가 아닙니다!');
+                return;  // 모달을 띄우지 않음
+            }
+
             else {
                 editMyHabitId.value = element.myHabitId;
                 editHabitId.value = element.habitId;
@@ -401,6 +392,9 @@ export default {
                 editHabitCategory.value = element.categoryTitle;
                 editHabitSaveAmount.value = element.saveAmount;
                 editHabitCertification.value = element.certification;
+                // Bootstrap의 JavaScript API를 사용해 수동으로 모달을 띄움
+                const editModal = new Modal(document.getElementById('editModal'));
+                editModal.show();
             }
         };
 
@@ -418,6 +412,17 @@ export default {
                 const response = await axios.put("http://localhost:8080/habits/update", request, {
                     headers: { 'Content-Type': 'application/json' }
                 });
+                // Pinia store에서 수정된 루틴 값을 반영 (splice를 이용해 배열 업데이트)
+                const habitIndex = habitStore.habits.findIndex(habit => habit.myHabitId === editHabitId.value);
+                if (habitIndex !== -1) {
+                    habitStore.habits.splice(habitIndex, 1, {
+                        ...habitStore.habits[habitIndex],
+                        habitTitle: editHabitName.value,
+                        categoryTitle: editHabitCategory.value,
+                        saveAmount: editHabitSaveAmount.value,
+                        certification: editHabitCertification.value
+                    });
+                }
                 alert("결과: " + response.data);
             }
             catch (error) {
@@ -455,11 +460,7 @@ export default {
                     params: { myHabitId: deleteMyHabitId.value }
                 });
 
-                if (deleteListType.value === "waiting") {
-                    waitingList.value = waitingList.value.filter(item => item.myHabitId !== deleteMyHabitId.value);
-                } else if (deleteListType.value === "inProgress") {
-                    inProgressList.value = inProgressList.value.filter(item => item.myHabitId !== deleteMyHabitId.value);
-                }
+                habitStore.habits = habitStore.habits.filter(item => item.myHabitId !== deleteMyHabitId.value);
 
                 alert("루틴이 성공적으로 삭제되었습니다!");
             } catch (error) {
@@ -473,9 +474,9 @@ export default {
         };
 
         // LifeCycle Hook
-        onMounted(() => {
-            getHabitList();
-        });
+        // onMounted(() => {
+        //     getHabitList();
+        // });
 
         return {
             newHabitCategory,
@@ -499,7 +500,7 @@ export default {
             handleDragStart,
             onDragEnd,
             getCategoryClass,
-            getHabitList,
+            // getHabitList,
             addHabit,
             updateRoutineState,
             confirmEdit,

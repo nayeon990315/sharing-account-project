@@ -11,19 +11,17 @@
         {{ category === '참여루틴' ? category : `#${category}` }}
       </button>
     </div>
-    <div v-for="post in filteredPosts" :key="post.id" class="post">
+    <div v-for="post in filteredPosts" :key="post.postId" class="post">
       <div class="user-info">
-        <img :src="post.user.icon" alt="User Icon" class="user-icon" />
-        <span>{{ post.user.name }}</span>
+        <img :src="userIcon" alt="User Icon" class="user-icon" />
+        <span>{{ post.userName }}</span>
+        <!-- userId 대신 userName 사용 -->
       </div>
-      <img :src="post.imageUrl" alt="Post Image" class="post-image" />
+      <img :src="post.imageURL" alt="Post Image" class="post-image" />
       <div class="post-details">
-        <p>{{ post.description }}</p>
-        <p>
-          <span v-for="tag in post.hashtags" :key="tag" class="hashtag">{{
-            tag
-          }}</span>
-        </p>
+        <p>{{ post.content }}</p>
+        <p>{{ post.hashtag }}</p>
+        <p>{{ new Date(post.createdAt).toLocaleDateString() }}</p>
         <!-- 댓글 섹션 -->
          <!-- 자식 comment-section import해서 전달받음  -->
         <comment-section v-if="post.showComments" :post-id="post.id" @comment-change="handleCommentChange"></comment-section>
@@ -32,7 +30,7 @@
             <span :class="{ liked: post.isLiked }">{{
               post.isLiked ? '❤️' : '🤍'
             }}</span>
-            {{ post.likes }}
+            {{ post.postLikes }}
           </div>
           <div class="comment-button" @click="toggleComments(post)">
             <span class="comment-icon">💬</span>
@@ -47,10 +45,9 @@
 <script setup>
 import { ref, computed,  onMounted } from 'vue';
 import axios from 'axios';
+
 import CommentSection from '@/components/PostCommunity/CommentSection.vue';
-import userIcon from '@/assets/icons8-user-64.png';
-import postImage1 from '@/assets/POST PNG (1).png';
-import postImage2 from '@/assets/POST PNG (2).png';
+import userIcon from '@/assets/icons8-user-64.png'; // 사용자 아이콘 불러오기
 
 const existingPosts = ref([]); // 게시물 목록
 const commentCounts = ref({}); // 게시물별 댓글 수 저장
@@ -69,45 +66,39 @@ const categoryOptions = [
   '기타',
 ];
 
-const posts = ref([
-  {
-    id: 1,
-    user: {
-      name: 'Money.java',
-      icon: userIcon,
-    },
-    title: '출근 전 모닝커피!',
-    imageUrl: postImage1,
-    description: '스타벅스 대신 저렴한 커피로 마셔봐요.',
-    hashtags: ['#카페/간식', '#커피', '#저렴한커피대신마시기', '#모닝커피'],
-    likes: 131,
-    comments: 27,
-    isLiked: false,
-    showComments: false, // 댓글 표시 여부
-  },
-  {
-    id: 2,
-    user: {
-      name: 'hijava',
-      icon: userIcon,
-    },
-    title: '시원한 강릉 바다',
-    imageUrl: postImage2,
-    description: '여행 갈 때도 커피는 텀블러에 챙기기!',
-    hashtags: ['#카페/간식', '#커피', '#텀블러커피마시기', '#강릉', '#바다'],
-    likes: 17,
-    comments: 2,
-    isLiked: false,
-    showComments: false, // 댓글 표시 여부
-  },
-]);
+const posts = ref([]);
+
+const getAllPost = async () => {
+  try {
+    const response = await axios.get(
+      'http://localhost:8080/post-community/all'
+    );
+    posts.value = response.data.map((post) => ({
+      postId: post.postId,
+      userId: post.userId,
+      userName: post.userName, // 유저 이름 추가
+      habitId: post.habitId,
+      postLikes: post.postLikes,
+      imageURL: post.imageURL,
+      content: post.content,
+      hashtag: post.hashtag,
+      createdAt: post.createdAt,
+      isLiked: false,
+      comments: 0,
+      showComments: false,
+    }));
+  } catch (error) {
+    console.error(error);
+    alert('게시글을 불러오는 중 에러가 발생했습니다.');
+  }
+};
 
 const filteredPosts = computed(() => {
   if (selectedCategory.value === '전체') {
     return posts.value;
   } else {
     return posts.value.filter((post) =>
-      post.hashtags.some((tag) => tag.includes(selectedCategory.value))
+      post.hashtag.includes(selectedCategory.value)
     );
   }
 });
@@ -118,7 +109,7 @@ const handleCategoryFilterChange = (category) => {
 
 const toggleLike = (post) => {
   post.isLiked = !post.isLiked;
-  post.likes += post.isLiked ? 1 : -1;
+  post.postLikes += post.isLiked ? 1 : -1;
 };
 
 const toggleComments = (post) => {
@@ -141,7 +132,6 @@ const fetchCommentCounts = () => {
     });
 };
 
-
 // 자식 컴포넌트에서 댓글 변경 이벤트를 받으면 댓글 수 다시 불러오기
 const handleCommentChange = (postId) => {
   // 특정 게시물에 대한 댓글 수만 가져오기
@@ -157,6 +147,7 @@ const handleCommentChange = (postId) => {
 
 // 컴포넌트가 마운트될 때 호출
 onMounted(() => {
+  getAllPost();
   fetchCommentCounts();
 });
 
@@ -204,6 +195,10 @@ html {
 .post {
   margin-top: 20px;
   padding: 15px;
+  border: 1px solid #ddd; /* 테두리 색상 */
+  border-radius: 10px; /* 둥근 테두리 모양 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+  background-color: #fff; /* 배경 색상 */
 }
 
 .user-info {

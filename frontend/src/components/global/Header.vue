@@ -2,7 +2,7 @@
     <header class="header">
         <!-- Left Menu Buttons -->
         <div class="menu-buttons">
-            <div class="dropdown dropend p-2" id="routineDropdown">
+            <div class="dropdown dropdown p-2" id="routineDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Routine
@@ -13,7 +13,7 @@
                 </ul>
             </div>
 
-            <div class="dropdown dropend p-2" id="moneyDropdown">
+            <div class="dropdown dropdown p-2" id="moneyDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Money
@@ -24,7 +24,7 @@
                 </ul>
             </div>
 
-            <div class="dropdown dropend p-2" id="communityDropdown">
+            <div class="dropdown dropdown p-2" id="communityDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Community
@@ -37,7 +37,7 @@
         </div>
 
         <div class="logo">
-            <h1>K-Bee</h1>
+            <img src="@/assets/images/header/bee_header.png">
         </div>
 
         <div class="auth-buttons">
@@ -91,8 +91,8 @@ onMounted(() => {
 
         dropdownContainer.addEventListener('mouseleave', () => {
             dropdownInstance.hide();
-            dropdownElement.style.backgroundColor = "#FFFFFF";
-            dropdownElement.style.color = "#000000";
+            dropdownElement.style.backgroundColor = "transparent";
+            dropdownElement.style.color = "black";
         });
     });
 
@@ -126,21 +126,26 @@ const logout = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background-color: #F5F5F5;
+    /* padding: 20px; */
+    background-color: #8a8a8a1b;
     width: 100%;
+    position: relative; /* 헤더 내에서 요소를 정렬 */
+}
+
+.logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .menu-buttons {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
 }
 
-.logo {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
+.logo img{
+    width: 35px;
 }
 
 .auth-buttons {
@@ -152,7 +157,7 @@ const logout = () => {
     background-color: transparent;
     border: none;
     font-weight: 400;
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin-left: 20px;
     cursor: pointer;
 }
@@ -166,7 +171,7 @@ const logout = () => {
 /* 호버 시 드롭다운 버튼 스타일 */
 .dropdown-toggle:hover {
     background-color: #000000;
-    color: #FFFFFF;
+    /* color: #FFFFFF; */
 }
 
 .btn:active,
@@ -176,12 +181,12 @@ const logout = () => {
 }
 
 .menu-btn {
-    width: 150px;
+    width: 120px;
     /* 버튼의 너비 고정 */
 }
 
 .menu-item {
-    width: 150px;
+    width: 120px;
     /* 드롭다운 메뉴창 너비 고정 */
 }
 </style>

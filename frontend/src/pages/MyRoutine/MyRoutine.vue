@@ -1,286 +1,300 @@
 <template>
-  <div class="container">
-    <h1>Daily Report</h1>
+    <div class="container">
+        <h1>Daily Report</h1>
 
-    <div class="report-section">
-      <h2>오늘의 소비 내역 리포트</h2>
-      <p>루틴 형성 정도를 한눈에 볼 수 있습니다.</p>
-      <div class="flex-container">
-        <div class="report-graph">리포트 그래프</div>
-        <ul class="category-list">
-          <li>식비</li>
-          <li>카페/간식</li>
-          <li>쇼핑</li>
-          <li>교통</li>
-          <li>문화/여가</li>
-        </ul>
-      </div>
+        <!-- Today's Expense Report Section -->
+        <div class="report-section block">
+            <h2 class="section-title">오늘의 소비 내역 리포트</h2>
+            <p class="description">
+                오늘의 소비를 카테고리별로 확인하고, 달성률을 %로 한눈에 확인하세요.
+            </p>
+            <div class="flex-container expense-container">
+                <div class="report-graph">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+                <ul class="category-list">
+                    <li v-for="(amount, category, index) in expensesByCategory" :key="category">
+                        <span :style="{
+                            backgroundColor: backgroundColors[index],
+                            width: '25px',
+                            height: '15px',
+                            display: 'inline-block',
+                            marginRight: '15px',
+                        }"></span>
+                        <span class="category-text">{{ category }}: {{ formatCurrency(amount) }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Savings & Routine Report Section -->
+        <div class="report-section block">
+            <h2 class="section-title">오늘의 루틴 & 절약 리포트</h2>
+            <p class="description">
+                루틴 달성 정도를 확인하고, 카테고리별 절약 목표와 달성 금액을
+                비교해보세요.
+            </p>
+            <div class="flex-container graph-right">
+                <canvas id="savingsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="block">
+            <h2 class="section-title">Details</h2>
+            <div class="flex-container details-container">
+                <ul class="routine-list">
+                    <li><input type="checkbox" /> 루틴 1</li>
+                    <li><input type="checkbox" /> 루틴 2</li>
+                    <li><input type="checkbox" /> 루틴 3</li>
+                </ul>
+                <div class="details-list">관련 지출 내역 리스트</div>
+            </div>
+        </div>
     </div>
-
-
-    <div class="report-section">
-      <h2>오늘의 루틴 & 절약 리포트</h2>
-      <p>루틴 형성 정도를 한눈에 볼 수 있습니다.</p>
-      <div class="flex-container">
-        <div class="report-graph">리포트 그래프</div>
-        <!-- 추가적인 내용 -->
-      </div>
-    </div>
-
-    <h2>Details</h2>
-    <div class="flex-container">
-      <ul class="routine-list">
-        <li><input type="checkbox" /> 루틴 1</li>
-        <li><input type="checkbox" /> 루틴 2</li>
-        <li><input type="checkbox" /> 루틴 3</li>
-        <!-- 추가 항목 -->
-      </ul>
-      <div class="details-list">관련 지출내역 리스트</div>
-    </div>
-  </div>
 </template>
 
 <script>
 import axios from 'axios';
-
-
+import { useHabitStore } from '@/stores/habitStore';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 export default {
+    setup() {
+        const storedUserId = localStorage.getItem('userId');
+        if (storedUserId) {
+            const habitStore = useHabitStore()
+            habitStore.getHabitsFromServer(storedUserId);
+        }
+    },
     data() {
         return {
-            routinesArray: [
-                {
-                    "routine_name": "아침 식사 준비",
-                    "category": "식비"
-                },
-                {
-                    "routine_name": "저녁 외식",
-                    "category": "식비"
-                },
-                {
-                    "routine_name": "아침 커피 한 잔",
-                    "category": "카페/간식"
-                },
-                {
-                    "routine_name": "오후 간식 타임",
-                    "category": "카페/간식"
-                },
-                {
-                    "routine_name": "월간 필수 아이템 구매",
-                    "category": "온라인쇼핑"
-                },
-                {
-                    "routine_name": "할인 쿠폰으로 쇼핑하기",
-                    "category": "온라인쇼핑"
-                },
-                {
-                    "routine_name": "화장품 꼭 필요한 것만 사기",
-                    "category": "뷰티"
-                }
-            ],
             expenses: [
-                {
-                    transactionDate: '2024-06-26T18:17',
-                    type: '체크카드',
-                    category: '식비',
-                    recipient: '사나이뚝배기화곡역',
-                    withdrawalAmount: 7800,
-                    depositAmount: 0,
-                    balance: 691,
-                },
-                {
-                    transactionDate: '2024-06-26T14:39',
-                    type: '체크카드',
-                    category: '카페/간식',
-                    recipient: '애크로매틱어린이대',
-                    withdrawalAmount: 3500,
-                    depositAmount: 0,
-                    balance: 8491,
-                },
-                {
-                    transactionDate: '2024-06-26T13:10',
-                    type: '체크카드',
-                    category: '카페/간식',
-                    recipient: '매머드커피앱_발트_1',
-                    withdrawalAmount: 2000,
-                    depositAmount: 0,
-                    balance: 11991,
-                },
-                {
-                    transactionDate: '2024-06-26T12:50',
-                    type: '체크카드',
-                    category: '식비',
-                    recipient: '홈플러스익스프레스',
-                    withdrawalAmount: 2590,
-                    depositAmount: 0,
-                    balance: 13991,
-                },
-                {
-                    transactionDate: '2024-06-26T12:00',
-                    type: '체크카드',
-                    category: '식비',
-                    recipient: '맘스터치화곡점',
-                    withdrawalAmount: 9800,
-                    depositAmount: 0,
-                    balance: 16581,
-                },
-                {
-                    transactionDate: '2024-06-26T09:11',
-                    type: '체크카드',
-                    category: '카페/간식',
-                    recipient: '메가엠지씨커피우장',
-                    withdrawalAmount: 2000,
-                    depositAmount: 0,
-                    balance: 26381,
-                },
-                {
-                    transactionDate: '2024-06-26T09:31',
-                    type: '체크카드',
-                    category: '뷰티',
-                    recipient: '블랭크유',
-                    withdrawalAmount: 74000,
-                    depositAmount: 0,
-                    balance: 28381,
-                }
+                { category: '카페/간식', amount: 5000 },
+                { category: '쇼핑', amount: 12000 },
+                { category: '교통', amount: 7000 },
+                { category: '식비', amount: 23000 },
+                { category: '문화/여가', amount: 15000 },
+                { category: '술/유흥', amount: 8000 },
+                { category: '주거/공과금', amount: 20000 },
+                { category: '기타', amount: 5000 },
             ],
-            selectedCategory: null
+            targets: [10000, 15000, 8000, 25000, 18000, 10000, 22000, 6000],
+            chart: null,
+            backgroundColors: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#9966FF',
+                '#4BC0C0',
+                '#FF9F40',
+                '#FFC300',
+                '#DAF7A6',
+            ],
         };
     },
     mounted() {
         this.getUserIdFromToken();
+        this.renderExpenseChart();
+        this.renderSavingsChart();
     },
-
     computed: {
-        // 카테고리별로 그룹화된 배열 생성
-        routineCategories() {
-            return [...new Set(this.routinesArray.map(routine => routine.category))];
-        },
-        // 선택된 카테고리에 따른 지출 내역 필터링 및 날짜순 정렬
-        filteredExpenses() {
-            if (!this.selectedCategory) return [];
-            return this.expenses
-                .filter(expense => expense.category === this.selectedCategory)
-                .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)); // 날짜 내림차순으로 정렬
-        },
-        // 오늘의 지출 총액을 계산
-        totalExpenses() {
-            return this.expenses.reduce((total, expense) => total + expense.withdrawalAmount, 0);
-        },
-        // 카테고리별 지출총액 합
         expensesByCategory() {
             return this.expenses.reduce((acc, expense) => {
-                if (!acc[expense.category]) {
-                    acc[expense.category] = 0;
-                }
-                acc[expense.category] += expense.withdrawalAmount;
+                if (!acc[expense.category]) acc[expense.category] = 0;
+                acc[expense.category] += expense.amount;
                 return acc;
             }, {});
         },
-        // 오늘의 최다 지출에 대한 카테고리, 총지출, 확률을 계산
-        maxExpenseCategory() {
-            const maxCategory = Object.keys(this.expensesByCategory).reduce((max, category) => {
-                return this.expensesByCategory[category] > this.expensesByCategory[max] ? category : max;
-            }, Object.keys(this.expensesByCategory)[0]);
-
-            return {
-                maxCategory,
-                maxAmount: this.expensesByCategory[maxCategory],
-                maxPercentage: this.expensesByCategory[maxCategory] / this.totalExpenses * 100
-            };
-        },
-        // 선택한 카테고리의 총지출, 확률을 계산
-        selectedCategoryExpenses() {
-            const amount = this.expensesByCategory[this.selectedCategory] || 0;
-            const percentage = (amount / this.totalExpenses) * 100;
-            return { amount, percentage };
-        }
     },
-
     methods: {
-        // 카테고리별로 루틴 필터링
-        filteredRoutines(category) {
-            return this.routinesArray.filter(routine => routine.category === category);
-        },
-        // 카테고리 선택
-        selectCategory(category) {
-            this.selectedCategory = category;
-        },
-        // Spring의 Date타입(Timestamp)를 HH:mm로 변환
-        formatTime(date) {
-            const d = new Date(date);
-            return d.toLocaleTimeString('ko-KR', {
-                hour: '2-digit',
-                minute: '2-digit',
-            });
-        },
-        // 숫자를 한국식 원화로 변환
-        formatCurrency(value) {
-            return new Intl.NumberFormat('ko-KR').format(value);
-        },
-        // 확률을 소수점 1번째 자리까지 표시
-        formatPercentage(value) {
-            return value.toFixed(1) + '%';
-        },
-        async getUserIdFromToken() {
-            const jwtToken = this.$cookies.get('jwtToken');
-            if (!jwtToken) {
-                alert('로그인이 필요합니다!');
-                this.$router.push('/login'); // Vue Router를 사용하여 리다이렉트
-                return;
-            }
-            console.log(jwtToken); try {
-                // axios를 이용해 백엔드의 findId 컨트롤러에 JWT 토큰을 전송
-                const response = await axios.post('http://localhost:8080/users/findId', {}, {
-                    headers: {
-                        'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 Authorization 헤더에 추가
-                    }
+            renderExpenseChart() {
+                const ctx = document.getElementById('expenseChart').getContext('2d');
+                if (!ctx) return;
+
+                const categories = Object.keys(this.expensesByCategory);
+                const amounts = Object.values(this.expensesByCategory);
+
+                if (this.chart) this.chart.destroy();
+
+                this.chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categories,
+                        datasets: [
+                            {
+                                data: amounts,
+                                backgroundColor: this.backgroundColors,
+                                hoverOffset: 4,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                        },
+                    },
                 });
-                console.log(response.data)
-                // 응답으로 받은 userId를 localStorage에 저장
-                const userId = response.data.userId;
-                const nickname = response.data.nickname;
-                localStorage.setItem('userId', userId);
-                localStorage.setItem('nickname', nickname);
-                console.log('사용자 ID가 localStorage에 저장되었습니다:', userId);
-            } catch (error) {
-                console.error('사용자 정보를 가져오지 못했습니다:', error);
-                if (error.response && error.response.status === 401) {
-                    alert('인증 오류: 로그인이 필요합니다.');
-                    this.$router.push('/login');
+            },
+            renderSavingsChart() {
+                const ctx = document.getElementById('savingsChart').getContext('2d');
+                if (!ctx) return;
+
+                const categories = Object.keys(this.expensesByCategory);
+                const amounts = Object.values(this.expensesByCategory);
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: categories,
+                        datasets: [
+                            {
+                                label: '목표 금액',
+                                data: this.targets,
+                                backgroundColor: '#cccccc',
+                            },
+                            {
+                                label: '달성 금액',
+                                data: amounts,
+                                backgroundColor: this.backgroundColors,
+                            },
+                        ],
+                    },
+                    options: {
+                        indexAxis: 'y', // Horizontal bar chart
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                        },
+                        scales: {
+                            xAxes: [
+                                {
+                                    ticks: { beginAtZero: true },
+                                },
+                            ],
+                        },
+                    },
+                });
+            },
+            formatCurrency(value) {
+                return new Intl.NumberFormat('ko-KR').format(value) + '원';
+            },
+            async getUserIdFromToken() {
+                const jwtToken = this.$cookies.get('jwtToken');
+                if (!jwtToken) {
+                    alert('로그인이 필요합니다!');
+                    this.$router.push('/login'); // Vue Router를 사용하여 리다이렉트
+                    return;
+                }
+                console.log(jwtToken); try {
+                    // axios를 이용해 백엔드의 findId 컨트롤러에 JWT 토큰을 전송
+                    const response = await axios.post('http://localhost:8080/users/findId', {}, {
+                        headers: {
+                            'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 Authorization 헤더에 추가
+                        }
+                    });
+                    console.log(response.data)
+                    // 응답으로 받은 userId를 localStorage에 저장
+                    const userId = response.data.userId;
+                    const nickname = response.data.nickname;
+                    localStorage.setItem('userId', userId);
+                    localStorage.setItem('nickname', nickname);
+                    console.log('사용자 ID가 localStorage에 저장되었습니다:', userId);
+                } catch (error) {
+                    console.error('사용자 정보를 가져오지 못했습니다:', error);
+                    if (error.response && error.response.status === 401) {
+                        alert('인증 오류: 로그인이 필요합니다.');
+                        this.$router.push('/login');
+                    }
                 }
             }
-        }
-    }
-};
+        },
+}
 </script>
 
 <style scoped>
 .container {
-  max-width: 800px;
-  margin: 0 auto;
+    max-width: 1200px;
+    /* 전체 컨테이너 크기 */
+    margin: 40px auto;
+    /* Daily Report 아래에 공백 추가 */
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
 }
+
+.section-title {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.description {
+    margin-bottom: 20px;
+    color: #666;
+}
+
 .report-section {
-  margin-bottom: 40px;
+    margin-bottom: 50px;
 }
+
 .flex-container {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
 }
-.report-graph,
-.details-list {
-  width: 48%;
-  height: 200px;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+.graph-right {
+    justify-content: flex-end;
+    /* 그래프를 오른쪽으로 이동 */
 }
+
+.details-container {
+    flex-direction: column;
+}
+
+.report-graph {
+    flex-grow: 1;
+}
+
+canvas {
+    max-width: 500px;
+    /* 그래프 크기 증가 */
+    max-height: 500px;
+}
+
 .category-list,
 .routine-list {
-  width: 48%;
-  list-style-type: none; /* 리스트 아이콘 제거 */
+    list-style-type: none;
+    padding-left: 0;
 }
+
+.category-list li,
+.routine-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    /* 항목 간의 간격을 넓힘 */
+}
+
+.category-text {
+    font-size: 1.2em;
+    /* 카테고리 텍스트의 크기를 증가 */
+}
+
 .details-list {
-  background-color: #f9f9f9;
+    margin-top: 20px;
+}
+
+/* 모서리가 둥근 블럭 스타일 */
+.block {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    margin-bottom: 30px;
 }
 </style>
