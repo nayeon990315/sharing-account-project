@@ -37,7 +37,7 @@
               <div class="day-number">{{ day.date.getDate() }}</div>
               <div class="day-events">
                 <div v-if="day.events.length > 0" class="event">
-                  <span class="event-count" @click="openModal(day)">습관 {{ day.events.length }}개 달성</span>
+                  <span class="event-count" @click="openModal(day)">루틴 {{ day.events.length }}개 달성</span>
                 </div>
               </div>
             </div>
@@ -45,11 +45,9 @@
         </div>
       </div>
   
-      <!-- Modal for event details -->
       <div v-if="eventDetailsVisible" class="modal">
         <div class="modal-content">
-          <span class="close" @click="closeModal">&times;</span>
-          <h3>{{ formatDate(hoveredDay.date) }}의 루틴</h3>
+          <h4 id="modal-title">{{ formatDate(hoveredDay.date) }} 달성 루틴</h4><br>
           <table>
             <tbody>
               <tr v-for="(event, index) in selectedDayEvents" :key="index">
@@ -58,6 +56,7 @@
               </tr>
             </tbody>
           </table>
+          <button class="close-btn" @click="closeModal">닫기</button>
         </div>
       </div>
     </div>
@@ -177,9 +176,9 @@
   };
 
   const formatDate = (date) => {
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  return date.toLocaleDateString('ko-KR', options).replace(/\//g, '년 ').replace(/일/, '일');
-};
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('ko-KR', options);
+  };
   
   watch(() => props.events, (newEvents) => {
     createCalendar(newEvents);
@@ -290,11 +289,39 @@
     border-radius: 5px;
     width: 500px; 
   }
-  
-  .close {
-    float: right;
-    font-size: 25px;
-    cursor: pointer;
+
+  #modal-title {
+    text-align: center;
   }
+
+  .modal table {
+    width: 100%;
+    margin-bottom: 30px;
+    border-top: 1px solid #ddd;
+  }
+
+  .modal table td {
+    padding: 12px 15px; 
+    border-bottom: 1px solid #ddd; 
+    color: #333;
+  }
+
+  .modal table tr:nth-child(even) {
+    background-color: #f2f2f2; 
+  }
+
+  .close-btn {
+    padding: 10px;
+    border-radius: 5px;
+    border: 3px solid #6c757d;
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .close-btn:hover {
+    background-color: white;
+    color: #5a6268;
+  }
+  
   </style>
   
