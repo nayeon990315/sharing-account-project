@@ -1,113 +1,115 @@
 <template>
-  <div class="container upload-container">
-    <form @submit.prevent="submitForm" class="border p-4 rounded bg-light">
-      <h3>인증하기</h3>
-      <div class="list-group">
-        <div
-          v-for="habit in filteredHabits"
-          :key="habit.myHabitId"
-          class="list-group-item list-group-item-action"
-          :class="{ 
-            'disabled-list': habit.isCheckedToday, 
-            'active border list-group-item-light': (formData.myHabitId === habit.myHabitId) && !habit.isCheckedToday,
-          }"
-          @click="!habit.isCheckedToday && (formData.myHabitId = habit.myHabitId)"
-        >
-          <div class="d-flex w-100 justify-content-between">
-            <h6 class="mb-1" :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
-              {{ habit.habitTitle }}
-            </h6>  
-          </div>
-          <small :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
-            {{ habit.certification || '자유롭게 작성해주세요.' }}
-          </small>
-        </div>
-      </div>
-      
-      <div class="mb-3">
-        <label for="content" class="form-label">내용</label>
-        <textarea
-          v-model="formData.content"
-          id="content"
-          class="form-control"
-          placeholder="인증 내용을 작성해주세요."
-          required
-        ></textarea>
-      </div>
-
-      <div class="mb-3">
-        <label class="input-label">해시태그</label>
-        <div class="hash-wrapper">
+  <div class="full-screen-container">
+    <div class="container upload-container border rounded">
+      <form @submit.prevent="submitForm" class=" p-4">
+        <h3>인증하기</h3>
+        <div class="list-group">
           <div
-            class="hash-item"
-            v-for="(tag, index) in hashArr"
-            :key="index"
-            @click="removeHashTag(index)"
-            draggable="true"
-            @dragstart="onDragStart(index, $event)"
-            @dragover="onDragOver(index, $event)"
-            @drop="onDrop(index, $event)"
-            @keyup.enter="preventSubmit"
+            v-for="habit in filteredHabits"
+            :key="habit.myHabitId"
+            class="list-group-item list-group-item-action"
+            :class="{ 
+              'disabled-list': habit.isCheckedToday, 
+              'active border list-group-item-light': (formData.myHabitId === habit.myHabitId) && !habit.isCheckedToday,
+            }"
+            @click="!habit.isCheckedToday && (formData.myHabitId = habit.myHabitId)"
           >
-            <p>#{{ tag }}</p>
-            <p class="hash-item-delete">x</p>
+            <div class="d-flex w-100 justify-content-between">
+              <h6 class="mb-1" :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
+                {{ habit.habitTitle }}
+              </h6>  
+            </div>
+            <small :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
+              {{ habit.certification || '자유롭게 작성해주세요.' }}
+            </small>
           </div>
-
-          <input
-            class="form-control input-tag"
-            type="text"
-            id="hashtag"
-            v-model="hashtag"
-            @keyup.space="onKeyUpSpace"
-            @keyup.delete="onKeyUpBackspace"
-            :placeholder="hashArr.length < 5 ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)' : '최대 5개까지만 입력이 가능합니다'"
-            :disabled="hashArr.length >= 5"
-          />
         </div>
-      </div>
+        
+        <div class="mb-3">
+          <label for="content" class="form-label">내용</label>
+          <textarea
+            v-model="formData.content"
+            id="content"
+            class="form-control"
+            placeholder="인증 내용을 작성해주세요."
+            required
+          ></textarea>
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">사진 업로드</label>
-        <div class="d-flex gap-3">
-          <div class="flex-grow-1">
-            <input type="file" @change="handleImageUpload" class="form-control" ref="fileInput"/>
-          </div>
-      
-          <div
-            class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
-            style="width: 150px; height: 150px; cursor: pointer;"
-            @click="triggerFileInput"
-          >
-            <img 
-              v-if="imagePreview" 
-              :src="imagePreview" 
-              alt="Image preview" 
-              class="img-thumbnail ms-auto" 
-              style="width: 100%; height: 100%;" 
-            />
-            
-            <div 
-              v-if="!imagePreview" 
-              class="img-thumbnail ms-auto d-flex justify-content-center align-items-center" 
-              style="width: 150px; height: 150px"
+        <div class="mb-3">
+          <label class="input-label">해시태그</label>
+          <div class="hash-wrapper">
+            <div
+              class="hash-item"
+              v-for="(tag, index) in hashArr"
+              :key="index"
+              @click="removeHashTag(index)"
+              draggable="true"
+              @dragstart="onDragStart(index, $event)"
+              @dragover="onDragOver(index, $event)"
+              @drop="onDrop(index, $event)"
+              @keyup.enter="preventSubmit"
             >
-              <span class="display-4 text-muted">+</span>
+              <p>#{{ tag }}</p>
+              <p class="hash-item-delete">x</p>
+            </div>
+
+            <input
+              class="form-control input-tag"
+              type="text"
+              id="hashtag"
+              v-model="hashtag"
+              @keyup.space="onKeyUpSpace"
+              @keyup.delete="onKeyUpBackspace"
+              :placeholder="hashArr.length < 5 ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)' : '최대 5개까지만 입력이 가능합니다'"
+              :disabled="hashArr.length >= 5"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">사진 업로드</label>
+          <div class="d-flex gap-3">
+            <div class="flex-grow-1">
+              <input type="file" @change="handleImageUpload" class="form-control" ref="fileInput"/>
+            </div>
+        
+            <div
+              class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
+              style="width: 150px; height: 150px; cursor: pointer;"
+              @click="triggerFileInput"
+            >
+              <img 
+                v-if="imagePreview" 
+                :src="imagePreview" 
+                alt="Image preview" 
+                class="img-thumbnail ms-auto" 
+                style="width: 100%; height: 100%;" 
+              />
+              
+              <div 
+                v-if="!imagePreview" 
+                class="img-thumbnail ms-auto d-flex justify-content-center align-items-center" 
+                style="width: 150px; height: 150px"
+              >
+                <span class="display-4 text-muted">+</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="d-flex justify-content-end">
-        <button type="submit" class="btn"
-        :class="{ 
-          'disabled': !isFormValid,
-          'btn-outline-dark': !isFormValid,
-          'btn-dark': isFormValid,
-        }"
-        @keyup.enter="preventSubmit"
-        >POST</button>
-      </div>
-    </form>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn"
+          :class="{ 
+            'disabled': !isFormValid,
+            'btn-outline-dark': !isFormValid,
+            'btn-dark': isFormValid,
+          }"
+          @keyup.enter="preventSubmit"
+          >POST</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -153,7 +155,7 @@ watch(() => habitStore.selectedMyHabitId, (newValue) => {
 });
 
 const findSelectedHabit = computed(() => {
-  return habitStore.habits.filter(habit => habit.myHabitId === formData.myHabitId);
+  return filteredHabits.value.filter(habit => habit.myHabitId === formData.myHabitId);
 });
 
 // 이미지 미리보기 상태 저장
@@ -276,10 +278,20 @@ const onDrop = (index, event) => {
 </script>
 
 <style scoped>
+.full-screen-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  background-color: rgb(255, 255, 255, 0.2)
+}
+
 .upload-container {
   max-width: 600px;
-  margin: auto;
+  margin: 0 auto;
   padding: 20px;
+  background-color: rgb(249, 249, 249);
+  border-radius: 10px;
 }
 img {
   object-fit: cover;
