@@ -26,6 +26,8 @@
       </div>
     </div>
 
+    <Modal :isVisible="isModalVisible" title="프로필 수정 완료" message="프로필 수정이 완료되었습니다." @close="closeAlertModal"/>
+
     <div v-if="isModalOpen" class="modal">
       <div class="modal-content">
         <h4 id="modal-title"><strong>프로필 수정</strong></h4>
@@ -75,6 +77,7 @@ import axios from 'axios';
 import defaultProfileImage from '@/assets/profile.png'; 
 import profileImage from '@/assets/profile.png'; 
 import Calendar from '@/components/Calendar.vue';
+import Modal from '@/components/Modal.vue';
 
 const API_URL = 'http://localhost:8080';
 
@@ -100,15 +103,10 @@ const isModalOpen = ref(false);
 const image = ref(null);
 const tempNickname = ref('');
 const tempProfileImageUrl = ref(null);
+const isModalVisible = ref(false);
 
 const getUserIdFromLocal = async () => {
   userId.value = localStorage.getItem('userId');
-  
-  if (!userId.value) {
-    alert('로그인이 필요합니다.');
-    return;
-  }
-
   await getUserInfo();
   await getCheckedHabitData();    
   await getCheckedHabit();         
@@ -151,11 +149,11 @@ const saveProfile = async (action) => {
 
     localStorage.setItem('nickname', tempNickname.value);
 
-    alert('프로필 수정이 완료되었습니다.');
+    isModalVisible.value = true;
     closeModal();
   } catch (error) {
     console.error('프로필 수정 중 오류가 발생했습니다:', error);
-    alert('프로필 수정 중 오류가 발생했습니다.');
+    isModalVisible.value = true;
   }
 };
 
@@ -265,6 +263,10 @@ const getCheckedHabit = async () => {
   } catch (error) {
     console.error('루틴 내역 조회 중 오류 발생:', error);
   }
+};
+
+const closeAlertModal = () => {
+  isModalVisible.value = false;
 };
 
 onMounted(getUserIdFromLocal);
