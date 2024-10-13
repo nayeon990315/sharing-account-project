@@ -131,7 +131,7 @@
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </a> -->
               <button
-                @click="addHabitToMyHabit(routine.habitId)"
+                @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
                 class="challengeButton btn btn-primary"
               >
                 <img
@@ -403,7 +403,7 @@ function isLiked(communityId) {
   return likesArray.value.includes(communityId);
 }
 
-async function addHabitToMyHabit(habitId) {
+async function addHabitToMyHabit(habitId, communityId) {
   const userId = localStorage.getItem('userId');  // 실제 로그인된 사용자 ID로 변경
 
 
@@ -420,7 +420,8 @@ async function addHabitToMyHabit(habitId) {
     await axios.post('http://localhost:8080/routine-community/challenge', null, {
       params: {
         userId: userId,
-        habitId: habitId,  // communityId를 habitId로 전달
+        habitId: habitId,
+        communityId: communityId  // communityId를 habitId로 전달
       }
     });
     console.log('내 루틴에 추가되었습니다.');

@@ -40,7 +40,7 @@
                                             <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                         </button>
                                         <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                            @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
+                                            @click="confirmRemove('inProgress', element.myHabitId, element.habitId, element.habitTitle)">
                                             <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -70,7 +70,7 @@
                                             <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                         </button>
                                         <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                            @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
+                                            @click="confirmRemove('inProgress', element.myHabitId, element.habitId, element.habitTitle)">
                                             <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -275,6 +275,7 @@ export default {
         const deleteListType = ref("");
         const deleteMyHabitId = ref("");
         const deleteHabitTitle = ref("");
+        const deleteHabitId = ref("");
         // const waitingList = ref([]);
         // const inProgressList = ref([]);
 
@@ -479,16 +480,20 @@ export default {
             }
         };
 
-        const confirmRemove = (listType, myHabitId, habitTitle) => {
+        const confirmRemove = (listType, myHabitId, habitId, habitTitle) => {
             deleteListType.value = listType;
             deleteMyHabitId.value = myHabitId;
+            deleteHabitId.value = habitId;
             deleteHabitTitle.value = habitTitle;
         };
 
         const removeItem = async () => {
             try {
                 await axios.delete("http://localhost:8080/habits/delete", {
-                    params: { myHabitId: deleteMyHabitId.value }
+                    params: { 
+                        myHabitId: deleteMyHabitId.value,
+                        habitId : deleteHabitId.value
+                     }
                 });
 
                 habitStore.habits = habitStore.habits.filter(item => item.myHabitId !== deleteMyHabitId.value);
@@ -568,6 +573,7 @@ export default {
             deleteListType,
             deleteMyHabitId,
             deleteHabitTitle,
+            deleteHabitId,
             categories,
             waitingList,
             inProgressList,

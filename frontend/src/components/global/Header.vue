@@ -52,7 +52,7 @@
             </template>
             <template v-else>
                 <router-link to="/login"><button class="auth-button">Log in</button></router-link>
-                <router-link to="/register"><button class="auth-button">Join</button></router-link>
+                <!-- <router-link to="/register"><button class="auth-button">Join</button></router-link> -->
             </template>
 
         </div>
