@@ -129,11 +129,6 @@ const getUserInfo = async () => {
 // 로컬스토리지에서 사용자 아이디 가져오기
 const getUserIdFromLocal = async () => {
     userId.value = localStorage.getItem('userId');
-
-    if (!userId.value) {
-        alert('로그인이 필요합니다.');
-        return;
-    }
     getUserInfo();
     getRoutinesToday();
     getPastData();
