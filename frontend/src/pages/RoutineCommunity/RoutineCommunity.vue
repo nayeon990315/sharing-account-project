@@ -4,23 +4,31 @@
     <div class="introLeft">
       <h3>Routine Share Community</h3>
       <p>
-        나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로 만들어보세요!
+        나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로
+        만들어보세요!
       </p>
     </div>
 
     <!-- 검색창 -->
     <div class="search-routine">
-      <input type="text" v-model="displayedQuery" placeholder="검색어를 입력하세요" />
+      <input
+        type="text"
+        v-model="displayedQuery"
+        placeholder="검색어를 입력하세요"
+      />
       <button @click="performSearch">검색</button>
     </div>
   </div>
-
 
   <nav class="filter">
     <div class="categoryFilter">
       <form action="#">
         <label for="category_filter">카테고리</label>
-        <select name="category" id="category" @change="handleCategoryFilterChange">
+        <select
+          name="category"
+          id="category"
+          @change="handleCategoryFilterChange"
+        >
           <option value="all">전체</option>
           <option value="food">식비</option>
           <option value="dessert">카페/간식</option>
@@ -39,25 +47,51 @@
           <option value="finance">금융</option>
           <option value="transportation">교통</option>
           <option value="event_fees">경조사/회비</option>
-
         </select>
       </form>
     </div>
 
     <div class="otherFilter">
       <form action="#">
-        <input type="radio" name="otherFilter" value="recent" v-model="currentSortType" @change="handleFilterChange" />
+        <input
+          type="radio"
+          name="otherFilter"
+          value="recent"
+          v-model="currentSortType"
+          @change="handleFilterChange"
+        />
         최신 순
-        <input type="radio" name="otherFilter" value="manyLikes" v-model="currentSortType"
-          @change="handleFilterChange" />
+        <input
+          type="radio"
+          name="otherFilter"
+          value="manyLikes"
+          v-model="currentSortType"
+          @change="handleFilterChange"
+        />
         좋아요 순
-        <input type="radio" name="otherFilter" value="manyParticipants" v-model="currentSortType"
-          @change="handleFilterChange" />
+        <input
+          type="radio"
+          name="otherFilter"
+          value="manyParticipants"
+          v-model="currentSortType"
+          @change="handleFilterChange"
+        />
         참여자 순
-        <input type="radio" name="otherFilter" value="manyCompletions" v-model="currentSortType"
-          @change="handleFilterChange" />
+        <input
+          type="radio"
+          name="otherFilter"
+          value="manyCompletions"
+          v-model="currentSortType"
+          @change="handleFilterChange"
+        />
         달성자 순
-        <input type="radio" name="otherFilter" value="myLikes" v-model="currentSortType" @change="handleFilterChange" />
+        <input
+          type="radio"
+          name="otherFilter"
+          value="myLikes"
+          v-model="currentSortType"
+          @change="handleFilterChange"
+        />
         나의 좋아요
       </form>
     </div>
@@ -69,15 +103,23 @@
     <!-- 인증사진 프리뷰 -->
     <div class="shots">
       <h5>SHOT PREVIEW</h5>
-      <p>벌루틴을 클릭하면, 해당 루틴에 대한 사람들의 꿀샷을 미리볼 수 있어요.</p>
+      <p>
+        벌루틴을 클릭하면, 해당 루틴에 대한 사람들의 꿀샷을 미리볼 수 있어요.
+      </p>
       <!-- 선택한 루틴 제목 표시 -->
       <!-- <h4 v-if="selectedHabitTitle">{{ selectedHabitTitle }}</h4> -->
 
-      <div class="row gx-0 gy-0"> <!-- 열과 행 간의 간격을 없앰 -->
-        <div class="col-6 col-md-6" v-for="shot in previewPosts" :key="shot.post_id"
-          @click="logImageUrl(shot.imageUrl)">
-          <div class="card h-100"> <!-- 카드 높이를 100%로 설정 -->
-            <img :src="shot.imageUrl" class="card-img-top img-fluid">
+      <div class="row gx-0 gy-0">
+        <!-- 열과 행 간의 간격을 없앰 -->
+        <div
+          class="col-6 col-md-6"
+          v-for="shot in previewPosts"
+          :key="shot.post_id"
+          @click="logImageUrl(shot.imageUrl)"
+        >
+          <div class="card h-100">
+            <!-- 카드 높이를 100%로 설정 -->
+            <img :src="shot.imageUrl" class="card-img-top img-fluid" />
           </div>
         </div>
       </div>
@@ -90,7 +132,11 @@
       <!-- 카드 하나 -->
       <!-- v-for 문 !!! -->
       <!-- <div class="col" v-for="routine in routineCommunityArray" :key="routine.community_id"> -->
-      <div class="col" v-for="routine in translatedRoutines" :key="routine.communityId">
+      <div
+        class="col"
+        v-for="routine in translatedRoutines"
+        :key="routine.communityId"
+      >
         <!-- <div class="card h-100 "> -->
         <div class="card h-100" @click="selectHabit(routine.habitId)">
           <div class="card-body">
@@ -111,8 +157,15 @@
                 <span class="writerName">{{ routine.nickname }}</span>
               </div>
               <div class="likeContainer">
-                <button class="likeButton" @click="toggleLike(routine.communityId)">
-                  <img class="likeImg" :src="isLiked(routine.communityId) ? fullLike : emptyLike" alt="like" />
+                <button
+                  class="likeButton"
+                  @click="toggleLike(routine.communityId)"
+                >
+                  <img
+                    class="likeImg"
+                    :src="isLiked(routine.communityId) ? fullLike : emptyLike"
+                    alt="like"
+                  />
                 </button>
                 <span class="likeComment">{{ routine.habitLikes }}</span>
               </div>
@@ -130,10 +183,17 @@
                 />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </a> -->
-              <button @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
-                class="challengeButton btn btn-primary">
-                <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
-                <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
+              <button
+                @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
+                class="challengeButton btn btn-primary"
+              >
+                <img
+                  class="challengeIcon"
+                  src="@/assets/icons/together_invertColor.png"
+                />
+                <span class="challengeButtonText"
+                  >내 루틴에 담고 함께 도전하기</span
+                >
               </button>
             </div>
           </div>
@@ -147,11 +207,23 @@
   </div>
 
   <!-- 페이지네이션 컴포넌트 -->
-  <paginate :page-count="totalPages" :click-handler="changePage" :prev-text="'<'" :next-text="'>'"
-    :container-class="'pagination'" :page-class="'page-item'" :page-link-class="'page-link'" :active-class="'active'" />
+  <paginate
+    :page-count="totalPages"
+    :click-handler="changePage"
+    :prev-text="'<'"
+    :next-text="'>'"
+    :container-class="'pagination'"
+    :page-class="'page-item'"
+    :page-link-class="'page-link'"
+    :active-class="'active'"
+  />
 
-  <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
-
+  <CustomModal
+    :isVisible="isModalVisible"
+    title="알림"
+    :message="modalMessage"
+    @close="closeModal"
+  />
 </template>
 
 <script setup>
@@ -175,8 +247,8 @@ const habitStore = useHabitStore();
 const props = defineProps({
   sortType: {
     type: String,
-    default: 'recent'  // 기본값으로 'recent'를 사용
-  }
+    default: 'recent', // 기본값으로 'recent'를 사용
+  },
 });
 
 // **카테고리명을 한국어로 변환하는 매핑 테이블**  <!-- 추가된 부분 -->
@@ -197,7 +269,7 @@ const categoryTranslations = {
   beauty: '뷰티',
   finance: '금융',
   transportation: '교통',
-  event_fees: '경조사/회비'
+  event_fees: '경조사/회비',
 };
 
 const isModalVisible = ref(false);
@@ -215,15 +287,16 @@ const closeModal = () => {
 // sortType을 상태로 관리할 변수 선언
 const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
 const routineCommunityArray = ref([]);
-const selectedCategory = ref('all');  // 카테고리 필터
+const selectedCategory = ref('all'); // 카테고리 필터
 const likesArray = ref([]);
 
 // 카테고리 타이틀을 한국어로 변환하는 함수
 const translatedRoutines = computed(() => {
-  return routineCommunityArray.value.map(routine => ({
+  return routineCommunityArray.value.map((routine) => ({
     ...routine,
-    categoryTitle: categoryTranslations[routine.categoryTitle] || routine.categoryTitle
-  }));  // map 함수의 닫는 괄호 위치 수정
+    categoryTitle:
+      categoryTranslations[routine.categoryTitle] || routine.categoryTitle,
+  })); // map 함수의 닫는 괄호 위치 수정
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,30 +306,33 @@ const previewPosts = ref([]); // 인증 사진을 저장할 변수
 // 페이지 로드시 SHOT PREVIEW에 1번째, 2번째, 3번째 루틴의 인증 사진을 표시하는 함수
 const fetchPreviewPosts = async (habitIds) => {
   try {
-    const promises = habitIds.map(habitId => axios.get(`http://localhost:8080/routine-community/posts/${habitId}`));
+    const promises = habitIds.map((habitId) =>
+      axios.get(`http://localhost:8080/routine-community/posts/${habitId}`)
+    );
     const responses = await Promise.all(promises);
-    const posts = responses.flatMap(response => response.data);
+    const posts = responses.flatMap((response) => response.data);
 
     // 중복되지 않게 최대 8개의 사진만 저장
-    previewPosts.value = posts.map(post => ({
-      post_id: post.postId,
-      habit_id: post.habitId,
-      imageUrl: post.imageURL ? post.imageURL : post.imageUrl // imageURL을 imageUrl로 일관성 있게 처리
-    })).slice(0, 8);
+    previewPosts.value = posts
+      .map((post) => ({
+        post_id: post.postId,
+        habit_id: post.habitId,
+        imageUrl: post.imageURL ? post.imageURL : post.imageUrl, // imageURL을 imageUrl로 일관성 있게 처리
+      }))
+      .slice(0, 8);
     console.log('Fetched initial preview posts:', previewPosts.value);
   } catch (error) {
     console.error('Error fetching initial preview posts:', error);
   }
 };
 
-
-const currentPage = ref(1);  // 현재 페이지 번호
-const totalPages = ref(1);  // 총 페이지 수
-const pageSize = ref(12);  // 한 페이지에 표시할 데이터 수
+const currentPage = ref(1); // 현재 페이지 번호
+const totalPages = ref(1); // 총 페이지 수
+const pageSize = ref(12); // 한 페이지에 표시할 데이터 수
 
 const changePage = (page) => {
   currentPage.value = page;
-  fetchRoutines();  // 페이지 변경 시 루틴 목록 다시 가져오기
+  fetchRoutines(); // 페이지 변경 시 루틴 목록 다시 가져오기
 };
 
 // 루틴 데이터를 가져오는 함수 (검색, 정렬, 필터를 모두 처리)
@@ -266,23 +342,27 @@ const fetchRoutines = async (keyword = '') => {
 
     const params = {
       keyword: keyword || null,
-      categoryName: selectedCategory.value !== 'all' ? selectedCategory.value : null,
+      categoryName:
+        selectedCategory.value !== 'all' ? selectedCategory.value : null,
       sortType: currentSortType.value || 'recent',
       page: currentPage.value,
       size: pageSize.value,
-    }
+    };
 
     // '나의 좋아요' 필터가 선택된 경우 userId 추가
     if (currentSortType.value === 'myLikes' && userId) {
-      params.userId = userId
+      params.userId = userId;
     }
 
-    const response = await axios.get('http://localhost:8080/routine-community/search-or-sort', {
-      params: params,
-    })
+    const response = await axios.get(
+      'http://localhost:8080/routine-community/search-or-sort',
+      {
+        params: params,
+      }
+    );
 
     routineCommunityArray.value = response.data.communities;
-    totalPages.value = response.data.totalPages;  // 서버에서 총 페이지 수를 받아와서 설정
+    totalPages.value = response.data.totalPages; // 서버에서 총 페이지 수를 받아와서 설정
 
     // 페이지 로드시 첫 번째, 두 번째, 세 번째 루틴의 habit_id를 이용해 인증 사진을 가져옴
     if (routineCommunityArray.value.length >= 3) {
@@ -290,11 +370,11 @@ const fetchRoutines = async (keyword = '') => {
         routineCommunityArray.value[0].habitId,
         routineCommunityArray.value[1].habitId,
         routineCommunityArray.value[2].habitId,
-      ]
-      fetchPreviewPosts(habitIds) // 인증 사진을 미리 가져오는 함수 호출
+      ];
+      fetchPreviewPosts(habitIds); // 인증 사진을 미리 가져오는 함수 호출
     }
   } catch (error) {
-    console.error('루틴 데이터 가져오는 중 오류 발생:', error)
+    console.error('루틴 데이터 가져오는 중 오류 발생:', error);
   }
 };
 
@@ -302,9 +382,12 @@ const fetchRoutines = async (keyword = '') => {
 const fetchLikedRoutines = async () => {
   const userId = localStorage.getItem('userId');
   try {
-    const response = await axios.get(`http://localhost:8080/routine-community/liked`, {
-      params: { userId },
-    });
+    const response = await axios.get(
+      `http://localhost:8080/routine-community/liked`,
+      {
+        params: { userId },
+      }
+    );
     likesArray.value = response.data.map((routine) => routine.communityId);
     console.log('사용자가 좋아요한 루틴 목록:', likesArray.value);
   } catch (error) {
@@ -312,30 +395,29 @@ const fetchLikedRoutines = async () => {
   }
 };
 
-const searchQuery = ref('');  // 검색어를 저장할 변수
-const displayedQuery = ref('');  // 화면에 보여질 검색어 상태
+const searchQuery = ref(''); // 검색어를 저장할 변수
+const displayedQuery = ref(''); // 화면에 보여질 검색어 상태
 
 const performSearch = () => {
   console.log('Search button clicked. Keyword:', searchQuery.value);
-  currentPage.value = 1;  // 검색 시 페이지를 1로 초기화
-  searchQuery.value = displayedQuery.value;  // 실제 검색어는 유지
-  fetchRoutines(searchQuery.value);  // 검색어를 기반으로 데이터를 가져옴
-  displayedQuery.value = "";  // 화면에 표시되는 검색어는 비움
+  currentPage.value = 1; // 검색 시 페이지를 1로 초기화
+  searchQuery.value = displayedQuery.value; // 실제 검색어는 유지
+  fetchRoutines(searchQuery.value); // 검색어를 기반으로 데이터를 가져옴
+  displayedQuery.value = ''; // 화면에 표시되는 검색어는 비움
 };
-
 
 // 필터가 변경되면 sortType 업데이트 후 데이터 요청
 // 오른쪽 필터 (ex: 최신순, 좋아요 순, 참여자 순, 달성자 순, 나의 좋아요)
 function handleFilterChange(event) {
-  currentSortType.value = event.target.value;  // 읽기 전용인 props.sortType 대신 상태로 관리되는 currentSortType을 변경
-  console.log("Selected sortType: ", currentSortType.value);
-  fetchRoutines(searchQuery.value);  // 업데이트된 sortType으로 데이터를 가져옴
+  currentSortType.value = event.target.value; // 읽기 전용인 props.sortType 대신 상태로 관리되는 currentSortType을 변경
+  console.log('Selected sortType: ', currentSortType.value);
+  fetchRoutines(searchQuery.value); // 업데이트된 sortType으로 데이터를 가져옴
 }
 
 // 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
 function handleCategoryFilterChange(event) {
   selectedCategory.value = categoryTranslations[event.target.value];
-  console.log(selectedCategory.value)
+  console.log(selectedCategory.value);
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
 }
 
@@ -358,7 +440,7 @@ async function toggleLike(communityId) {
   if (isLiked(communityId)) {
     routine.habitLikes -= 1;
     likesArray.value = likesArray.value.filter(
-      (like) => like !== communityId  // likesArray에서 제거
+      (like) => like !== communityId // likesArray에서 제거
     );
 
     // 좋아요 취소 API 호출 (DELETE)
@@ -374,8 +456,8 @@ async function toggleLike(communityId) {
       console.log('좋아요 취소 성공');
     } catch (error) {
       console.error('좋아요 취소 실패', error);
-      routine.habitLikes += 1;  // 실패 시 복구
-      likesArray.value.push(communityId);  // 실패 시 다시 추가
+      routine.habitLikes += 1; // 실패 시 복구
+      likesArray.value.push(communityId); // 실패 시 다시 추가
     }
   }
   // 좋아요 추가 (아직 좋아요를 누르지 않은 상태)
@@ -395,14 +477,13 @@ async function toggleLike(communityId) {
       if (error.response && error.response.status === 400) {
         openModal('이미 좋아요한 루틴입니다!');
       }
-      routine.habitLikes -= 1;  // 실패 시 복구
+      routine.habitLikes -= 1; // 실패 시 복구
       likesArray.value = likesArray.value.filter(
-        (like) => like !== communityId  // 실패 시 likesArray에서 제거
+        (like) => like !== communityId // 실패 시 likesArray에서 제거
       );
     }
   }
 }
-
 
 // 좋아요 여부 확인 함수
 // function isLiked(communityId) {
@@ -414,11 +495,12 @@ function isLiked(communityId) {
 }
 
 async function addHabitToMyHabit(habitId, communityId) {
-  const userId = localStorage.getItem('userId');  // 실제 로그인된 사용자 ID로 변경
-
+  const userId = localStorage.getItem('userId'); // 실제 로그인된 사용자 ID로 변경
 
   // 먼저 habitStore에 해당 habitId가 이미 존재하는지 확인
-  const existingHabit = habitStore.habits.find(habit => habit.habitId === habitId);
+  const existingHabit = habitStore.habits.find(
+    (habit) => habit.habitId === habitId
+  );
 
   //이미 공유한 루틴인지 확인
   if (existingHabit) {
@@ -427,36 +509,39 @@ async function addHabitToMyHabit(habitId, communityId) {
   }
   try {
     // POST 요청에서 params를 통해 userId와 habitId 전달
-    await axios.post('http://localhost:8080/routine-community/challenge', null, {
-      params: {
-        userId: userId,
-        habitId: habitId,
-        communityId: communityId  // communityId를 habitId로 전달
+    await axios.post(
+      'http://localhost:8080/routine-community/challenge',
+      null,
+      {
+        params: {
+          userId: userId,
+          habitId: habitId,
+          communityId: communityId, // communityId를 habitId로 전달
+        },
       }
-    });
+    );
     console.log('내 루틴에 추가되었습니다.');
 
     const response = await axios.get(`http://localhost:8080/habits/find`, {
       params: {
-        habitId: habitId
-      }
-    }
-    )
+        habitId: habitId,
+      },
+    });
 
     habitStore.habits.push({
       myHabitId: response.data.myHabitId,
       habitId: response.data.habitId,
-      writerId: localStorage.getItem("userId"),
+      writerId: localStorage.getItem('userId'),
       habitTitle: response.data.habitTitle,
       categoryTitle: response.data.categoryTitle,
-      state: "대기",
+      state: '대기',
       saveAmount: response.data.saveAmount,
       certification: response.data.certification,
       isCheckedToday: false,
-      checkDate: null
+      checkDate: null,
     });
 
-    openModal('MyRoutine에 추가되었습니다.');  // 성공 시 알림 표시
+    openModal('MyRoutine에 추가되었습니다.'); // 성공 시 알림 표시
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
   }
@@ -469,20 +554,24 @@ const selectedHabitId = ref(null);
 
 // 루틴 클릭 시 SHOT PREVIEW에 해당 루틴의 사진만 보여줌
 async function selectHabit(habitId) {
-  console.log("Selected habitId:", habitId);
+  console.log('Selected habitId:', habitId);
 
   if (selectedHabitId.value === habitId) {
     selectedHabitId.value = null;
-    previewPosts.value = [];  // habit이 해제되면 posts 초기화
+    previewPosts.value = []; // habit이 해제되면 posts 초기화
   } else {
     selectedHabitId.value = habitId;
     try {
-      const response = await axios.get(`http://localhost:8080/routine-community/posts/${habitId}`);
-      previewPosts.value = response.data.map(post => ({
-        post_id: post.postId,
-        habit_id: post.habitId,
-        imageUrl: post.imageURL  // 백엔드에서 제공하는 imageURL 필드
-      })).slice(0, 8);
+      const response = await axios.get(
+        `http://localhost:8080/routine-community/posts/${habitId}`
+      );
+      previewPosts.value = response.data
+        .map((post) => ({
+          post_id: post.postId,
+          habit_id: post.habitId,
+          imageUrl: post.imageURL, // 백엔드에서 제공하는 imageURL 필드
+        }))
+        .slice(0, 8);
       console.log('Fetched posts:', previewPosts.value);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -491,9 +580,8 @@ async function selectHabit(habitId) {
 }
 
 function logImageUrl(imageUrl) {
-  console.log("Image URL:", imageUrl);
+  console.log('Image URL:', imageUrl);
 }
-
 </script>
 
 <style scoped>
@@ -505,9 +593,7 @@ function logImageUrl(imageUrl) {
 }
 
 * {
-
-  font-family: "Wanted Sans";
-
+  font-family: 'Wanted Sans';
 }
 
 /* 화면 줄이면 !!*/
@@ -590,17 +676,13 @@ function logImageUrl(imageUrl) {
   /* min-width: 200px; 비었을 때 최소 높이 */
 }
 
-
-
-
-
 /* 1등, 2등, 3등 표시 */
 .cards .col {
   position: relative;
 }
 
 .cards .col:nth-child(1) .card::before {
-  content: "1st";
+  content: '1st';
   position: absolute;
   top: -4px;
   /* 삼각형의 위치를 조금 위로 조정 */
@@ -628,7 +710,7 @@ function logImageUrl(imageUrl) {
 }
 
 .cards .col:nth-child(2) .card::before {
-  content: "2nd";
+  content: '2nd';
   position: absolute;
   top: -4px;
   left: -4px;
@@ -647,7 +729,7 @@ function logImageUrl(imageUrl) {
 }
 
 .cards .col:nth-child(3) .card::before {
-  content: "3rd";
+  content: '3rd';
   position: absolute;
   top: -4px;
   left: -4px;
@@ -666,8 +748,6 @@ function logImageUrl(imageUrl) {
   text-align: left;
 }
 
-
-
 .cards .col:nth-child(1) .card {
   box-shadow: 0 1px 3px #ffd9008a, 0 1px 2px #ffd9008a;
 }
@@ -679,13 +759,6 @@ function logImageUrl(imageUrl) {
 .cards .col:nth-child(3) .card {
   box-shadow: 0 1px 3px #cd8032ab, 0 1px 2px #cd8032ab;
 }
-
-
-
-
-
-
-
 
 /* ************ 인트로 세부 ************ */
 .intro p {
@@ -809,8 +882,6 @@ function logImageUrl(imageUrl) {
   font-size: 14px;
 }
 
-
-
 /* 인증사진 미리보기 */
 .shots {
   grid-column: 1;
@@ -850,7 +921,6 @@ function logImageUrl(imageUrl) {
 
   border-radius: 0;
 }
-
 
 /* 카드를 조밀하게 배치 */
 .shots .row .col {
