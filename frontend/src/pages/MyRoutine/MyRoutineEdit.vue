@@ -66,6 +66,9 @@
                                         <span class="task-name mx-3">{{ element.habitTitle }}</span>
                                     </div>
                                     <div class="d-flex bd-highlight">
+                                        <button class="btn" @click="confirmAddCommunity(element)">
+                                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                        </button>
                                         <button class="btn" @click="confirmEdit('inProgress', element)">
                                             <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                         </button>

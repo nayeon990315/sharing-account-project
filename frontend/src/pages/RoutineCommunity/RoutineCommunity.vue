@@ -325,7 +325,8 @@ function handleFilterChange(event) {
 
 // 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
 function handleCategoryFilterChange(event) {
-  selectedCategory.value = event.target.value;
+  selectedCategory.value = categoryTranslations[event.target.value];
+  console.log(selectedCategory.value)
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
 }
 
