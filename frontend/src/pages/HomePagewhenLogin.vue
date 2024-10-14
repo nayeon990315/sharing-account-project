@@ -124,6 +124,10 @@
       </div>
     </div>
   </div>
+
+  <!-- Alert Modal -->
+  <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
+
 </template>
 
 
@@ -132,6 +136,7 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import Header from '@/components/global/Header.vue';
+import CustomModal from '@/components/Modal.vue';
 
 // 벌집 캘린더
 const daysInMonth = ref(31); // 기본 31일
@@ -143,6 +148,21 @@ const todayChecked = ref(0);
 const formattedDate = `${new Date().getMonth() + 1}/${new Date().getDate()}`;
 const month = new Date().getMonth() + 1;
 const day = new Date().getDate();
+
+const isModalVisible = ref(false);
+const modalMessage = ref('');
+// Modal 표시 함수
+const openModal = (message) => {
+  modalMessage.value = message;
+  isModalVisible.value = true;
+};
+
+// Modal 닫기 함수
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+
 
 const imageSources = ref([]);
 const getImageForRoutine = (completedRoutines) => {
@@ -282,7 +302,7 @@ const todayPercent = computed(() => {
 const getUserIdFromToken = async () => {
   const jwtToken = $cookies.get('jwtToken');
   if (!jwtToken) {
-    alert('로그인이 필요합니다!');
+    openModal('로그인이 필요합니다!');
     this.$router.push('/login'); // Vue Router를 사용하여 리다이렉트
     return;
   }
@@ -303,7 +323,7 @@ const getUserIdFromToken = async () => {
   } catch (error) {
     console.error('사용자 정보를 가져오지 못했습니다:', error);
     if (error.response && error.response.status === 401) {
-      alert('인증 오류: 로그인이 필요합니다.');
+      openModal('인증 오류: 로그인이 필요합니다.');
       this.$router.push('/login');
     }
   }
@@ -417,7 +437,7 @@ async function addHabitToMyHabit(habitId, communityId) {
 
   //이미 공유한 루틴인지 확인
   if (existingHabit) {
-    alert('이미 추가한 루틴입니다!');
+    openModal('이미 추가한 루틴입니다!');
     return;
   }
   try {
@@ -451,7 +471,7 @@ async function addHabitToMyHabit(habitId, communityId) {
       checkDate: null
     });
 
-    alert('습관이 MyHabit에 추가되었습니다.');  // 성공 시 알림 표시
+    openModal('습관이 MyHabit에 추가되었습니다.');  // 성공 시 알림 표시
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
   }

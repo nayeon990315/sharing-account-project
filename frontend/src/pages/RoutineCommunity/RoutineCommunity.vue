@@ -130,14 +130,9 @@
                 />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </a> -->
-              <button
-                @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
-                class="challengeButton btn btn-primary"
-              >
-                <img
-                  class="challengeIcon"
-                  src="@/assets/icons/together_invertColor.png"
-                />
+              <button @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
+                class="challengeButton btn btn-primary">
+                <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </button>
             </div>
@@ -155,6 +150,7 @@
   <paginate :page-count="totalPages" :click-handler="changePage" :prev-text="'<'" :next-text="'>'"
     :container-class="'pagination'" :page-class="'page-item'" :page-link-class="'page-link'" :active-class="'active'" />
 
+  <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
 
 </template>
 
@@ -170,6 +166,7 @@ import foodImg2 from '@/assets/images/food_sample2.jpg';
 import defaultAvatarImg from '@/assets/images/sample.jpg';
 import Paginate from 'vuejs-paginate-next';
 import { useHabitStore } from '@/stores/habitStore';
+import CustomModal from '@/components/Modal.vue';
 
 const defaultAvatar = defaultAvatarImg;
 const habitStore = useHabitStore();
@@ -203,6 +200,18 @@ const categoryTranslations = {
   event_fees: '경조사/회비'
 };
 
+const isModalVisible = ref(false);
+const modalMessage = ref('');
+// Modal 표시 함수
+const openModal = (message) => {
+  modalMessage.value = message;
+  isModalVisible.value = true;
+};
+
+// Modal 닫기 함수
+const closeModal = () => {
+  isModalVisible.value = false;
+};
 // sortType을 상태로 관리할 변수 선언
 const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
 const routineCommunityArray = ref([]);
@@ -384,7 +393,7 @@ async function toggleLike(communityId) {
     } catch (error) {
       console.error('좋아요 추가 실패', error);
       if (error.response && error.response.status === 400) {
-        alert('이미 좋아요한 루틴입니다!');
+        openModal('이미 좋아요한 루틴입니다!');
       }
       routine.habitLikes -= 1;  // 실패 시 복구
       likesArray.value = likesArray.value.filter(
@@ -410,11 +419,11 @@ async function addHabitToMyHabit(habitId, communityId) {
 
   // 먼저 habitStore에 해당 habitId가 이미 존재하는지 확인
   const existingHabit = habitStore.habits.find(habit => habit.habitId === habitId);
-  
+
   //이미 공유한 루틴인지 확인
   if (existingHabit) {
-    alert('이미 추가한 루틴입니다!');
-    return; 
+    openModal('이미 추가한 루틴입니다!');
+    return;
   }
   try {
     // POST 요청에서 params를 통해 userId와 habitId 전달
@@ -447,7 +456,7 @@ async function addHabitToMyHabit(habitId, communityId) {
       checkDate: null
     });
 
-    alert('습관이 MyHabit에 추가되었습니다.');  // 성공 시 알림 표시
+    openModal('MyRoutine에 추가되었습니다.');  // 성공 시 알림 표시
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
   }

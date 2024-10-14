@@ -239,11 +239,15 @@
         </div>
     </div>
 
+    <!-- Alert Modal -->
+    <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue';
+import CustomModal from '@/components/Modal.vue';
 import { Modal } from 'bootstrap';
 import { useHabitStore } from '@/stores/habitStore';
 import draggable from "vuedraggable";
@@ -252,7 +256,8 @@ import axios from 'axios';
 export default {
     name: "TaskManager",
     components: {
-        draggable
+        draggable,
+        CustomModal
     },
     setup() {
         // 상태
@@ -279,9 +284,6 @@ export default {
         const deleteMyHabitId = ref("");
         const deleteHabitTitle = ref("");
         const deleteHabitId = ref("");
-        // const waitingList = ref([]);
-        // const inProgressList = ref([]);
-
         const categories = ref([
             { value: "식비", label: "식비 (Food)" },
             { value: "카페/간식", label: "카페/간식 (Cafe/Snacks)" },
@@ -301,6 +303,22 @@ export default {
             { value: "여행", label: "여행 (Travel)" },
             { value: "경조사/회비", label: "경조사/회비 (Events/Fees)" }
         ]);
+        // const waitingList = ref([]);
+        // const inProgressList = ref([]);
+        const isModalVisible = ref(false);
+        const modalMessage = ref('');
+
+        // Modal 표시 함수
+        const openModal = (message) => {
+            modalMessage.value = message;
+            isModalVisible.value = true;
+        };
+
+        // Modal 닫기 함수
+        const closeModal = () => {
+            isModalVisible.value = false;
+        };
+
 
         // Computed
         const isAddFormValid = computed(() => newHabitCategory.value && newHabitName.value);
@@ -313,7 +331,7 @@ export default {
 
         const checkListLength = () => {
             if (inProgressList.value.length >= 5) {
-                alert("진행 목록에는 최대 5개의 항목만 추가할 수 있습니다.");
+                openModal("진행 목록에는 최대 5개의 항목만 추가할 수 있습니다.");
                 return false; // 이동을 막음
             }
         };
@@ -378,10 +396,12 @@ export default {
                     headers: { 'Content-Type': 'application/json' }
                 });
                 if (response.data === 'duplicate') {
-                    alert("이미 같은 이름의 루틴이 존재합니다!");
+                    // alert("이미 같은 이름의 루틴이 존재합니다!");
+                    openModal("이미 같은 이름의 루틴이 존재합니다!");
                     return;
                 }
-                alert("루틴이 성공적으로 추가되었습니다!");
+                // alert("루틴이 성공적으로 추가되었습니다!");
+                openModal("루틴이 성공적으로 추가되었습니다!");
 
                 habitStore.habits.push({
                     myHabitId: response.data.myHabitId,
@@ -403,20 +423,21 @@ export default {
 
             } catch (error) {
                 console.error("습관 추가 중 오류 발생:", error);
-                alert("습관 추가 중 오류가 발생했습니다.");
-
+                openModal("습관 추가 중 오류가 발생했습니다.");
             }
         };
 
         const confirmEdit = (type, element) => {
             if (type === 'inProgress') {
-                alert('진행중인 루틴은 수정할 수 없습니다!');
+                // alert('진행중인 루틴은 수정할 수 없습니다!');
+                openModal('진행중인 루틴은 수정할 수 없습니다!');
                 return;
             }
 
             const storedUserId = localStorage.getItem('userId');
             if (element.writerId != storedUserId) {
-                alert('루틴의 작성자가 아닙니다!');
+                // alert('루틴의 작성자가 아닙니다!');
+                openModal('루틴의 작성자가 아닙니다!');
                 return;  // 모달을 띄우지 않음
             }
 
@@ -458,7 +479,7 @@ export default {
                         certification: editHabitCertification.value
                     });
                 }
-                alert("결과: " + response.data);
+                openModal("결과: " + response.data);
             }
             catch (error) {
                 console.error("루틴 수정 중 오류 발생:", error);
@@ -475,11 +496,11 @@ export default {
                     params: { userId: userId },
                     headers: { 'Content-Type': 'application/json' }
                 });
-                alert("루틴 상태가 성공적으로 업데이트되었습니다!");
+                openModal("루틴 상태가 성공적으로 업데이트되었습니다!");
 
             } catch (error) {
                 console.error("루틴 상태 업데이트 중 오류 발생:", error);
-                alert("루틴 상태 업데이트 중 오류가 발생했습니다.");
+                openModal("루틴 상태 업데이트 중 오류가 발생했습니다.");
             }
         };
 
@@ -493,18 +514,18 @@ export default {
         const removeItem = async () => {
             try {
                 await axios.delete("http://localhost:8080/habits/delete", {
-                    params: { 
+                    params: {
                         myHabitId: deleteMyHabitId.value,
-                        habitId : deleteHabitId.value
-                     }
+                        habitId: deleteHabitId.value
+                    }
                 });
 
                 habitStore.habits = habitStore.habits.filter(item => item.myHabitId !== deleteMyHabitId.value);
 
-                alert("루틴이 성공적으로 삭제되었습니다!");
+                openModal("루틴이 성공적으로 삭제되었습니다!");
             } catch (error) {
                 console.error("루틴 삭제 중 오류 발생:", error);
-                alert("루틴 삭제 중 오류가 발생했습니다.");
+                openModal("루틴 삭제 중 오류가 발생했습니다.");
             }
 
             deleteListType.value = "";
@@ -514,13 +535,13 @@ export default {
         const confirmAddCommunity = async (element) => {
             const storedUserId = localStorage.getItem('userId');
             if (element.writerId != storedUserId) {
-                alert('루틴의 작성자가 아닙니다!');
+                openModal('루틴의 작성자가 아닙니다!');
                 return;  // 모달을 띄우지 않음
             }
             const response = await axios.get(`http://localhost:8080/routine-community/find/${element.habitId}`)
             console.log(response.data);
             if (response.data > 0) {
-                alert('이미 공유된 루틴입니다!')
+                openModal('이미 공유된 루틴입니다!')
                 return;
             }
             else {
@@ -540,17 +561,17 @@ export default {
             }
             try {
                 await axios.post("http://localhost:8080/routine-community/add",
-                    request,{
+                    request, {
                     headers: { 'Content-Type': 'application/json' }
                 });
-                alert("루틴이 성공적으로 공유되었습니다!");
+                openModal("루틴이 성공적으로 공유되었습니다!");
             } catch (error) {
                 console.error("루틴 공유 중 오류 발생:", error);
-                alert("루틴 공유 중 오류가 발생했습니다.");
+                openModal("루틴 공유 중 오류가 발생했습니다.");
             }
 
-            addCommunityHabitId.value ="";
-            addCommunityHabitTitle.value ="";
+            addCommunityHabitId.value = "";
+            addCommunityHabitTitle.value = "";
         }
 
         // LifeCycle Hook
@@ -594,6 +615,10 @@ export default {
             confirmRemove,
             removeItem,
             checkListLength,
+            openModal,
+            closeModal,
+            isModalVisible,
+            modalMessage
         }
     }
 }
