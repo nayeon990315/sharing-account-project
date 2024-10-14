@@ -52,7 +52,7 @@ watch(
 
         // rewardBefore로 다시 초기화 후 gsap 애니메이션 적용
         tweenedReward.number = newRewardBefore;
-        gsap.to(tweenedReward, { duration: 2.3, number: newRewardAfter });
+        gsap.to(tweenedReward, { duration: 2, number: newRewardAfter });
     },
     { immediate: true }
 );
