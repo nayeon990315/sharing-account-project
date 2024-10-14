@@ -33,6 +33,7 @@ html {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background-color: #F3F3F3;
 }
 
 .content {

@@ -147,7 +147,9 @@
                 />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </a> -->
-              <button @click="addHabitToMyHabit(routine.habitId)" class="challengeButton btn btn-primary">
+
+              <button @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
+                class="challengeButton btn btn-primary">
                 <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </button>
@@ -166,6 +168,7 @@
   <paginate :page-count="totalPages" :click-handler="changePage" :prev-text="'<'" :next-text="'>'"
     :container-class="'pagination'" :page-class="'page-item'" :page-link-class="'page-link'" :active-class="'active'" />
 
+  <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
 
 </template>
 
@@ -177,6 +180,7 @@ import emptyLike from '@/assets/icons/emptyLike.png';
 import defaultAvatarImg from '@/assets/images/sample.jpg';
 import Paginate from 'vuejs-paginate-next';
 import { useHabitStore } from '@/stores/habitStore';
+import CustomModal from '@/components/Modal.vue';
 
 const defaultAvatar = defaultAvatarImg;
 const habitStore = useHabitStore();
@@ -237,6 +241,19 @@ const rightCategories = [
   { value: 'education', label: '교육' }
 ];
 
+
+const isModalVisible = ref(false);
+const modalMessage = ref('');
+// Modal 표시 함수
+const openModal = (message) => {
+  modalMessage.value = message;
+  isModalVisible.value = true;
+};
+
+// Modal 닫기 함수
+const closeModal = () => {
+  isModalVisible.value = false;
+};
 
 // sortType을 상태로 관리할 변수 선언
 const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
@@ -368,9 +385,9 @@ const toggleDropdown = () => {
 
 // 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
 function handleCategoryFilterChange(event) {
+
   console.log('selected category', event)
   selectedCategory.value = event;
-
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
 
  // 드롭다운을 닫기
@@ -442,7 +459,7 @@ async function toggleLike(communityId) {
     } catch (error) {
       console.error('좋아요 추가 실패', error);
       if (error.response && error.response.status === 400) {
-        alert('이미 좋아요한 루틴입니다!');
+        openModal('이미 좋아요한 루틴입니다!');
       }
       routine.habitLikes -= 1;  // 실패 시 복구
       likesArray.value = likesArray.value.filter(
@@ -462,21 +479,35 @@ function isLiked(communityId) {
   return likesArray.value.includes(communityId);
 }
 
-async function addHabitToMyHabit(habitId) {
+async function addHabitToMyHabit(habitId, communityId) {
   const userId = localStorage.getItem('userId');  // 실제 로그인된 사용자 ID로 변경
 
+
+  // 먼저 habitStore에 해당 habitId가 이미 존재하는지 확인
+  const existingHabit = habitStore.habits.find(habit => habit.habitId === habitId);
+
+  //이미 공유한 루틴인지 확인
+  if (existingHabit) {
+    openModal('이미 추가한 루틴입니다!');
+    return;
+  }
   try {
     // POST 요청에서 params를 통해 userId와 habitId 전달
     await axios.post('http://localhost:8080/routine-community/challenge', null, {
       params: {
         userId: userId,
-        habitId: habitId,  // communityId를 habitId로 전달
+        habitId: habitId,
+        communityId: communityId  // communityId를 habitId로 전달
       }
     });
-    console.log('습관이 MyHabit에 추가되었습니다.');
+    console.log('내 루틴에 추가되었습니다.');
 
-    const response = await axios.get(`http://localhost:8080/habits/${habitId}`)
-
+    const response = await axios.get(`http://localhost:8080/habits/find`, {
+      params: {
+        habitId: habitId
+      }
+    }
+    )
 
     habitStore.habits.push({
       myHabitId: response.data.myHabitId,
@@ -491,7 +522,7 @@ async function addHabitToMyHabit(habitId) {
       checkDate: null
     });
 
-    alert('습관이 MyHabit에 추가되었습니다.');  // 성공 시 알림 표시
+    openModal('MyRoutine에 추가되었습니다.');  // 성공 시 알림 표시
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
   }
@@ -733,7 +764,6 @@ function logImageUrl(imageUrl) {
   grid-column: 2;
   /* min-width: 200px; 비었을 때 최소 높이 */
 }
-
 .card-body {
   display: flex;
   flex-direction: column;
@@ -741,8 +771,6 @@ function logImageUrl(imageUrl) {
   flex-grow: 1;
   /* 내용물이 차지하는 공간만큼 높이를 유지 */
 }
-
-
 /* 1등, 2등, 3등 표시 */
 .cards .col {
   display: flex;

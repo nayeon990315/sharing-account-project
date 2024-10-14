@@ -33,11 +33,14 @@
                                         <span class="task-name mx-3">{{ element.habitTitle }}</span>
                                     </div>
                                     <div class="d-flex bd-highlight">
+                                        <button class="btn" @click="confirmAddCommunity(element)">
+                                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                        </button>
                                         <button class="btn" @click="confirmEdit('waiting', element)">
                                             <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                         </button>
                                         <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                            @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
+                                            @click="confirmRemove('inProgress', element.myHabitId, element.habitId, element.habitTitle)">
                                             <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -63,11 +66,14 @@
                                         <span class="task-name mx-3">{{ element.habitTitle }}</span>
                                     </div>
                                     <div class="d-flex bd-highlight">
+                                        <button class="btn" @click="confirmAddCommunity(element)">
+                                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                        </button>
                                         <button class="btn" @click="confirmEdit('inProgress', element)">
                                             <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                         </button>
                                         <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                            @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
+                                            @click="confirmRemove('inProgress', element.myHabitId, element.habitId, element.habitTitle)">
                                             <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                         </button>
                                     </div>
@@ -208,11 +214,40 @@
         </div>
     </div>
 
+    <!-- 공유 확인 모달 -->
+    <div class="modal fade" id="communityModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">루틴 공유하기</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    "{{ addCommunityHabitTitle }}" 루틴을 공유하시겠습니까?
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button class="btn btn-danger" @click="addCommunity" data-bs-dismiss="modal">공유</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue';
+import CustomModal from '@/components/Modal.vue';
 import { Modal } from 'bootstrap';
 import { useHabitStore } from '@/stores/habitStore';
 import draggable from "vuedraggable";
@@ -221,7 +256,8 @@ import axios from 'axios';
 export default {
     name: "TaskManager",
     components: {
-        draggable
+        draggable,
+        CustomModal
     },
     setup() {
         // 상태
@@ -230,11 +266,14 @@ export default {
         // Pinia에서 waitingList와 inProgressList를 가져오기
         const waitingList = computed(() => habitStore.habits.filter(habit => habit.state === '대기'));
         const inProgressList = computed(() => habitStore.habits.filter(habit => habit.state === '진행'));
+        const completedList = computed(() => habitStore.habits.filter(habit => habit.isCheckedToday === true));
 
         const newHabitCategory = ref("");
         const newHabitName = ref("");
         const newHabitSaveAmount = ref("");
         const newHabitCertification = ref("");
+        const addCommunityHabitId = ref("");
+        const addCommunityHabitTitle = ref("");
         const editHabitId = ref("");
         const editMyHabitId = ref("");
         const editHabitName = ref("");
@@ -244,9 +283,7 @@ export default {
         const deleteListType = ref("");
         const deleteMyHabitId = ref("");
         const deleteHabitTitle = ref("");
-        // const waitingList = ref([]);
-        // const inProgressList = ref([]);
-
+        const deleteHabitId = ref("");
         const categories = ref([
             { value: "식비", label: "식비 (Food)" },
             { value: "카페/간식", label: "카페/간식 (Cafe/Snacks)" },
@@ -266,6 +303,22 @@ export default {
             { value: "여행", label: "여행 (Travel)" },
             { value: "경조사/회비", label: "경조사/회비 (Events/Fees)" }
         ]);
+        // const waitingList = ref([]);
+        // const inProgressList = ref([]);
+        const isModalVisible = ref(false);
+        const modalMessage = ref('');
+
+        // Modal 표시 함수
+        const openModal = (message) => {
+            modalMessage.value = message;
+            isModalVisible.value = true;
+        };
+
+        // Modal 닫기 함수
+        const closeModal = () => {
+            isModalVisible.value = false;
+        };
+
 
         // Computed
         const isAddFormValid = computed(() => newHabitCategory.value && newHabitName.value);
@@ -278,7 +331,7 @@ export default {
 
         const checkListLength = () => {
             if (inProgressList.value.length >= 5) {
-                alert("진행 목록에는 최대 5개의 항목만 추가할 수 있습니다.");
+                openModal("진행 목록에는 최대 5개의 항목만 추가할 수 있습니다.");
                 return false; // 이동을 막음
             }
         };
@@ -343,10 +396,12 @@ export default {
                     headers: { 'Content-Type': 'application/json' }
                 });
                 if (response.data === 'duplicate') {
-                    alert("이미 같은 이름의 루틴이 존재합니다!");
+                    // alert("이미 같은 이름의 루틴이 존재합니다!");
+                    openModal("이미 같은 이름의 루틴이 존재합니다!");
                     return;
                 }
-                alert("루틴이 성공적으로 추가되었습니다!");
+                // alert("루틴이 성공적으로 추가되었습니다!");
+                openModal("루틴이 성공적으로 추가되었습니다!");
 
                 habitStore.habits.push({
                     myHabitId: response.data.myHabitId,
@@ -368,20 +423,21 @@ export default {
 
             } catch (error) {
                 console.error("습관 추가 중 오류 발생:", error);
-                alert("습관 추가 중 오류가 발생했습니다.");
-
+                openModal("습관 추가 중 오류가 발생했습니다.");
             }
         };
 
         const confirmEdit = (type, element) => {
             if (type === 'inProgress') {
-                alert('진행중인 루틴은 수정할 수 없습니다!');
+                // alert('진행중인 루틴은 수정할 수 없습니다!');
+                openModal('진행중인 루틴은 수정할 수 없습니다!');
                 return;
             }
 
             const storedUserId = localStorage.getItem('userId');
             if (element.writerId != storedUserId) {
-                alert('루틴의 작성자가 아닙니다!');
+                // alert('루틴의 작성자가 아닙니다!');
+                openModal('루틴의 작성자가 아닙니다!');
                 return;  // 모달을 띄우지 않음
             }
 
@@ -423,7 +479,7 @@ export default {
                         certification: editHabitCertification.value
                     });
                 }
-                alert("결과: " + response.data);
+                openModal("결과: " + response.data);
             }
             catch (error) {
                 console.error("루틴 수정 중 오류 발생:", error);
@@ -440,38 +496,83 @@ export default {
                     params: { userId: userId },
                     headers: { 'Content-Type': 'application/json' }
                 });
-                alert("루틴 상태가 성공적으로 업데이트되었습니다!");
+                openModal("루틴 상태가 성공적으로 업데이트되었습니다!");
 
             } catch (error) {
                 console.error("루틴 상태 업데이트 중 오류 발생:", error);
-                alert("루틴 상태 업데이트 중 오류가 발생했습니다.");
+                openModal("루틴 상태 업데이트 중 오류가 발생했습니다.");
             }
         };
 
-        const confirmRemove = (listType, myHabitId, habitTitle) => {
+        const confirmRemove = (listType, myHabitId, habitId, habitTitle) => {
             deleteListType.value = listType;
             deleteMyHabitId.value = myHabitId;
+            deleteHabitId.value = habitId;
             deleteHabitTitle.value = habitTitle;
         };
 
         const removeItem = async () => {
             try {
                 await axios.delete("http://localhost:8080/habits/delete", {
-                    params: { myHabitId: deleteMyHabitId.value }
+                    params: {
+                        myHabitId: deleteMyHabitId.value,
+                        habitId: deleteHabitId.value
+                    }
                 });
 
                 habitStore.habits = habitStore.habits.filter(item => item.myHabitId !== deleteMyHabitId.value);
 
-                alert("루틴이 성공적으로 삭제되었습니다!");
+                openModal("루틴이 성공적으로 삭제되었습니다!");
             } catch (error) {
                 console.error("루틴 삭제 중 오류 발생:", error);
-                alert("루틴 삭제 중 오류가 발생했습니다.");
+                openModal("루틴 삭제 중 오류가 발생했습니다.");
             }
 
             deleteListType.value = "";
             deleteMyHabitId.value = "";
             deleteHabitTitle.value = "";
         };
+        const confirmAddCommunity = async (element) => {
+            const storedUserId = localStorage.getItem('userId');
+            if (element.writerId != storedUserId) {
+                openModal('루틴의 작성자가 아닙니다!');
+                return;  // 모달을 띄우지 않음
+            }
+            const response = await axios.get(`http://localhost:8080/routine-community/find/${element.habitId}`)
+            console.log(response.data);
+            if (response.data > 0) {
+                openModal('이미 공유된 루틴입니다!')
+                return;
+            }
+            else {
+                addCommunityHabitId.value = element.habitId;
+                addCommunityHabitTitle.value = element.habitTitle;
+                // Bootstrap의 JavaScript API를 사용해 수동으로 모달을 띄움
+                const editModal = new Modal(document.getElementById('communityModal'));
+                editModal.show();
+            }
+        };
+        const addCommunity = async () => {
+            const request = {
+                habitId: addCommunityHabitId.value,
+                habitLikes: 0,
+                participants: 1,
+                complete: 0
+            }
+            try {
+                await axios.post("http://localhost:8080/routine-community/add",
+                    request, {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                openModal("루틴이 성공적으로 공유되었습니다!");
+            } catch (error) {
+                console.error("루틴 공유 중 오류 발생:", error);
+                openModal("루틴 공유 중 오류가 발생했습니다.");
+            }
+
+            addCommunityHabitId.value = "";
+            addCommunityHabitTitle.value = "";
+        }
 
         // LifeCycle Hook
         // onMounted(() => {
@@ -483,6 +584,10 @@ export default {
             newHabitName,
             newHabitSaveAmount,
             newHabitCertification,
+            addCommunityHabitId,
+            addCommunityHabitTitle,
+            confirmAddCommunity,
+            addCommunity,
             editHabitCategory,
             editHabitName,
             editMyHabitId,
@@ -492,9 +597,11 @@ export default {
             deleteListType,
             deleteMyHabitId,
             deleteHabitTitle,
+            deleteHabitId,
             categories,
             waitingList,
             inProgressList,
+            completedList,
             isAddFormValid,
             isEditFormValid,
             handleDragStart,
@@ -508,6 +615,10 @@ export default {
             confirmRemove,
             removeItem,
             checkListLength,
+            openModal,
+            closeModal,
+            isModalVisible,
+            modalMessage
         }
     }
 }

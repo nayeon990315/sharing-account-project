@@ -12,12 +12,17 @@
         </div>
       </div>
     </div>
+  </div>
 
+  <div id="routine" class="half">
     <div  id="past-routine" class="col-md-6 mb-4">
       <div class="card shadow-sm">
         <div class="card-body">
           <h3 class="card-title text-center">과거의 루틴</h3>
           <ul v-if="showPastRoutines" class="list-group list-group-flush routine-list">
+            <li v-if="routinesPast.length === 0" class="list-group-item text-center">
+              과거에 달성한 루틴이 없습니다.
+            </li>
             <li v-for="(routine, index) in routinesPast" :key="index" class="list-group-item text-center">
               {{ routine.routine_name }} <span class="badge bg-secondary">{{ routine.category }}</span><span></span>
             </li>

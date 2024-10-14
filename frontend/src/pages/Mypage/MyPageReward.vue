@@ -26,6 +26,8 @@
       </div>
     </div>
 
+    <CustomModal :isVisible="isModalVisible" title="프로필 수정 완료" message="프로필 수정이 완료되었습니다." @close="closeAlertModal"/>
+
     <div v-if="isModalOpen" class="modal">
       <div class="modal-content">
         <h4 id="modal-title"><strong>프로필 수정</strong></h4>
@@ -74,7 +76,8 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import defaultProfileImage from '@/assets/profile.png'; 
 import profileImage from '@/assets/profile.png'; 
-import Calendar from '@/components/Calendar.vue'; // 달력 컴포넌트 import
+import Calendar from '@/components/Calendar.vue';
+import CustomModal from '@/components/Modal.vue';
 
 const API_URL = 'http://localhost:8080';
 
@@ -92,7 +95,7 @@ const routine = ref({
   save: [],
 });
 
-const calendarEvents = ref([]); // 달력 이벤트 데이터
+const calendarEvents = ref([]); 
 const profileImageUrl = ref(defaultProfileImage);
 const profileImageUrl2 = ref(profileImage);
 const userId = ref(null);
@@ -100,15 +103,10 @@ const isModalOpen = ref(false);
 const image = ref(null);
 const tempNickname = ref('');
 const tempProfileImageUrl = ref(null);
+const isModalVisible = ref(false);
 
 const getUserIdFromLocal = async () => {
   userId.value = localStorage.getItem('userId');
-  
-  if (!userId.value) {
-    alert('로그인이 필요합니다.');
-    return;
-  }
-
   await getUserInfo();
   await getCheckedHabitData();    
   await getCheckedHabit();         
@@ -149,11 +147,13 @@ const saveProfile = async (action) => {
     await Promise.all([updateNicknamePromise, updateImagePromise]);
     await getUserInfo(); 
 
-    alert('프로필 수정이 완료되었습니다.');
+    localStorage.setItem('nickname', tempNickname.value);
+
+    isModalVisible.value = true;
     closeModal();
   } catch (error) {
     console.error('프로필 수정 중 오류가 발생했습니다:', error);
-    alert('프로필 수정 중 오류가 발생했습니다.');
+    isModalVisible.value = true;
   }
 };
 
@@ -225,10 +225,10 @@ const getCheckedHabitData = async () => {
     user.value.completedRoutines = countResponse.data;
     user.value.savedAmount = moneyResponse.data;
 
-    console.log('인증한 습관 개수:', user.value.completedRoutines);
-    console.log('인증한 습관 금액:', user.value.savedAmount);
+    console.log('인증한 루틴 개수:', user.value.completedRoutines);
+    console.log('인증한 루틴 금액:', user.value.savedAmount);
   } catch (error) {
-    console.error('습관 데이터 조회 중 오류 발생:', error);
+    console.error('루틴 데이터 조회 중 오류 발생:', error);
   }
 };
 
@@ -241,28 +241,32 @@ const getCheckedHabit = async () => {
     routine.value.date = [];
     routine.value.title = [];
     routine.value.save = [];
-    calendarEvents.value = []; // 달력 이벤트 초기화
+    calendarEvents.value = []; 
 
     habits.forEach(habit => {
       const checkDate = new Date(habit.checkDate);
-      const formattedDate = checkDate.toISOString().split('T')[0]; // YYYY-MM-DD 형식
+      const formattedDate = checkDate.toISOString().split('T')[0];
       routine.value.date.push(formattedDate);
       routine.value.title.push(habit.habitTitle);
       routine.value.save.push(habit.saveAmount);
 
-      // 달력 이벤트 추가 (checkDate 사용)
+
       calendarEvents.value.push({
-        date: checkDate, // Date 객체로 추가
+        date: checkDate, 
         title: habit.habitTitle,
         save: habit.saveAmount,
       });
     });
 
-    console.log('인증한 습관 내역:', routine.value);
-    console.log('달력 이벤트:', calendarEvents.value); // 이벤트 확인
+    console.log('인증한 루틴 내역:', routine.value);
+    console.log('달력 이벤트:', calendarEvents.value); 
   } catch (error) {
-    console.error('습관 내역 조회 중 오류 발생:', error);
+    console.error('루틴 내역 조회 중 오류 발생:', error);
   }
+};
+
+const closeAlertModal = () => {
+  isModalVisible.value = false;
 };
 
 onMounted(getUserIdFromLocal);

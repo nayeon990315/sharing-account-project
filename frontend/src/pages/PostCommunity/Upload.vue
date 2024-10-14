@@ -1,120 +1,89 @@
 <template>
-  <div class="container upload-container">
-    <form @submit.prevent="submitForm" class="border p-4 rounded bg-light">
-      <h3>인증하기</h3>
-      <div class="list-group">
-        <div
-          v-for="habit in filteredHabits"
-          :key="habit.myHabitId"
-          class="list-group-item list-group-item-action"
-          :class="{ 
-            'disabled-list': habit.isCheckedToday, 
-            'active border list-group-item-light': (formData.myHabitId === habit.myHabitId) && !habit.isCheckedToday,
-          }"
-          @click="!habit.isCheckedToday && (formData.myHabitId = habit.myHabitId)"
-        >
-          <div class="d-flex w-100 justify-content-between">
-            <h6 class="mb-1" :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
-              {{ habit.habitTitle }}
-            </h6>  
+  <div class="full-screen-container">
+    <div class="container upload-container border rounded">
+      <form @submit.prevent="submitForm" class=" p-4">
+        <h3>인증하기</h3>
+        <div class="list-group">
+          <div v-for="habit in filteredHabits" :key="habit.myHabitId" class="list-group-item list-group-item-action"
+            :class="{
+              'disabled-list': habit.isCheckedToday,
+              'active border list-group-item-light': (formData.myHabitId === habit.myHabitId) && !habit.isCheckedToday,
+            }" @click="!habit.isCheckedToday && (formData.myHabitId = habit.myHabitId)">
+            <div class="d-flex w-100 justify-content-between">
+              <h6 class="mb-1" :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
+                {{ habit.habitTitle }}
+              </h6>
+            </div>
+            <small :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
+              {{ habit.certification || '자유롭게 작성해주세요.' }}
+            </small>
           </div>
-          <small :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
-            {{ habit.certification || '자유롭게 작성해주세요.' }}
-          </small>
         </div>
-      </div>
-      
-      <div class="mb-3">
-        <label for="content" class="form-label">내용</label>
-        <textarea
-          v-model="formData.content"
-          id="content"
-          class="form-control"
-          placeholder="인증 내용을 작성해주세요."
-          required
-        ></textarea>
-      </div>
 
-      <div class="mb-3">
-        <label class="input-label">해시태그</label>
-        <div class="hash-wrapper">
-          <div
-            class="hash-item"
-            v-for="(tag, index) in hashArr"
-            :key="index"
-            @click="removeHashTag(index)"
-            draggable="true"
-            @dragstart="onDragStart(index, $event)"
-            @dragover="onDragOver(index, $event)"
-            @drop="onDrop(index, $event)"
-            @keyup.enter="preventSubmit"
-          >
-            <p>#{{ tag }}</p>
-            <p class="hash-item-delete">x</p>
-          </div>
-
-          <input
-            class="form-control input-tag"
-            type="text"
-            id="hashtag"
-            v-model="hashtag"
-            @keyup.space="onKeyUpSpace"
-            @keyup.delete="onKeyUpBackspace"
-            :placeholder="hashArr.length < 5 ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)' : '최대 5개까지만 입력이 가능합니다'"
-            :disabled="hashArr.length >= 5"
-          />
+        <div class="mb-3">
+          <label for="content" class="form-label">내용</label>
+          <textarea v-model="formData.content" id="content" class="form-control" placeholder="인증 내용을 작성해주세요."
+            required></textarea>
         </div>
-      </div>
 
-      <div class="mb-3">
-        <label class="form-label">사진 업로드</label>
-        <div class="d-flex gap-3">
-          <div class="flex-grow-1">
-            <input type="file" @change="handleImageUpload" class="form-control" ref="fileInput"/>
+        <div class="mb-3">
+          <label class="input-label">해시태그</label>
+          <div class="hash-wrapper">
+            <div class="hash-item" v-for="(tag, index) in hashArr" :key="index" @click="removeHashTag(index)"
+              draggable="true" @dragstart="onDragStart(index, $event)" @dragover="onDragOver(index, $event)"
+              @drop="onDrop(index, $event)" @keyup.enter="preventSubmit">
+              <p>#{{ tag }}</p>
+              <p class="hash-item-delete">x</p>
+            </div>
+
+            <input class="form-control input-tag" type="text" id="hashtag" v-model="hashtag" @keyup.space="onKeyUpSpace"
+              @keyup.delete="onKeyUpBackspace"
+              :placeholder="hashArr.length < 5 ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)' : '최대 5개까지만 입력이 가능합니다'"
+              :disabled="hashArr.length >= 5" />
           </div>
-      
-          <div
-            class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
-            style="width: 150px; height: 150px; cursor: pointer;"
-            @click="triggerFileInput"
-          >
-            <img 
-              v-if="imagePreview" 
-              :src="imagePreview" 
-              alt="Image preview" 
-              class="img-thumbnail ms-auto" 
-              style="width: 100%; height: 100%;" 
-            />
-            
-            <div 
-              v-if="!imagePreview" 
-              class="img-thumbnail ms-auto d-flex justify-content-center align-items-center" 
-              style="width: 150px; height: 150px"
-            >
-              <span class="display-4 text-muted">+</span>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">사진 업로드</label>
+          <div class="d-flex gap-3">
+            <div class="flex-grow-1">
+              <input type="file" @change="handleImageUpload" class="form-control" ref="fileInput" />
+            </div>
+
+            <div class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
+              style="width: 150px; height: 150px; cursor: pointer;" @click="triggerFileInput">
+              <img v-if="imagePreview" :src="imagePreview" alt="Image preview" class="img-thumbnail ms-auto"
+                style="width: 100%; height: 100%;" />
+
+              <div v-if="!imagePreview" class="img-thumbnail ms-auto d-flex justify-content-center align-items-center"
+                style="width: 150px; height: 150px">
+                <span class="display-4 text-muted">+</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="d-flex justify-content-end">
-        <button type="submit" class="btn"
-        :class="{ 
-          'disabled': !isFormValid,
-          'btn-outline-dark': !isFormValid,
-          'btn-dark': isFormValid,
-        }"
-        @keyup.enter="preventSubmit"
-        >POST</button>
-      </div>
-    </form>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn" :class="{
+            'disabled': !isFormValid,
+            'btn-outline-dark': !isFormValid,
+            'btn-dark': isFormValid,
+          }" @keyup.enter="preventSubmit">POST</button>
+        </div>
+      </form>
+    </div>
   </div>
+  <!-- Alert Modal -->
+  <RewardModal :isVisible="isModalVisible" title="알림" :message="modalMessage" :rewardBefore="originalReward"
+  :rewardAfter="calculatedReward"
+    @close="closeModal" />
 </template>
 
 <script setup>
 import { computed, reactive, ref, onMounted, watch } from 'vue';
 import { useHabitStore } from '@/stores/habitStore';
 import axios from 'axios';
+import RewardModal from '@/components/RewardModal.vue';
 
 // 로컬 스토리지에서 userId 가져오기
 onMounted(() => {
@@ -126,6 +95,24 @@ onMounted(() => {
   formData.habitId = findSelectedHabit.value[0].habitId;
   console.log('writerId: ', findSelectedHabit.value[0].writerId)
 });
+const isModalVisible = ref(false);
+const modalMessage = ref('');
+const originalReward = ref(0);
+const calculatedReward = ref(0);
+const userReward = ref(0);
+
+// Modal 표시 함수
+const openModal = (message, rewardBefore, rewardPlus) => {
+  modalMessage.value = message;
+  isModalVisible.value = true;
+  originalReward.value = rewardBefore
+  calculatedReward.value = rewardBefore + rewardPlus;
+};
+
+// Modal 닫기 함수
+const closeModal = () => {
+  isModalVisible.value = false;
+};
 
 const hashtag = ref(''); // 현재 입력 중인 태그
 const hashArr = ref([]); // 태그 배열
@@ -153,7 +140,7 @@ watch(() => habitStore.selectedMyHabitId, (newValue) => {
 });
 
 const findSelectedHabit = computed(() => {
-  return habitStore.habits.filter(habit => habit.myHabitId === formData.myHabitId);
+  return filteredHabits.value.filter(habit => habit.myHabitId === formData.myHabitId);
 });
 
 // 이미지 미리보기 상태 저장
@@ -192,14 +179,39 @@ const submitForm = async () => {
     console.error('Error submitting form');
     return;
   }
-  
+
   try {
     const response = await axios.post('http://localhost:8080/post-community/add', data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
     if (response.status === 200) {
-      alert('Post created successfully!');
+      console.log(response.data);
+      const targetHabit = habitStore.habits.filter(item => item.habitId === formData.habitId)[0];
+
+      const userResponse = await axios.get("http://localhost:8080/users/mypage", {
+        params: { userId: localStorage.getItem('userId') },
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      userReward.value = userResponse.data.reward;
+      console.log(userReward);
+      let message;
+      if (response.data == 10) {
+        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!'
+        openModal(message, userReward.value, response.data);
+      }
+      else if (response.data == 20) {
+        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!' + '추가로 4일 연속 인증으로 10꿀을 더 얻었습니다.'
+        openModal(message, userReward.value, response.data);
+      }
+      else if (response.data == 30) {
+        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!' + '추가로 7일 연속 인증으로 20꿀을 더 얻었습니다.'
+        openModal(message, userReward.value, response.data);
+      }
+
+      
+      // alert('Post created successfully!');
       await habitStore.getHabitsFromServer(formData.userId);
     }
   } catch (error) {
@@ -217,8 +229,8 @@ const triggerFileInput = () => {
 const isFormValid = computed(() => {
   return !(
     formData.content.trim() === '' ||
-    hashArr.value.length === 0     ||
-    formData.image === null        ||
+    hashArr.value.length === 0 ||
+    formData.image === null ||
     findSelectedHabit.value[0].isCheckedToday
   );
 });
@@ -276,36 +288,54 @@ const onDrop = (index, event) => {
 </script>
 
 <style scoped>
+.full-screen-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  background-color: rgb(255, 255, 255, 0.2)
+}
+
 .upload-container {
   max-width: 600px;
-  margin: auto;
+  margin: 0 auto;
   padding: 20px;
+  background-color: rgb(249, 249, 249);
+  border-radius: 10px;
 }
+
 img {
   object-fit: cover;
 }
+
 .form-control {
   border-radius: 8px;
 }
+
 .btn-success {
   background-color: #42b983;
 }
+
 .disabled-list {
   pointer-events: none;
   opacity: 0.6;
   background-color: #eeefe9;
 }
+
 .list-group-item-custom {
   background-color: blue;
   color: gray;
 }
+
 .text-small-custom {
   color: white;
 }
+
 .hash-wrapper {
   display: flex;
   flex-wrap: wrap;
 }
+
 .hash-item {
   background-color: #e0e0e0;
   border-radius: 8px;
@@ -315,11 +345,13 @@ img {
   display: flex;
   align-items: center;
 }
+
 .hash-item-delete {
   margin-left: 10px;
   color: red;
   cursor: pointer;
 }
+
 .input-tag {
   padding: 5px;
   border: 1px solid #ddd;

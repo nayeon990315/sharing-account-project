@@ -260,7 +260,6 @@ export default {
   height: 40px;
   margin-left: 10px;
   border-radius: 50%;
-  background-color: #007bff; /* Blue background */
   border: none;
   display: flex;
   justify-content: center;
