@@ -68,7 +68,6 @@ aside {
   transition: background-color0.3s, color0.3s, box-shadow0.3s;
 }
 
-
 .nav-item:hover {
   color: #f8c952;
   background-color: #e9ecef;
