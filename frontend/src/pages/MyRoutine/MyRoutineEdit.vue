@@ -44,7 +44,7 @@
                                                 <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                             </button>
                                             <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                                @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
+                                                @click="confirmRemove('waiting', element.myHabitId, element.habitId, element.habitTitle)">
                                                 <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                             </button>
                                         </div>
@@ -82,7 +82,7 @@
                                                 <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                             </button>
                                             <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                                @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
+                                                @click="confirmRemove('inProgress', element.myHabitId, element.habitId, element.habitTitle)">
                                                 <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
                                             </button>
                                         </div>
