@@ -8,7 +8,7 @@
                 <img src="@/assets/images/header/bee_header3.png">
             </div>
 
-            <div class="dropdown dropdown p-2" id="routine&moneyDropdown">
+            <div class="dropdown dropdown p-2" id="routineDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Routine & Money
@@ -88,29 +88,6 @@ const router = useRouter();
 // 드롭다운 메뉴가 호버 시 열리고 닫히도록 설정
 onMounted(() => {
     checkLoginStatus();
-
-    const dropdowns = ['routineDropdown', 'moneyDropdown', 'communityDropdown']; // 각 드롭다운 ID
-
-    dropdowns.forEach(id => {
-        const dropdownElement = document.querySelector(`#${id} button`);
-        const dropdownInstance = new Dropdown(dropdownElement);
-
-        const dropdownContainer = document.getElementById(id);
-
-        dropdownContainer.addEventListener('mouseover', () => {
-            dropdownInstance.show();
-            dropdownElement.style.backgroundColor = "#000000";
-            dropdownElement.style.color = "#FFFFFF";
-        });
-
-        dropdownContainer.addEventListener('mouseleave', () => {
-            dropdownInstance.hide();
-            dropdownElement.style.backgroundColor = "transparent";
-            dropdownElement.style.color = "black";
-        });
-    });
-
-    // 로그아웃 기능
 });
 
 router.beforeEach((to, from, next) => {
