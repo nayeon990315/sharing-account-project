@@ -46,12 +46,12 @@
                 alt="image" 
                 class="day-image" 
               />
-              <img 
+              <!-- <img 
                 v-else 
                 src="/src/assets/꿀벌 X.png" 
                 alt="default image" 
                 class="day-image small-default-image" 
-              />
+              /> -->
             </div>
           </div>
         </div>
@@ -316,6 +316,7 @@ const closeModal = () => {
   border: 1px solid #eee;
   background-color: #f9f9f9;
   transition: background-color 0.2s ease;
+  
 }
 
 .month-button {
@@ -354,16 +355,13 @@ select {
 
 
 .day-image {
-  width: 100px;
-  /* 이미지 크기를 적절히 조정 */
-  height: 100px;
-  /* 이미지 크기를 적절히 조정 */
-  object-fit: cover;
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   z-index: 0;
-
 }
 
 .small-default-image {

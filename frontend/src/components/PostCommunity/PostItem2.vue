@@ -3,8 +3,8 @@
     <div v-if="post" class="post-content">
 
       <div class="user-info">
-        <img :src="userIcon" alt="User Icon" class="user-icon" />
-        <span class="username">{{ post.userName }}</span>
+        <img :src="userIcon || defaultUserIcon" alt="User Icon" class="user-icon" />
+        <span class="username">{{ userName }}</span>
       </div>
       <p class="habit-title">{{ habitData.habitTitle }}</p>
       <p class="participants">
@@ -15,20 +15,20 @@
       </p>
       <img :src="post.imageURL" alt="Post Image" class="post-image" />
        <div class="post-details">
-        <!-- <p class="post-content">{{ post.content }}</p>
+        <p class="post-content">{{ post.content }}</p>
         <p class="post-hashtag">{{ post.hashtag }}</p>
         <p class="post-date">
           {{ new Date(post.createdAt).toLocaleDateString() }}
-        </p>  -->
+        </p> 
 
 
-        <!-- <comment-section
+        <comment-section
           v-if="post.showComments"
           :post-id="post.postId"
           @comment-change="handleCommentChange"
-        ></comment-section> -->
+        ></comment-section>
 
-        <!-- <div class="interaction-buttons">
+        <div class="interaction-buttons">
           <div class="like-button" @click="toggleLike">
             <span :class="{ liked: post.isLiked }">{{
               post.isLiked ? '❤️' : '🤍'
@@ -38,7 +38,7 @@
             <span class="comment-icon">💬</span>
             {{ commentCounts[post.postId] || 0 }}
           </div>
-        </div> -->
+        </div>
  
       </div> 
     </div>
@@ -49,8 +49,8 @@
 <script setup>
 import { defineProps, defineEmits, ref, onMounted, watch } from 'vue';
 import axios from 'axios';
-// import CommentSection from '@/components/PostCommunity/CommentSection.vue';
-import userIcon from '@/assets/icons8-user-64.png';
+import CommentSection from '@/components/PostCommunity/CommentSection.vue';
+import defaultUserIcon from '@/assets/icons8-user-64.png';
 
 const props = defineProps({
   selectedYear: {// 혹은 Date 타입도 가능
@@ -84,7 +84,7 @@ const fetchPostDataByDate = async (selectedYear, selectedMonth, selectedDt) => {
     console.log("----------------");
     console.log(post.value)
     // 추가 데이터 (참여자 수, 습관 데이터 등) 가져오기
-    fetchData();
+    // fetchData();
   } catch (error) {
     console.error('포스트 데이터를 가져오는 중 오류가 발생했습니다:', error);
   }
@@ -94,12 +94,12 @@ const fetchPostDataByDate = async (selectedYear, selectedMonth, selectedDt) => {
 const fetchData = async () => {
   if (post.value) {
     try {
-      const shotResponse = await axios.get(
-        `http://localhost:8080/post-community/certification-count?userId=${post.value.userId}`
-      );
-      const habitResponse = await axios.get(
-        `http://localhost:8080/habits/find?habitId=${post.value.habitId}`
-      );
+      // const shotResponse = await axios.get(
+      //   `http://localhost:8080/post-community/certification-count?userId=${post.value.userId}`
+      // );
+      // const habitResponse = await axios.get(
+      //   `http://localhost:8080/habits/find?habitId=${post.value.habitId}`
+      // );
       const habitCommunityResponse = await axios.get(
         `http://localhost:8080/routine-community/${post.value.habitId}`
       );
@@ -116,13 +116,13 @@ const fetchData = async () => {
   }
 };
 
-// const toggleLike = () => {
-//   emit('toggleLike', post.value);
-// };
+const toggleLike = () => {
+  emit('toggleLike', post.value);
+};
 
-// const toggleComments = () => {
-//   emit('toggleComments', post.value);
-// };
+const toggleComments = () => {
+  emit('toggleComments', post.value);
+};
 
 // 댓글 수를 가져오는 함수
 const fetchCommentCounts = () => {
@@ -136,7 +136,21 @@ const fetchCommentCounts = () => {
     });
 };
 
-// 자식 컴포넌트에서 댓글 변경 이벤트 처리
+const userIcon = ref('');
+const userName = ref('');
+
+const fetchUserInfo = async () => {
+  try {
+    const userId = localStorage.getItem("userId");
+    const response = await axios.get(`http://localhost:8080/users/getUserInfo?userId=${userId}`);
+    userIcon.value = response.data.avatar; // 백엔드에서 사용자 아이콘 URL 제공
+    userName.value = response.data.name; // 백엔드에서 사용자 이름 제공
+  } catch (error) {
+    console.error('사용자 정보를 가져오는 중 오류가 발생했습니다:', error);
+  }
+};
+
+// 자식 컴포넌트에서 댓글 변경 이벤트 처리 **********************************************
 // const handleCommentChange = (postId) => {
 //   axios
 //     .get(`http://localhost:8080/post-community/posts/${postId}/comments/count`)
@@ -156,7 +170,9 @@ watch(() => props.selectedDate, (newDate) => {
 // 컴포넌트 마운트 시 초기 데이터 가져오기
 onMounted(() => {
   fetchPostDataByDate(props.selectedYear, props.selectedMonth, props.selectedDt); // 초기 날짜 데이터 가져오기
-  // fetchCommentCounts(); // 댓글 수 가져오기
+  fetchCommentCounts(); // 댓글 수 가져오기 **********************************************************************
+  
+  fetchUserInfo();
 });
 </script>
 

@@ -1,8 +1,8 @@
 <template>
   <div class="post">
     <div class="user-info">
-      <img :src="userIcon" alt="User Icon" class="user-icon" />
-      <span class="username">{{ post.userName }}</span>
+      <img :src="userIcon || defaultUserIcon" alt="User Icon" class="user-icon" />
+      <span class="username">{{ userName }}</span>
     </div>
     <p class="habit-title">{{ habitData.habitTitle }}</p>
     <!-- <p class="shot-count">{{ shotCount }} 번째 SHOT</p> -->
@@ -45,7 +45,7 @@
 import { defineProps, defineEmits, ref, onMounted } from 'vue';
 import axios from 'axios';
 import CommentSection from '@/components/PostCommunity/CommentSection.vue';
-import userIcon from '@/assets/icons8-user-64.png';
+import defaultUserIcon from '@/assets/icons8-user-64.png';
 
 const props = defineProps({
   post: {
@@ -134,10 +134,30 @@ const handleCommentChange = (postId) => {
     });
 };
 
+ // 사용자 아이콘과 이름을 저장할 변수 선언
+const userIcon = ref('');
+const userName = ref('');
+
+const fetchUserInfo = async () => {
+  try {
+    // postId를 통해 백엔드에서 사용자 정보를 가져오는 API 호출
+    const response = await axios.get(`http://localhost:8080/post-community/getUserInfoByPostId?postId=${props.post.postId}`);
+    
+    // 가져온 사용자 정보에서 avatar와 name을 각각 userIcon과 userName에 매핑
+    userIcon.value = response.data.avatar;
+    userName.value = response.data.name;
+    
+    console.log("User info:", response.data);
+  } catch (error) {
+    console.error('사용자 정보를 가져오는 중 오류가 발생했습니다:', error);
+  }
+};
+
 // 컴포넌트가 마운트될 때 호출
 onMounted(() => {
   fetchData();
   // getAllPost();
+  fetchUserInfo();
   fetchCommentCounts();
 });
 </script>

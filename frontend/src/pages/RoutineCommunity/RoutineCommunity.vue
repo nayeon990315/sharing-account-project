@@ -27,7 +27,13 @@
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
             <button @click="toggleDropdown" class="accordion-button">
-              {{ selectedCategory !== 'all' ? categoryTranslations[selectedCategory] : '전체 (카테고리를 선택해주세요!)' }}
+              <span class="selected-category">
+                {{ selectedCategory !== 'all' ? selectedCategory : '전체' }}
+              </span>
+              <!-- 가이드라인 메시지 -->
+              <span class="guideline-message">
+                카테고리를 선택해주세요.
+              </span>
             </button>
           </h2>
           <div id="collapseOne" class="accordion-collapse collapse">
@@ -36,7 +42,7 @@
                 <div class="col-4">
                   <ul>
                     <li v-for="category in leftCategories" :key="category.value">
-                      <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                      <button @click="handleCategoryFilterChange(category.label)" class="btn btn-link">
                         {{ category.label }}
                       </button>
                     </li>
@@ -45,7 +51,7 @@
                 <div class="col-4">
                   <ul>
                     <li v-for="category in middleCategories" :key="category.value">
-                      <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                      <button @click="handleCategoryFilterChange(category.label)" class="btn btn-link">
                         {{ category.label }}
                       </button>
                     </li>
@@ -54,7 +60,7 @@
                 <div class="col-4">
                   <ul>
                     <li v-for="category in rightCategories" :key="category.value">
-                      <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                      <button @click="handleCategoryFilterChange(category.label)" class="btn btn-link">
                         {{ category.label }}
                       </button>
                     </li>
@@ -111,7 +117,6 @@
         나의 좋아요
       </form>
     </div>
-
   </nav>
 
   <div class="main">
@@ -153,18 +158,12 @@
         <div class="card h-100" @click="selectHabit(routine.habitId)">
           <div class="card-body">
             <div class="subtitle">
-              <span class="type card-subtitle">
-                {{ routine.categoryTitle }}
-              </span>
-              <span class="date card-subtitle">
-                {{ routine.uploadDate }}
-              </span>
-              <!-- mb-2 text-body-secondary -->
+              <span class="type card-subtitle">{{ routine.categoryTitle }}</span>
+              <span class="date card-subtitle">{{ routine.uploadDate }}</span>
             </div>
             <h5 class="card-title">{{ routine.habitTitle }}</h5>
             <div class="card-text">
               <div class="writer">
-                <!-- <img class="avatar" src="@/assets/images/sample.jpg"> -->
                 <img class="avatar" :src="routine.avatar || defaultAvatar" />
                 <span class="writerName">{{ routine.nickname }}</span>
               </div>
@@ -184,9 +183,7 @@
             </div>
 
             <div class="challengeContainer">
-              <p class="challengeComment">
-                {{ routine.participants }}명의 루티너 중<br />
-                오늘 {{ routine.complete }}명이 목표를 달성했어요.
+              <p class="challengeComment">{{ routine.participants }}명의 루티너 중<br />오늘 {{ routine.complete }}명이 목표를 달성했어요.
               </p>
               <!-- <a href="#" class="challengeButton btn btn-primary">
                 <img
@@ -211,11 +208,7 @@
           </div>
         </div>
       </div>
-      <!-- 카드 하나 끝-->
-      <!-- 카드 끝 -->
     </div>
-    <!-- 좋아요한 루틴이 없을 때 표시할 메시지 -->
-    <!-- <p v-else>좋아요한 루틴이 없습니다.</p>  -->
   </div>
 
   <!-- 페이지네이션 컴포넌트 -->
@@ -249,6 +242,8 @@ import { useHabitStore } from '@/stores/habitStore';
 import CustomModal from '@/components/Modal.vue';
 
 const defaultAvatar = defaultAvatarImg;
+// isDropdownOpen 변수 선언
+const isDropdownOpen = ref(false);
 const habitStore = useHabitStore();
 
 // props로 sortType 받기
@@ -459,9 +454,14 @@ const toggleDropdown = () => {
 };
 
 // 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
-function handleCategoryFilterChange(event) {
-  selectedCategory.value = categoryTranslations[event.target.value];
-  console.log(selectedCategory.value);
+function handleCategoryFilterChange(category) {
+
+  // 전체를 선택했을 때 'all'로 설정
+  if (category === '전체') {
+    selectedCategory.value = 'all';
+  } else {
+    selectedCategory.value = category;
+  }
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
 
   // 드롭다운을 닫기
@@ -851,7 +851,6 @@ function logImageUrl(imageUrl) {
   box-sizing: border-box;
   /* padding과 border를 포함한 너비 계산 */
   width: 100%;
-
   /* 버튼의 외부 그림자 제거 */
   box-shadow: none !important;
 }
@@ -863,16 +862,13 @@ function logImageUrl(imageUrl) {
 
   /* 버튼의 외부 그림자 제거 */
   box-shadow: none !important;
-
 }
 
 /* 선택적인 hover 상태에서 배경색 수정 */
 .accordion-button:hover {
   /* hover 시 원하는 배경색 설정 (회색 예시) */
   background-color: white !important;
-
   border-bottom: none;
-
 }
 
 .accordion {
@@ -1164,7 +1160,7 @@ function logImageUrl(imageUrl) {
 }
 
 .challengeButton:hover {
-  background-color:  rgba(211, 190, 85, 0.267);
+  background-color: rgba(211, 190, 85, 0.267);
   color: black;
 }
 
@@ -1287,5 +1283,14 @@ col-6 col-md-6 .col {
   opacity: 0.5;
   cursor: not-allowed;
 }
+.guideline-message {
+  margin-left: 5%;
+  /* 버튼과의 간격 */
+  color: #999;
+  /* 옅은 회색 */
+  font-size: 14px;
+  /* 작은 글씨 크기 */
+}
+
 
 </style>
