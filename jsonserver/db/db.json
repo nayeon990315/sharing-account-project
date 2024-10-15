@@ -1,0 +1,565 @@
+{
+    "2024-10-16": [
+        {
+          "transactionDate": "2024-10-16T04:11:00.000+09:00",
+          "type": "신한체",
+          "recipient": "N_OPENAI *CHAT",
+          "withdrawalAmount": 26787,
+          "depositAmount": 0,
+          "balance": 557023,
+          "category": "생활"
+        },
+        {
+          "transactionDate": "2024-10-16T09:01:00.000+09:00",
+          "type": "신한체",
+          "recipient": "N_매머드익스프",
+          "withdrawalAmount": 2000,
+          "depositAmount": 0,
+          "balance": 555023,
+          "category": "카페/간식"
+        },
+        {
+          "transactionDate": "2024-10-16T09:07:00.000+09:00",
+          "type": "신한체",
+          "recipient": "N_지에스(GS)25",
+          "withdrawalAmount": 10350,
+          "depositAmount": 0,
+          "balance": 544673,
+          "category": "생활"
+        },
+        {
+          "transactionDate": "2024-10-16T12:24:00.000+09:00",
+          "type": "신한체",
+          "recipient": "N_마당족발",
+          "withdrawalAmount": 20000,
+          "depositAmount": 0,
+          "balance": 524673,
+          "category": "식비"
+        },
+        {
+          "transactionDate": "2024-10-16T12:40:00.000+09:00",
+          "type": "신한체",
+          "recipient": "N_매머드익스프",
+          "withdrawalAmount": 2000,
+          "depositAmount": 0,
+          "balance": 522673,
+          "category": "카페/간식"
+        }
+      ],
+    "2024-10-15": [
+    {
+      "transactionDate": "2024-10-15T12:15:30.000+09:00",
+      "type": "신한체",
+      "recipient": "롯데쇼핑(주)롯데몰",
+      "withdrawalAmount": 12500,
+      "depositAmount": 0,
+      "balance": 500000,
+      "category": "패션/쇼핑"
+    },
+    {
+      "transactionDate": "2024-10-15T14:01:00.000+09:00",
+      "type": "신한체",
+      "recipient": "호시카츠",
+      "withdrawalAmount": 20000,
+      "depositAmount": 0,
+      "balance": 480000,
+      "category": "식비"
+    },
+    {
+      "transactionDate": "2024-10-15T15:10:00.000+09:00",
+      "type": "신한체",
+      "recipient": "엔젤리너스",
+      "withdrawalAmount": 13500,
+      "depositAmount": 0,
+      "balance": 466500,
+      "category": "카페/간식"
+    },
+    {
+      "transactionDate": "2024-10-15T16:33:00.000+09:00",
+      "type": "신한체",
+      "recipient": "롯데쇼핑(주)롯데몰",
+      "withdrawalAmount": 59900,
+      "depositAmount": 0,
+      "balance": 406600,
+      "category": "패션/쇼핑"
+    },
+    {
+      "transactionDate": "2024-10-15T17:10:00.000+09:00",
+      "type": "신한체",
+      "recipient": "롯데쇼핑(주)롯데몰",
+      "withdrawalAmount": 20800,
+      "depositAmount": 0,
+      "balance": 385800,
+      "category": "패션/쇼핑"
+    },
+    {
+      "transactionDate": "2024-10-15T18:02:00.000+09:00",
+      "type": "신한체",
+      "recipient": "토끼정",
+      "withdrawalAmount": 16500,
+      "depositAmount": 0,
+      "balance": 369300,
+      "category": "식비"
+    }
+  ],
+  "2024-10-12": [
+    {
+      "transactionDate": "2024-10-12T09:06:54.000+09:00",
+      "type": "신한체",
+      "recipient": "N_지에스(GS)25",
+      "withdrawalAmount": 4600,
+      "depositAmount": 0,
+      "balance": 643511,
+      "category": "생활"
+    }
+  ],
+  "2024-10-10": [
+    {
+      "transactionDate": "2024-10-10T20:10:37.000+09:00",
+      "type": "신한체",
+      "recipient": "N_컴포즈커피",
+      "withdrawalAmount": 3800,
+      "depositAmount": 0,
+      "balance": 648111,
+      "category": "카페/간식"
+    },
+    {
+      "transactionDate": "2024-10-10T19:41:31.000+09:00",
+      "type": "신한체",
+      "recipient": "N_롤링파스타화",
+      "withdrawalAmount": 10400,
+      "depositAmount": 0,
+      "balance": 651911,
+      "category": "식비"
+    },
+    {
+      "transactionDate": "2024-10-10T12:13:33.000+09:00",
+      "type": "신한체",
+      "recipient": "N_버거킹군자능",
+      "withdrawalAmount": 7500,
+      "depositAmount": 0,
+      "balance": 662311,
+      "category": "식비"
+    },
+    {
+      "transactionDate": "2024-10-10T09:06:57.000+09:00",
+      "type": "신한체",
+      "recipient": "N_지에스(GS)25",
+      "withdrawalAmount": 1980,
+      "depositAmount": 0,
+      "balance": 669811,
+      "category": "생활"
+    }
+  ],
+  "2024-10-08": [
+    {
+      "transactionDate": "2024-10-08T21:38:26.000+09:00",
+      "type": "신한체",
+      "recipient": "N_카카오_카카",
+      "withdrawalAmount": 19900,
+      "depositAmount": 0,
+      "balance": 671791,
+      "category": "온라인쇼핑"
+    },
+    {
+      "transactionDate": "2024-10-08T21:04:45.000+09:00",
+      "type": "신한체",
+      "recipient": "N_(주)케이에프",
+      "withdrawalAmount": 7000,
+      "depositAmount": 0,
+      "balance": 691691,
+      "category": "식비"
+    },
+    {
+      "transactionDate": "2024-10-08T20:33:36.000+09:00",
+      "type": "신한체",
+      "recipient": "N_(주)케이에프",
+      "withdrawalAmount": 500,
+      "depositAmount": 0,
+      "balance": 698691,
+      "category": "식비"
+    },
+    {
+      "transactionDate": "2024-10-08T12:25:28.000+09:00",
+      "type": "신한체",
+      "recipient": "N_메가엠지씨커",
+      "withdrawalAmount": 2000,
+      "depositAmount": 0,
+      "balance": 699191,
+      "category": "카페/간식"
+    },
+    {
+      "transactionDate": "2024-10-08T12:22:51.000+09:00",
+      "type": "신한체",
+      "recipient": "N_마당족발",
+      "withdrawalAmount": 20000,
+      "depositAmount": 0,
+      "balance": 701191,
+      "category": "식비"
+    }
+  ],
+  "2024-10-07": [
+    {
+      "transactionDate": "2024-10-07T20:08:46.000+09:00",
+      "type": "신한체",
+      "recipient": "GOOGLE *YouTub",
+      "withdrawalAmount": 2692,
+      "depositAmount": 0,
+      "balance": 721191,
+      "category": "문화/여가"
+    },
+    {
+      "transactionDate": "2024-10-07T19:34:21.000+09:00",
+      "type": "신한체",
+      "recipient": "N_이팔복돈까스",
+      "withdrawalAmount": 12000,
+      "depositAmount": 0,
+      "balance": 723883,
+      "category": "식비"
+    }
+  ],
+  "2024-10-02": [
+      {
+        "transactionDate": "2024-10-02T19:19:51.000+09:00",
+        "type": "신한체",
+        "recipient": "N_KFC KOREA",
+        "withdrawalAmount": 5600,
+        "depositAmount": 0,
+        "balance": 736873,
+        "category": "식비"
+      },
+      {
+        "transactionDate": "2024-10-02T19:18:17.000+09:00",
+        "type": "신한체",
+        "recipient": "N_(주)케이에프",
+        "withdrawalAmount": 3200,
+        "depositAmount": 0,
+        "balance": 742473,
+        "category": "식비"
+      },
+      {
+        "transactionDate": "2024-10-02T12:31:45.000+09:00",
+        "type": "신한체",
+        "recipient": "N_매머드익스프",
+        "withdrawalAmount": 4800,
+        "depositAmount": 0,
+        "balance": 745673,
+        "category": "카페/간식"
+      },
+      {
+        "transactionDate": "2024-10-02T12:03:39.000+09:00",
+        "type": "신한체",
+        "recipient": "N_이비푸드(EB",
+        "withdrawalAmount": 6500,
+        "depositAmount": 0,
+        "balance": 750473,
+        "category": "식비"
+      }
+    ],
+    "2024-10-01": [
+      {
+        "transactionDate": "2024-10-01T19:40:21.000+09:00",
+        "type": "신한체",
+        "recipient": "N_죠스떡볶기",
+        "withdrawalAmount": 9000,
+        "depositAmount": 0,
+        "balance": 440973,
+        "category": "식비"
+      },
+      {
+        "transactionDate": "2024-10-01T11:57:28.000+09:00",
+        "type": "FB이체",
+        "recipient": "카카오페이",
+        "withdrawalAmount": 10350,
+        "depositAmount": 0,
+        "balance": 449973,
+        "category": "금융"
+      },
+      {
+        "transactionDate": "2024-10-01T09:03:57.000+09:00",
+        "type": "신한체",
+        "recipient": "N_매머드익스프",
+        "withdrawalAmount": 2000,
+        "depositAmount": 0,
+        "balance": 460323,
+        "category": "카페/간식"
+      }
+    ],
+    "2024-09-30": [
+      {
+        "transactionDate": "2024-09-30T19:26:56.000+09:00",
+        "type": "신한체",
+        "recipient": "N_서브웨이",
+        "withdrawalAmount": 8600,
+        "depositAmount": 0,
+        "balance": 462323,
+        "category": "식비"
+      },
+      {
+        "transactionDate": "2024-09-30T13:44:04.000+09:00",
+        "type": "신한체",
+        "recipient": "N_대표인증_3",
+        "withdrawalAmount": 6900,
+        "depositAmount": 0,
+        "balance": 470923,
+        "category": "온라인쇼핑"
+      },
+      {
+        "transactionDate": "2024-09-30T12:30:15.000+09:00",
+        "type": "신한체",
+        "recipient": "N_롯데리아 화",
+        "withdrawalAmount": 5200,
+        "depositAmount": 0,
+        "balance": 477823,
+        "category": "식비"
+      }
+    ],
+    "2024-09-29": [
+      {
+        "transactionDate": "2024-09-29T16:34:50.000+09:00",
+        "type": "신한체",
+        "recipient": "N_네이버페이",
+        "withdrawalAmount": 74000,
+        "depositAmount": 0,
+        "balance": 483023,
+        "category": "온라인쇼핑"
+      },
+      {
+        "transactionDate": "2024-09-29T14:11:30.000+09:00",
+        "type": "신한체",
+        "recipient": "N_OPENAI *CHAT",
+        "withdrawalAmount": 26787,
+        "depositAmount": 0,
+        "balance": 557023,
+        "category": "온라인쇼핑"
+      }
+    ],
+    "2024-09-28": [
+      {
+        "transactionDate": "2024-09-28T19:56:47.000+09:00",
+        "type": "신한체",
+        "recipient": "N_컴포즈커피",
+        "withdrawalAmount": 9600,
+        "depositAmount": 0,
+        "balance": 583810,
+        "category": "카페/간식"
+      },
+      {
+        "transactionDate": "2024-09-28T19:46:52.000+09:00",
+        "type": "신한체",
+        "recipient": "N_춘천골닭갈비",
+        "withdrawalAmount": 32000,
+        "depositAmount": 0,
+        "balance": 593410,
+        "category": "식비"
+      },
+      {
+        "transactionDate": "2024-09-28T12:02:32.000+09:00",
+        "type": "신한체",
+        "recipient": "N_건대우동집",
+        "withdrawalAmount": 10000,
+        "depositAmount": 0,
+        "balance": 625410,
+        "category": "식비"
+      },
+      {
+        "transactionDate": "2024-09-28T09:05:42.000+09:00",
+        "type": "신한체",
+        "recipient": "N_지에스(GS)25",
+        "withdrawalAmount": 5310,
+        "depositAmount": 0,
+        "balance": 635410,
+        "category": "생활"
+      }
+    ],
+    "2024-09-27": [
+      {
+        "transactionDate": "2024-09-27T12:48:28.000+09:00",
+        "type": "FB이체",
+        "recipient": "카카오페이",
+        "withdrawalAmount": 10000,
+        "depositAmount": 0,
+        "balance": 240720,
+        "category": "금융"
+      },
+      {
+        "transactionDate": "2024-09-27T12:28:43.000+09:00",
+        "type": "신한체",
+        "recipient": "N_매머드익스프",
+        "withdrawalAmount": 3500,
+        "depositAmount": 0,
+        "balance": 250720,
+        "category": "카페/간식"
+      },
+      {
+        "transactionDate": "2024-09-27T07:58:02.000+09:00",
+        "type": "신한체",
+        "recipient": "N_KOCES_자판기",
+        "withdrawalAmount": 1400,
+        "depositAmount": 0,
+        "balance": 254220,
+        "category": "생활"
+      }
+    ],
+    "2024-09-26": [
+        {
+          "transactionDate": "2024-09-26T10:55:56.000+09:00",
+          "type": "신한체",
+          "recipient": "N_씨유(CU) 화",
+          "withdrawalAmount": 1500,
+          "depositAmount": 0,
+          "balance": 255620,
+          "category": "식비"
+        },
+        {
+          "transactionDate": "2024-09-26T10:52:57.000+09:00",
+          "type": "신한체",
+          "recipient": "N_대우실로암약",
+          "withdrawalAmount": 18400,
+          "depositAmount": 0,
+          "balance": 257120,
+          "category": "의료/건강"
+        },
+        {
+          "transactionDate": "2024-09-26T10:49:23.000+09:00",
+          "type": "신한체",
+          "recipient": "N_서울가정의원",
+          "withdrawalAmount": 5200,
+          "depositAmount": 0,
+          "balance": 275520,
+          "category": "의료/건강"
+        }
+      ],
+      "2024-09-25": [
+        {
+          "transactionDate": "2024-09-25T19:34:40.000+09:00",
+          "type": "모바일",
+          "recipient": "이영호",
+          "withdrawalAmount": 10000,
+          "depositAmount": 0,
+          "balance": 280720,
+          "category": "기타"
+        },
+        {
+          "transactionDate": "2024-09-25T19:29:03.000+09:00",
+          "type": "신한체",
+          "recipient": "N_주식회사 아",
+          "withdrawalAmount": 5000,
+          "depositAmount": 0,
+          "balance": 290720,
+          "category": "온라인쇼핑"
+        },
+        {
+          "transactionDate": "2024-09-25T12:32:40.000+09:00",
+          "type": "신한체",
+          "recipient": "N_공차 어린이",
+          "withdrawalAmount": 5100,
+          "depositAmount": 0,
+          "balance": 295720,
+          "category": "카페/간식"
+        },
+        {
+          "transactionDate": "2024-09-25T07:01:08.000+09:00",
+          "type": "체신보",
+          "recipient": "우체002건",
+          "withdrawalAmount": 24740,
+          "depositAmount": 0,
+          "balance": 815,
+          "category": "금융"
+        }
+      ],
+      "2024-09-24": [
+        {
+          "transactionDate": "2024-09-24T22:42:02.000+09:00",
+          "type": "신한체",
+          "recipient": "N_11번가-SK pa",
+          "withdrawalAmount": 29200,
+          "depositAmount": 0,
+          "balance": 25555,
+          "category": "온라인쇼핑"
+        },
+        {
+          "transactionDate": "2024-09-24T18:33:41.000+09:00",
+          "type": "신한체",
+          "recipient": "N_이팔복돈까스",
+          "withdrawalAmount": 12000,
+          "depositAmount": 0,
+          "balance": 54755,
+          "category": "식비"
+        },
+        {
+          "transactionDate": "2024-09-24T18:25:24.000+09:00",
+          "type": "FB자동",
+          "recipient": "N_11번가-SK pa",
+          "withdrawalAmount": 6932,
+          "depositAmount": 0,
+          "balance": 66755,
+          "category": "온라인쇼핑"
+        },
+        {
+          "transactionDate": "2024-09-24T18:25:18.000+09:00",
+          "type": "FB자동",
+          "recipient": "N_롯데쇼핑(주)",
+          "withdrawalAmount": 3118,
+          "depositAmount": 0,
+          "balance": 73687,
+          "category": "온라인쇼핑"
+        },
+        {
+          "transactionDate": "2024-09-24T15:17:50.000+09:00",
+          "type": "신한체",
+          "recipient": "N_대우실로암약",
+          "withdrawalAmount": 32900,
+          "depositAmount": 0,
+          "balance": 76805,
+          "category": "의료/건강"
+        },
+        {
+          "transactionDate": "2024-09-24T15:14:42.000+09:00",
+          "type": "신한체",
+          "recipient": "N_서울가정의원",
+          "withdrawalAmount": 7500,
+          "depositAmount": 0,
+          "balance": 109705,
+          "category": "의료/건강"
+        }
+      ],
+      "2024-09-23": [
+        {
+          "transactionDate": "2024-09-23T19:49:52.000+09:00",
+          "type": "신한체",
+          "recipient": "N_북촌손만두",
+          "withdrawalAmount": 12500,
+          "depositAmount": 0,
+          "balance": 117205,
+          "category": "식비"
+        },
+        {
+          "transactionDate": "2024-09-23T18:27:07.000+09:00",
+          "type": "FB자동",
+          "recipient": "카카오페이",
+          "withdrawalAmount": 6074,
+          "depositAmount": 0,
+          "balance": 129705,
+          "category": "금융"
+        },
+        {
+          "transactionDate": "2024-09-23T12:43:10.000+09:00",
+          "type": "신한체",
+          "recipient": "N_매머드익스프",
+          "withdrawalAmount": 2000,
+          "depositAmount": 0,
+          "balance": 135779,
+          "category": "카페/간식"
+        },
+        {
+          "transactionDate": "2024-09-23T12:35:45.000+09:00",
+          "type": "신한체",
+          "recipient": "N_양분식",
+          "withdrawalAmount": 9000,
+          "depositAmount": 0,
+          "balance": 137779,
+          "category": "식비"
+        }
+      ]
+}
