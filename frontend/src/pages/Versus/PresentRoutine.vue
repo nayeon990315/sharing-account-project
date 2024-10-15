@@ -26,7 +26,7 @@
   #present-routine {
     width: 210px;
     /* border: none; */
-    /* height: 170px; */
+    height: 160px;
   }
 
   .card {
@@ -43,8 +43,9 @@
   }
   
   .card-body {
-    height: 200px;
+    height: 170px;
     margin: 0;
+    overflow-y: auto;
   }
   
   .list-group-item {
