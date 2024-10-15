@@ -9,7 +9,7 @@
           @click="handleCategoryFilterChange(category)"
           :class="{ active: selectedCategory === category }"
         >
-          {{ category === '참여루틴' ? category : `${category}` }}
+          {{ category }}
         </button>
       </div>
       <!-- 검색창 -->
@@ -22,7 +22,6 @@
         <button @click="performSearch">검색</button>
       </div>
     </div>
-    <div>{{ shot }}</div>
     <PostItem
       v-for="post in paginatedPosts"
       :key="post.postId"
@@ -65,9 +64,9 @@ const categoryOptions = [
 ];
 
 const posts = ref([]);
-const currentPage = ref(1); // 현재 페이지 번호
-const totalPages = ref(1); // 총 페이지 수
-const pageSize = ref(5); // 한 페이지에 표시할 데이터 수를 5로 설정
+const currentPage = ref(1);
+const totalPages = ref(1);
+const pageSize = ref(5);
 
 const getAllPost = async () => {
   try {
@@ -90,7 +89,7 @@ const getAllPost = async () => {
       showComments: false,
     }));
 
-    totalPages.value = Math.ceil(posts.value.length / pageSize.value); // 총 페이지 수 계산
+    totalPages.value = Math.ceil(posts.value.length / pageSize.value);
 
     console.log(response.data);
   } catch (error) {
@@ -132,13 +131,13 @@ const changePage = (page) => {
   currentPage.value = page;
 };
 
-const searchQuery = ref(''); // 검색어를 저장할 변수
-const displayedQuery = ref(''); // 화면에 보여질 검색어 상태
+const searchQuery = ref('');
+const displayedQuery = ref('');
 
 const performSearch = () => {
   console.log('Search button clicked. Keyword:', searchQuery.value);
-  currentPage.value = 1; // 검색 시 페이지를 1로 초기화
-  searchQuery.value = displayedQuery.value; // 실제 검색어는 유지
+  currentPage.value = 1;
+  searchQuery.value = displayedQuery.value;
 };
 
 // 초기 데이터 로드
@@ -160,7 +159,17 @@ html {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 20px;
+  background-color: #fffbee;
+  border-radius: 10px;
+  box-shadow: 0px4px10pxrgba (0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: left; /* 텍스트를 왼쪽으로 배치 */
+  color: #f39c12;
+  font-size: 2.5em;
+  margin-bottom: 20px;
 }
 
 .top-bar {
@@ -173,50 +182,53 @@ html {
 .category-tags {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center; /* 버튼들을 중앙으로 정렬 */
 }
 
 .category-tags button {
   margin-right: 10px;
   margin-bottom: 10px;
-  padding: 8px 15px; /* Increased padding for better touch target */
+  padding: 12px20px;
   border-radius: 20px;
   border: none;
-  background-color: #d3d3d3; /* Darker gray for more visibility */
-  color: #333; /* Default text color */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
-  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* Smooth transition */
+  background-color: #f7d794;
+  color: #333;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
 .category-tags button.active {
-  background-color: #71b5fe; /* Active button color */
+  background-color: #f6b93b;
+  color: #fff;
 }
 
 .category-tags button:hover {
-  background-color: #4a90e2;
+  background-color: #fa983a;
   color: #fff;
   box-shadow: none;
 }
 
 .category-tags button:nth-child(1) {
-  background-color: #fcf5ab;
+  background-color: #000000;
+  color: white;
 }
 
 .search-routine input[type='text'] {
-  padding: 5px10px;
+  padding: 10px15px;
   border-radius: 20px;
   border: none;
-  background-color: #f0f0f0;
+  background-color: #f3f3f3;
   margin-right: 10px;
   border-width: 2px;
-  border-style: solid;
+  border-style: dashed;
   border-color: #ccc;
 }
 
 .search-routine button {
-  padding: 5px10px;
+  padding: 10px15px;
   border-radius: 20px;
   border: none;
-  background-color: #71b5fe;
+  background-color: #f39c12;
   color: white;
   cursor: pointer;
 }
@@ -229,7 +241,7 @@ html {
 
 .page-item {
   min-width: 32px;
-  padding: 2px6px;
+  padding: 8px12px;
   text-align: center;
   margin-right: 3px;
   border-radius: 6px;
