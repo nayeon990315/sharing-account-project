@@ -38,13 +38,13 @@
 
         <!-- 승리 결과 -->
         <div class="winner-result" v-show="showPastRoutines && isFlipped"
-            :class="{ 'today-win': winnerMessage === true, 'past-win': winnerMessage === false, 'draw': winnerMessage === '무승부!' }"
+            :class="{ 'today-win': winnerMessage === 'true', 'past-win': winnerMessage === 'false', 'draw': winnerMessage === '무승부!' }"
             >
             
-            <template v-if="winnerMessage === true">
+            <template v-if="winnerMessage === 'true'">
                 <p>오늘 더 많은 절약을 했습니다!</p>
             </template>
-            <template v-else-if="winnerMessage === false">
+            <template v-else-if="winnerMessage === 'false'">
                 <p>{{ formatTemplateDate(targetDate) }}에 더 많은 절약을 했습니다!</p>
             </template>
             <template v-else>
@@ -70,8 +70,8 @@
                         <img :src="profileImageUrl" alt="Profile" class="profile-image2" :class="{ 'winner-border': winnerMessage === false}"/>
                     </div> -->
                         
-                        <p v-if="winnerMessage === true">Winner</p>
-                        <p v-else-if="winnerMessage === false">Loser</p>
+                        <p v-if="winnerMessage === 'false'">Winner</p>
+                        <p v-else-if="winnerMessage === 'true'">Loser</p>
                         <p v-else>Draw</p>
                         
                         <div class="total">
@@ -115,8 +115,8 @@
                             <img :src="profileImageUrl" alt="Profile" class="profile-image1" :class="{ 'winner-border': winnerMessage === true && showPastRoutines == true}"/>
                         </div> -->
 
-                        <p v-if="winnerMessage === false">Winner</p>
-                        <p v-else-if="winnerMessage === true">Loser</p>
+                        <p v-if="winnerMessage === 'true'">Winner</p>
+                        <p v-else-if="winnerMessage === 'false'">Loser</p>
                         <p v-else>Draw</p>
 
                         <div class="total">
@@ -152,6 +152,7 @@ import '@vuepic/vue-datepicker/dist/main.css';    // 달력 스타일 import
 import defaultProfileImage from '@/assets/profile.png'; 
 
 const API_URL = 'http://localhost:8080';
+const EXPENSE_API_URL = 'http://localhost:3000';
 
 const userId = ref(null);
 const checkDate = ref(null);
@@ -162,8 +163,14 @@ const routinesPast = ref([]);          // 과거 달성한 루틴
 const showPastRoutines = ref(false);   // 과거 루틴 랜더링 여부
 
 const today = new Date();
-const targetDate = ref(new Date());
-const selectedDate = ref(new Date());
+const yesterday = new Date(today);
+yesterday.setDate(today.getDate() - 1);
+
+const targetDate = ref(yesterday);
+const selectedDate = ref(yesterday);
+
+
+
 const formatTemplateDate = (date) => {
     if (typeof(date) === 'string') {
         const dateResult = date.split('-')
@@ -297,14 +304,14 @@ const saveMoneyPast = async () => {
 
 // 오늘의 소비 내역
 const expensesToday = ref([
-    { transactionDate: '2024-09-22T10:15', type: '체크카드', category: '카페/간식', recipient: '스타벅스신촌역점', withdrawalAmount: 5000, depositAmount: 0, balance: 85000 },
-    { transactionDate: '2024-09-22T12:30', type: '체크카드', category: '식비', recipient: '맥도날드홍대점', withdrawalAmount: 7600, depositAmount: 0, balance: 77400 },
-    { transactionDate: '2024-09-22T14:00', type: '체크카드', category: '의류', recipient: '유니클로강남점', withdrawalAmount: 35000, depositAmount: 0, balance: 42400 },
-    { transactionDate: '2024-09-22T16:10', type: '체크카드', category: '교통비', recipient: '카카오택시', withdrawalAmount: 9500, depositAmount: 0, balance: 20900 },
-    { transactionDate: '2024-09-22T17:50', type: '체크카드', category: '식비', recipient: '백년토종순대국', withdrawalAmount: 8500, depositAmount: 0, balance: 12400 },
-    { transactionDate: '2024-09-22T20:45', type: '체크카드', category: '카페/간식', recipient: '탐앤탐스신촌', withdrawalAmount: 4500, depositAmount: 0, balance: 1000 },
-    { transactionDate: '2024-09-22T21:20', type: '체크카드', category: '식비', recipient: '롯데리아강남점', withdrawalAmount: 7400, depositAmount: 0, balance: -6400 },
-    { transactionDate: '2024-09-22T22:00', type: '체크카드', category: '교통비', recipient: '서울지하철', withdrawalAmount: 1250, depositAmount: 0, balance: -7650 }
+    // { transactionDate: '2024-09-22T10:15', type: '체크카드', category: '카페/간식', recipient: '스타벅스신촌역점', withdrawalAmount: 5000, depositAmount: 0, balance: 85000 },
+    // { transactionDate: '2024-09-22T12:30', type: '체크카드', category: '식비', recipient: '맥도날드홍대점', withdrawalAmount: 7600, depositAmount: 0, balance: 77400 },
+    // { transactionDate: '2024-09-22T14:00', type: '체크카드', category: '의류', recipient: '유니클로강남점', withdrawalAmount: 35000, depositAmount: 0, balance: 42400 },
+    // { transactionDate: '2024-09-22T16:10', type: '체크카드', category: '교통비', recipient: '카카오택시', withdrawalAmount: 9500, depositAmount: 0, balance: 20900 },
+    // { transactionDate: '2024-09-22T17:50', type: '체크카드', category: '식비', recipient: '백년토종순대국', withdrawalAmount: 8500, depositAmount: 0, balance: 12400 },
+    // { transactionDate: '2024-09-22T20:45', type: '체크카드', category: '카페/간식', recipient: '탐앤탐스신촌', withdrawalAmount: 4500, depositAmount: 0, balance: 1000 },
+    // { transactionDate: '2024-09-22T21:20', type: '체크카드', category: '식비', recipient: '롯데리아강남점', withdrawalAmount: 7400, depositAmount: 0, balance: -6400 },
+    // { transactionDate: '2024-09-22T22:00', type: '체크카드', category: '교통비', recipient: '서울지하철', withdrawalAmount: 1250, depositAmount: 0, balance: -7650 }
 ]);
 
 // 내역
@@ -322,10 +329,13 @@ const totalPast = computed(() => {
 
 const winnerMessage = computed(() => {
     if (habit.value.savedAmountToday > habit.value.savedAmountPast) {
-        return true;
+        console.log('true1231231231')
+        return 'true';
     } else if (habit.value.savedAmountToday < habit.value.savedAmountPast) {
-        return false;
+        console.log('false1231231231')
+        return 'false';
     } else {
+        console.log('무승부!1231231231')
         return '무승부!';
     }
 });
@@ -342,21 +352,45 @@ const selectDate = async (days, unit) => {
     const newDate = new Date();
     if (unit === '일전') {
         newDate.setDate(today.getDate() - days);
-        expensesPast.value = expensesPastDay; 
+        // expensesPast.value = expensesPastDay; 
     } else if (unit === '주전') {
         newDate.setDate(today.getDate() - days);
-        expensesPast.value = expensesPastWeek;
+        // expensesPast.value = expensesPastWeek;
     } else if (unit === '달전') {
         newDate.setMonth(today.getMonth() - days);
-        expensesPast.value = expensesPastMonth; 
+        // expensesPast.value = expensesPastMonth; 
     } else if (unit === '년전') {
         newDate.setFullYear(today.getFullYear() - days);
-        expensesPast.value = expensesPastYear;
+        // expensesPast.value = expensesPastYear;
     }
     
     targetDate.value = formatDate(newDate);
     await getPastData(); 
     await saveMoneyPast();
+    await getExpensesPast();
+};
+
+const getExpensesToday = async () => {
+    try {
+        const formattedToday = formatDate(today);
+        const response = await axios.get(`${EXPENSE_API_URL}/${formattedToday}`);
+        expensesToday.value = response.data;
+        console.log('오늘의 소비 내역:', expensesToday.value);
+    } catch (error) {
+        console.error('오늘의 소비 내역을 가져오는 중 오류 발생:', error);
+        expensesToday.value = [];
+    }
+};
+
+const getExpensesPast = async () => {
+    try {
+        const response = await axios.get(`${EXPENSE_API_URL}/${targetDate.value}`);
+        expensesPast.value = response.data;
+        console.log(`${targetDate.value}의 소비 내역:`, expensesPast.value);
+    } catch (error) {
+        // console.error('과거의 소비 내역을 가져오는 중 오류 발생:', error);
+        expensesPast.value = [];
+    }
 };
 
 const selectCalender = () => {
@@ -438,6 +472,7 @@ const expensesPastMonth = [
 
 onMounted(() => {
     getUserIdFromLocal();
+    getExpensesToday();    
 });
 
 </script>
