@@ -71,52 +71,52 @@
     </div>
 
 
-  <div class="community">
-    <h1>많이 찾는 벌루틴에 참여해보세요</h1>
-    <div class="top-likes-section">
-      <div class="grid-container">
-        <!-- 좋아요 많은 순서대로 상위 3개 루틴 표시 -->
-        <div class="grid-item" v-for="(routine, index) in topLikedRoutines" :key="routine.communityId">
-            <!-- 순위 -->
-            <div class="rank">{{ index + 1 }}</div> 
+    <div class="community">
+        <h1>많이 찾는 벌루틴에 참여해보세요</h1>
+        <div class="top-likes-section">
+            <div class="grid-container">
+                <!-- 좋아요 많은 순서대로 상위 3개 루틴 표시 -->
+                <div class="grid-item" v-for="(routine, index) in topLikedRoutines" :key="routine.communityId">
+                    <!-- 순위 -->
+                    <div class="rank">{{ index + 1 }}</div>
 
-            <div class="card h-100">
-            <div class="card-body">
-              <div class="subtitle">
-                <span class="type card-subtitle">{{ routine.categoryTitle }}</span>
-                <!-- <span class="date card-subtitle">{{ routine.uploadDate }}</span> -->
-              </div>
-              <h5 class="card-title">{{ routine.habitTitle }}</h5>
-              <div class="card-text">
-                <div class="writer">
-                  <img class="avatar" :src="routine.avatar || defaultAvatar" />
-                  <span class="writerName">{{ routine.nickname }}</span>
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="subtitle">
+                                <span class="type card-subtitle">{{ routine.categoryTitle }}</span>
+                                <!-- <span class="date card-subtitle">{{ routine.uploadDate }}</span> -->
+                            </div>
+                            <h5 class="card-title">{{ routine.habitTitle }}</h5>
+                            <div class="card-text">
+                                <div class="writer">
+                                    <img class="avatar" :src="routine.avatar || defaultAvatar" />
+                                    <span class="writerName">{{ routine.nickname }}</span>
+                                </div>
+                                <div class="likeContainer">
+                                    <button class="likeButton" @click="toggleLike(routine.communityId)">
+                                        <img class="likeImg" :src="isLiked(routine.communityId) ? fullLike : emptyLike"
+                                            alt="like" />
+                                    </button>
+                                    <span class="likeComment">{{ routine.habitLikes }}</span>
+                                </div>
+                            </div>
+                            <div class="challengeContainer">
+                                <p class="challengeComment">{{ routine.participants }}명이 루틴에 참여 중</p>
+                                <button @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
+                                    class="challengeButton btn btn-primary">
+                                    <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
+                                    <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="likeContainer">
-                  <button class="likeButton" @click="toggleLike(routine.communityId)">
-                    <img class="likeImg" :src="isLiked(routine.communityId) ? fullLike : emptyLike" alt="like" />
-                  </button>
-                  <span class="likeComment">{{ routine.habitLikes }}</span>
-                </div>
-              </div>
-              <div class="challengeContainer">
-                <p class="challengeComment">{{ routine.participants }}명이 루틴에 참여 중</p>
-                <button @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
-                  class="challengeButton btn btn-primary">
-                  <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
-                  <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
-                </button>
-              </div>
             </div>
         </div>
-    </div>
-</div>
-    </div>
-</div>
-    
 
-    <!-- Alert Modal -->
-    <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
+    </div>
+        <!-- Alert Modal -->
+        <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
 
 </template>
 
@@ -780,10 +780,10 @@ onMounted(() => {
 }
 
 .grid-item {
-  display: flex;
-  justify-content: center;
-  /* text-align: center; */
-  flex-direction: column;
+    display: flex;
+    justify-content: center;
+    /* text-align: center; */
+    flex-direction: column;
 }
 
 .rank {
@@ -854,34 +854,33 @@ onMounted(() => {
 }
 
 .challengeContainer {
-  display: flex;
-  /* flexbox 레이아웃 활성화 */
-  flex-direction: column;
-  /* 요소들을 수직으로 쌓기 */
-  justify-content: center;
-  width: 300px;
+    display: flex;
+    /* flexbox 레이아웃 활성화 */
+    flex-direction: column;
+    /* 요소들을 수직으로 쌓기 */
+    justify-content: center;
+    width: 300px;
 }
 
 .challengeComment {
-  font-size: 13px;
-  margin-top: 20%;
-  margin-bottom: 5px;
-  text-align: center;
+    font-size: 13px;
+    margin-top: 20%;
+    margin-bottom: 5px;
+    text-align: center;
 }
 
 .challengeIcon {
-  width: 18px;
-  margin-right: 2px;
+    width: 18px;
+    margin-right: 2px;
 }
 
 .challengeButton {
-  background-color: black;
-  border: 0;
-  border-radius: 0;
+    background-color: black;
+    border: 0;
+    border-radius: 0;
 }
 
 .challengeButtonText {
-  font-size: 14px;
+    font-size: 14px;
 }
-
 </style>
