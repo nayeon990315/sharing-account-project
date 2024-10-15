@@ -110,6 +110,10 @@
             </div>
         </div>
     </div>
+</div>
+    </div>
+</div>
+    
 
     <!-- Alert Modal -->
     <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
@@ -358,7 +362,7 @@ const getImageForPercent = computed(() => {
 
 
 // 슬로건 마퀴효과
-const imageCount = 10;
+const imageCount = 100;
 const sloganSrc = new URL('@/assets/images/slogan/slogan_update.png', import.meta.url).href;
 
 
@@ -393,30 +397,78 @@ async function toggleLike(communityId) {
 
     if (isLiked(communityId)) {
         routine.habitLikes -= 1;
-        topLikedRoutines.value = topLikedRoutines.value.filter(like => like.communityId !== communityId);
-        try {
-            await axios.delete('http://localhost:8080/routine-community/like', {
-                data: { userId, communityId },
+            likesArray.value = likesArray.value.filter(
+            (like) => like !== communityId // likesArray에서 제거
+            );
+
+            // 좋아요 취소 API 호출 (DELETE)
+            try {
+            await axios({
+                method: 'delete',
+                url: 'http://localhost:8080/routine-community/like',
+                data: { userId, communityId }, // DELETE에서 data를 명시적으로 전달
+                headers: {
+                'Content-Type': 'application/json', // JSON 형식 명시
+                },
             });
-        } catch (error) {
-            routine.habitLikes += 1;
-            topLikedRoutines.value.push(communityId);
+            console.log('좋아요 취소 성공');
+            } catch (error) {
+            console.error('좋아요 취소 실패', error);
+            routine.habitLikes += 1; // 실패 시 복구
+            likesArray.value.push(communityId); // 실패 시 다시 추가
+            }
         }
-    } else {
+     else {
         routine.habitLikes += 1;
-        topLikedRoutines.value.push(communityId);
+        likesArray.value.push(communityId);
+
+        // 좋아요 추가 API 호출 (POST)
         try {
-            await axios.post('http://localhost:8080/routine-community/like', { userId, communityId });
+            await axios.post('http://localhost:8080/routine-community/like', {
+                userId,
+                communityId,
+            });
+            console.log('좋아요 추가 성공');
         } catch (error) {
-            routine.habitLikes -= 1;
-            topLikedRoutines.value = topLikedRoutines.value.filter(like => like.communityId !== communityId);
+            console.error('좋아요 추가 실패', error);
+            if (error.response && error.response.status === 400) {
+                openModal('이미 좋아요한 루틴입니다!');
+            }
+            routine.habitLikes -= 1; // 실패 시 복구
+            likesArray.value = likesArray.value.filter(
+                (like) => like !== communityId // 실패 시 likesArray에서 제거
+            );
         }
     }
 }
 
+
 // 좋아요 여부 확인
+// function isLiked(communityId) {
+//     const userId = localStorage.getItem('userId');
+//     return topLikedRoutines.value.some(like => like.communityId === communityId);
+// }
+const likesArray = ref([]);
+
+// 사용자가 좋아요한 루틴
+const fetchLikedRoutines = async () => {
+  const userId = localStorage.getItem('userId');
+  try {
+    const response = await axios.get(
+      `http://localhost:8080/routine-community/liked`,
+      {
+        params: { userId },
+      }
+    );
+    likesArray.value = response.data.map((routine) => routine.communityId);
+    console.log('사용자가 좋아요한 루틴 목록:', likesArray.value);
+  } catch (error) {
+    console.error('좋아요한 루틴을 가져오는 중 오류 발생:', error);
+  }
+};
+
 function isLiked(communityId) {
-    return topLikedRoutines.value.some(like => like.communityId === communityId);
+  return likesArray.value.includes(communityId);
 }
 
 async function addHabitToMyHabit(habitId, communityId) {
@@ -469,6 +521,7 @@ async function addHabitToMyHabit(habitId, communityId) {
 
 onMounted(() => {
     fetchTopLikedRoutines(); // 컴포넌트가 로드될 때 상위 3개 루틴을 가져옴
+    fetchLikedRoutines(); // 사용자가 좋아요 했던 거 가져옴
 });
 </script>
 
@@ -517,7 +570,7 @@ onMounted(() => {
 .slogan .image-container {
     display: flex;
     /* 이미지들이 옆으로 나란히 배치 */
-    animation: marquee 100s linear infinite;
+    animation: marquee 1000s linear infinite;
     /* 애니메이션 설정 */
     width: max-content;
     /* 이미지들이 옆으로 계속 이어지도록 설정 */
@@ -608,6 +661,7 @@ onMounted(() => {
     align-items: center;
     gap: -10px;
     position: relative;
+    /* justify-content: center; */
 }
 
 .beeImg {

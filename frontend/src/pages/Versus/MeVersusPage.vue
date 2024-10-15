@@ -70,9 +70,9 @@
                         <img :src="profileImageUrl" alt="Profile" class="profile-image2" :class="{ 'winner-border': winnerMessage === false}"/>
                     </div> -->
                         
-                        <p v-if="winnerMessage === true">Winner</p>
-                        <p v-else-if="winnerMessage === false">Loser</p>
-                        <p v-else>Draw</p>
+                        <p class="cardWin" v-if="winnerMessage === true">Winner</p>
+                        <p class="cardWin" v-else-if="winnerMessage === false">Loser</p>
+                        <p class="cardWin" v-else>Draw</p>
                         
                         <div class="total">
                             <div class="stat">
@@ -115,9 +115,9 @@
                             <img :src="profileImageUrl" alt="Profile" class="profile-image1" :class="{ 'winner-border': winnerMessage === true && showPastRoutines == true}"/>
                         </div> -->
 
-                        <p v-if="winnerMessage === false">Winner</p>
-                        <p v-else-if="winnerMessage === true">Loser</p>
-                        <p v-else>Draw</p>
+                        <p class="cardWin" v-if="winnerMessage === false">Winner</p>
+                        <p class="cardWin" v-else-if="winnerMessage === true">Loser</p>
+                        <p class="cardWin" v-else>Draw</p>
 
                         <div class="total">
                             <div class="stat">
@@ -598,7 +598,7 @@ onMounted(() => {
 
 .stat .statValue {
     font-weight: 900;
-    font-size: 25px;
+    font-size: 22px;
     color: rgb(89, 57, 0);
 }
 
@@ -729,6 +729,13 @@ onMounted(() => {
 
 .btn-flip {
     margin-bottom: 20px;
+}
+
+/* 카드 안 성공 메시지 */
+.cardWin {
+    font-weight: 800;
+    font-size: 24px;
+    text-decoration: underline;
 }
 
 </style>

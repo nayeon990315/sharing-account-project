@@ -9,22 +9,22 @@
         만들어보세요!
       </p>
     </div>
+  </div>
 
-    <!-- 검색창 -->
-    <div class="search-routine">
-      <input
-        type="text"
-        v-model="displayedQuery"
-        placeholder="검색어를 입력하세요"
-      />
-      <button @click="performSearch">검색</button>
-    </div>
+  <!-- 검색창 -->
+  <div class="search-routine">
+    <input
+      type="text"
+      v-model="displayedQuery"
+      placeholder="검색어를 입력하세요"
+    />
+    <button @click="performSearch">검색</button>
   </div>
 
   <nav class="filter">
     <div class="categoryFilter">
       <form action="#">
-        <label for="category_filter">카테고리</label>
+        <label for="category_filter">카테고리 선택</label>
         <select
           name="category"
           id="category"
@@ -156,7 +156,7 @@
               <div class="likeContainer">
                 <button
                   class="likeButton"
-                  @click="toggleLike(routine.communityId)"
+                  @click.stop="toggleLike(routine.communityId)"
                 >
                   <img
                     class="likeImg"
@@ -693,8 +693,57 @@ function logImageUrl(imageUrl) {
   grid-column: 1;
 }
 
+.categoryFilter select {
+  width: 150px;
+  height: 30px;
+  margin-left: 10px; /* 카테고리 문구와 드롭박스 사이 간격 */
+  border: solid 1px black; /* 테두리 없애기 */
+  padding: 5px;
+  font-size: 14px;
+  appearance: none; /* 기본 화살표 제거 */
+}
+
+.categoryFilter select:focus {
+  outline: none; /* 클릭 시 외곽선 제거 */
+}
+
+.categoryFilter {
+  display: flex;
+  align-items: center;
+}
+
 .otherFilter {
   grid-column: 2;
+}
+
+.otherFilter input {
+  margin-left: 13px;
+}
+
+.otherFilter input[type="radio"] {
+  appearance: none; /* 기본 라디오 버튼 스타일 제거 */
+  width: 10px;
+  height: 10px;
+  border: 1px solid black; /* 사각형 테두리 */
+  border-radius: 0px; /* 둥근 모서리 제거 */
+  position: relative;
+  cursor: pointer;
+}
+
+.otherFilter input[type="radio"]::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: white; /* 기본 상태는 흰색 */
+  display: block;
+}
+
+.otherFilter input[type="radio"]:checked::before {
+  background-color: black; /* 선택된 상태일 때 검정색으로 채우기 */
+}
+
+.otherFilter input[type="radio"]:checked {
+  border-color: black; /* 선택된 상태일 때 테두리 색도 검정색 */
 }
 
 .intro {
@@ -714,16 +763,26 @@ function logImageUrl(imageUrl) {
 .search-routine {
   display: flex;
   align-items: center;
+  justify-content: flex-end; /* 오른쪽 끝으로 배치 */
+  margin-right: 8%;
+  margin-bottom: 15px;
 }
 
 .search-routine input {
+  height: 30px;
   margin-right: 5px;
+  font-size: 14px;
   /* 버튼과 입력창 사이 간격 */
+  border: 1px solid black;
 }
 
 .search-routine button {
   display: inline-block;
-  height: 100%;
+  height: 30px;
+  background-color: black;
+  color: white;
+  border: none;
+  font-size: 14px;
 }
 
 .accordion-container {
@@ -841,7 +900,7 @@ function logImageUrl(imageUrl) {
   height: auto;
   flex: 1 1 30%;
   max-width: 33%;
-  min-height: 350px;
+  /* min-height: 350px; */
   /* 카드 최소 높이 통일 */
   overflow: hidden;
   /* 넘치는 내용 숨기기 */
@@ -849,7 +908,8 @@ function logImageUrl(imageUrl) {
 }
 
 .cards .card {
-  height: 100%;
+  /* height: 100%; */
+  /* max-height: 330px; */
   /* 카드 높이 일관성 */
   display: flex;
   flex-direction: column;
@@ -1114,26 +1174,57 @@ function logImageUrl(imageUrl) {
 }
 
 
-
+/* 페이지네이션 */
 .pagination {
   margin: 24px;
   display: flex;
-  /* 페이지네이션을 가로로 배치 */
   list-style: none;
-  /* 기본 리스트 스타일 제거 */
   justify-content: center;
-  /* 중앙 정렬 */
   padding-left: 0;
-  /* 패딩 제거 */
+  gap: 8px; /* 페이지 간 간격 */
 }
 
 .page-item {
   min-width: 32px;
-  padding: 2px 6px;
+  padding: 8px 12px;
   text-align: center;
   margin: 0 3px;
   border-radius: 6px;
-  border: 1px solid #eee;
-  color: #666;
+  border: 2px solid black; /* 페이지 테두리 검정색 */
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
+
+.page-item:hover {
+  background-color: #f0f0f0; /* 호버 시 밝은 배경 */
+}
+
+.active {
+  background-color: black !important; /* 선택된 페이지는 검정 배경 */
+  color: white; /* 선택된 페이지의 글씨는 흰색 */
+}
+
+.page-link {
+  text-decoration: none;
+  color: inherit; /* 부모 요소의 색상 상속 */
+  display: block;
+}
+
+.page-item.arrow {
+  background-color: transparent; /* 화살표는 배경 없이 */
+  border: none; /* 화살표 테두리 없앰 */
+}
+
+.page-item.arrow:hover {
+  background-color: transparent; /* 화살표는 호버 시에도 배경 없게 */
+  color: black;
+}
+
+.page-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 </style>
