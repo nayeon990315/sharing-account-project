@@ -5,16 +5,17 @@
       <div class="user">
 
         <div class="logo">
-          <img src="@/assets/images/bee/bee4.png" alt="" style="width: 150px">
+          <img src="@/assets/images/bee/bee4.png" alt="" style="width: 130px">
         </div>
         <div class="form-wrap">
 
           <div v-if="isLogin">
-            <div>
+            <div class="info">
               <h1>Login</h1>
               <p>소셜 계정으로 간편하게 시작하세요. 로그인 즉시 가입 및 이용이 가능합니다.</p>
             </div>
-            <div>
+
+            <div class="socialLoginForm">
               <div class="socialLogin kakaoLogin"
               @click="kakaoLogin"><img src="@/assets/icons/kakaoIcon.png">카카오 계정으로 로그인</div>
               <div class="socialLogin googleLogin"
@@ -108,6 +109,10 @@ const naverLogin = ()=>{
   font-family: 'Wanted Sans';
 }
 
+/* template {
+  background-color: #FFD565;
+} */
+
 body {
   
   height: 100vh;
@@ -127,6 +132,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* background-color: #FFD565; */
 }
 
 .logo {
@@ -141,14 +147,25 @@ footer {
 
 
 /* 전체 모듈 */
+
+.info h1{
+  font-weight: 800;
+  text-align: center;
+  margin: 30px 0;
+}
+
+.info p {
+  margin-bottom: 50px;
+}
 .login {
   background-color: transparent;
-  width: 400px;
+  /* width: 800px; */
   padding: 40px;
   margin: auto;
   border-radius: 8px;
   /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); */
 }
+
 
 
 h3 {
@@ -162,6 +179,8 @@ h3 {
 /* 세부 폼 스타일 */
 .form-wrap {
   text-align: left;
+  width: 600px;
+  margin: 0 auto;
 }
 
 input[type="text"],
@@ -201,25 +220,11 @@ input[type="submit"]:hover {
 
 
 
-
-/* Forgot password link */
-.help-action, .signUp {
-  text-align: center;
-}
-
-.help-action a, .signUp a {
-  color: rgb(84, 84, 84);
-  font-size: 13px;
-  text-decoration: none;
-  margin-top: 5px;
-}
-
-.help-action a:hover, .signUp a:hover {
-  text-decoration: underline;
-}
-
-
 /* 소셜 로그인 */
+
+.socialLoginForm {
+  margin-bottom: 60px;
+}
 .socialLogin {
     border: solid 1px rgb(126, 126, 126);
     text-align: center;
@@ -273,21 +278,6 @@ input[type="submit"]:hover {
 
 
 
-/* -------------------------------- */
-/* 복구화면 */
-.recovery {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100vh;
-  gap: 20px; /* 그리드 아이템 사이의 간격 추가 */
-}
 
-.recoverID {
-  grid-column: 1;
-}
-
-.recoverPW {
-  grid-column: 2;
-}
 
 </style>

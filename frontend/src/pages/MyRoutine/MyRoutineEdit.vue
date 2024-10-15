@@ -1,7 +1,7 @@
 <template>
     <div class="info">
-        <h1 >Routine Settings</h1>
-        <h5>루틴 설정</h5>
+        <h1 >My Routine Settings</h1>
+        <h5>마이루틴 설정</h5>
         <p>루틴 설정에 대한 설명</p>
     </div>
 
@@ -22,7 +22,7 @@
                             </h4>
                             <p>준비 중인 벌루틴! 실행할 준비가 되면 활성화해 보세요.</p>
 
-                            <h6 class="d-flex align-items-center mt-5">
+                            <h6 class="d-flex align-items-center mt-5 type">
                                 <img src="@/assets/images/check/true.png" style="width: 12px; margin-right: 6px;">
                                 비활성화된 루틴
                             </h6>
@@ -41,11 +41,12 @@
                                                 <i class="fa fa-cloud-upload" aria-hidden="true"></i>
                                             </button>
                                             <button class="btn" @click="confirmEdit('waiting', element)">
-                                                <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
+                                                <img src="@/assets/icons/edit.png" alt="" class="icon" style="width: 14px">
                                             </button>
                                             <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                                @click="confirmRemove('waiting', element.myHabitId, element.habitId, element.habitTitle)">
-                                                <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
+                                                @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
+                                                <img src="@/assets/icons/delete.png" alt="" class="icon" style="width: 14px">
+
                                             </button>
                                         </div>
 
@@ -57,13 +58,13 @@
                         <!-- 진행 중 리스트 -->
                         <div class="col-6 active-box">
                             <h4 class="d-flex align-items-center">
-                                <img class = "beeImg" src="@/assets/images/bee/bee3.png" alt="">
+                                <img class = "beeImg" src="@/assets/images/bee/bee3.png" alt="" style="margin-top: -9px">
                                 <!-- <i class="fa fa-circle px-2" style="font-size:16px; color:green;" aria-hidden="true"></i> -->
                                 활성화
                             </h4>
                             <p>매일 실천할 벌루틴을 활성화된 루틴에 모아보세요.</p>
 
-                            <h6 class="d-flex align-items-center mt-5">
+                            <h6 class="d-flex align-items-center mt-5 type">
                                 <img src="@/assets/images/check/true.png" style="width: 12px; margin-right: 6px;">
                                 활성화된 루틴
                             </h6>
@@ -82,11 +83,12 @@
                                                 <i class="fa fa-cloud-upload" aria-hidden="true"></i>
                                             </button>
                                             <button class="btn" @click="confirmEdit('inProgress', element)">
-                                                <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
+                                                <img src="@/assets/icons/edit.png" alt=""  class="icon" style="width: 14px">
                                             </button>
                                             <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                                @click="confirmRemove('inProgress', element.myHabitId, element.habitId, element.habitTitle)">
-                                                <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
+                                                @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
+                                                <img src="@/assets/icons/delete.png" alt=""  class="icon" style="width: 14px">
+
                                             </button>
                                         </div>
                                     </div>          
@@ -94,7 +96,7 @@
                             </draggable>
 
                             <!-- 완료된 리스트도 같은 박스 안에 배치 -->
-                            <h6 class="allTodayChecked d-flex align-items-center mt-5">
+                            <h6 class="allTodayChecked d-flex align-items-center mt-5 type">
                                 <img src="@/assets/images/check/true.png" style="width: 12px; margin-right: 6px;">
                                 오늘 완료한 루틴
                             </h6>
@@ -141,19 +143,21 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 사이드바 버튼들 -->
-    <div class="col-2 sidebar d-flex flex-column align-items-center justify-content-start">
+        <!-- 사이드바 버튼들 -->
+    <div class="button-section col-2 sidebar d-flex flex-column align-items-center justify-content-start">
                 <div class="d-flex flex-column">
                     <button type="button" class="btn btn-dark mb-3" data-bs-toggle="modal" data-bs-target="#myModal">
-                        루틴 추가하기
+                        루틴 추가
                     </button>
                     <button type="button" class="btn btn-dark mb-3" @click="updateRoutineState">
-                        상태 업데이트
+                        업데이트
                     </button>
                 </div>
             </div>
+    </div>
+
+    
 
 
     <!-- 루틴 추가 Modal -->
@@ -700,6 +704,9 @@ export default {
 .col-6 {
     /* border: 1px solid black; */
     padding: 10px;
+    width: 50%;
+    flex-grow: 1; /* 두 박스가 가용 공간을 균등하게 나누도록 설정 */
+
 }
 
 .col-6 h4 {
@@ -707,6 +714,26 @@ export default {
 }
 .col-6 h4 img {
     margin-right: 15px;
+}
+
+
+/* 버튼을 옆에 */
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.button-section {
+    width: 300px;
+    flex: 0 0 10%;
+    margin-top: 40px;
+}
+
+.row {
+    /* flex: 0 0 80%; */
+    margin-right: -20px;
+    /* width: 100%; */
 }
 
 
@@ -767,7 +794,7 @@ export default {
     margin-bottom: 3px;
     border-radius: 0px;
 
-    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='black' stroke-width='4' stroke-dasharray='11%2c 10' stroke-dashoffset='27' stroke-linecap='butt'/%3e%3c/svg%3e");
+    /* background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='black' stroke-width='4' stroke-dasharray='11%2c 10' stroke-dashoffset='27' stroke-linecap='butt'/%3e%3c/svg%3e"); */
 }
 
 .list-group-item:active {
@@ -864,7 +891,7 @@ export default {
 
 /* 루틴 명 스타일 */
 .task-name {
-    font-weight: bold;
+    /* font-weight: bold; */
     font-size: 1rem;
 }
 
@@ -872,5 +899,14 @@ export default {
 /* 벌 이미지 */
 .beeImg {
     width: 60px;
+}
+
+/* .icon {
+    margin: -10px;
+} */
+
+.type {
+    font-weight: 700;
+    font-size: 18px;
 }
 </style>

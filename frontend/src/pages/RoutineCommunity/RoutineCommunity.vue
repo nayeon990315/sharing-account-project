@@ -1,8 +1,9 @@
 <template>
   <!-- 루틴 커뮤니티 -->
-  <div class="intro">
+  <div class="info">
     <div class="introLeft">
-      <h3>Routine Share Community</h3>
+      <h1>Routine Share</h1>
+      <h5>벌루틴 공유</h5>
       <p>
         나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로
         만들어보세요!
@@ -101,10 +102,9 @@
   <div class="main">
     <!-- 인증사진 프리뷰 -->
     <div class="shots">
-      <h5>SHOT PREVIEW</h5>
-      <p>
-        벌루틴을 클릭하면, 해당 루틴에 대한 사람들의 꿀샷을 미리볼 수 있어요.
-      </p>
+      <h4>SHOT PREVIEW</h4>
+      <p>벌루틴을 클릭하면, 해당 루틴에 대한 사람들의 꿀샷을 미리볼 수 있어요.</p>
+
       <!-- 선택한 루틴 제목 표시 -->
       <!-- <h4 v-if="selectedHabitTitle">{{ selectedHabitTitle }}</h4> -->
 
@@ -628,16 +628,7 @@ function logImageUrl(imageUrl) {
 </script>
 
 <style scoped>
-@font-face {
-  font-family: 'Wanted Sans';
-  src: url('@/assets/fonts/WantedSans-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-* {
-  font-family: 'Wanted Sans';
-}
 
 /* 화면 줄이면 !!*/
 @media (max-width: 850px) {
@@ -661,6 +652,21 @@ function logImageUrl(imageUrl) {
     width: 100%;
     /* 가로 너비 채우기 */
   }
+}
+
+
+/* 인포 */
+.info {
+    margin: 6% 8%;
+}
+
+.info h1{
+    font-weight: 800;
+}
+
+.info p {
+    /* font-weight: 700; */
+    margin-top: 25px;
 }
 
 /* 전체 배치 */
@@ -1063,15 +1069,16 @@ function logImageUrl(imageUrl) {
 /* 인증사진 미리보기 */
 .shots {
   grid-column: 1;
-  background-color: #d3be5544;
+  background-color: #ffd73984;
   margin-right: 100px;
   padding: 8px;
   width: 100%;
 }
 
-.shots h5 {
+.shots h4 {
   margin-bottom: 20px;
   text-decoration: underline;
+  font-weight: 800;
 }
 
 .shots p {

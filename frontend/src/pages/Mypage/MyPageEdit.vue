@@ -5,7 +5,7 @@
     <div class="profile-container" v-if="!isEditing">
       <div class="profile-picture">
         <img :src="profileImageUrl" alt="Profile Picture" v-if="profileImageUrl" />
-        <p v-else>No profile picture</p>
+        <img v-else src="@/assets/images/bee/bee4.png">
       </div>
 
       <div class="profile-info">

@@ -8,7 +8,8 @@
                 <img src="@/assets/images/header/bee_header3.png">
             </div>
 
-            <div class="dropdown dropdown p-2" id="routineDropdown">
+            <div class="dropdown dropdown p-2" id="routineMoneyDropdown">
+
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Routine & Money
@@ -35,7 +36,7 @@
                     Community
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                    <li><a href="/routine-community" class="dropdown-item">벌루틴 마켓/벌루틴 허브</a></li>
+                    <li><a href="/routine-community" class="dropdown-item">벌루틴 공유</a></li>
                     <li><a href="/post-community/explore" class="dropdown-item" >허니샷 인증</a></li>
                 </ul>
             </div>
@@ -88,6 +89,13 @@ const router = useRouter();
 // 드롭다운 메뉴가 호버 시 열리고 닫히도록 설정
 onMounted(() => {
     checkLoginStatus();
+
+
+    const dropdowns = ['routineMoneyDropdown', 'communityDropdown', 'myDropdown']; // 각 드롭다운 ID
+
+
+    // 로그아웃 기능
+
 });
 
 router.beforeEach((to, from, next) => {
