@@ -565,7 +565,7 @@ async function addHabitToMyHabit(habitId, communityId) {
     );
     console.log('내 루틴에 추가되었습니다.');
 
-    const response = await axios.get(`http://localhost:8080/habits/find`, {
+    const response = await axios.get(`http://localhost:8080/habits/find-my-habit`, {
       params: {
         habitId: habitId,
       },
@@ -574,7 +574,7 @@ async function addHabitToMyHabit(habitId, communityId) {
     habitStore.habits.push({
       myHabitId: response.data.myHabitId,
       habitId: response.data.habitId,
-      writerId: localStorage.getItem('userId'),
+      writerId: response.data.userId,
       habitTitle: response.data.habitTitle,
       categoryTitle: response.data.categoryTitle,
       state: '대기',
@@ -583,7 +583,7 @@ async function addHabitToMyHabit(habitId, communityId) {
       isCheckedToday: false,
       checkDate: null,
     });
-
+    console.log(response.data);
     openModal('MyRoutine에 추가되었습니다.'); // 성공 시 알림 표시
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
