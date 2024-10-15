@@ -266,7 +266,4 @@ onMounted(() => {
   height: 100%;
   object-fit: cover; /* 이미지 비율을 유지하며 잘 맞추기 */
 }
-
-.pagination-container {
-}
 </style>

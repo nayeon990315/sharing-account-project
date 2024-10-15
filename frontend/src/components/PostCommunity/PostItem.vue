@@ -5,12 +5,15 @@
       <span class="username">{{ post.userName }}</span>
     </div>
     <p class="habit-title">{{ habitData.habitTitle }}</p>
-    <p class="participants">
-      현재 이 습관에 {{ participants }} 명이 참여 중이고,
-    </p>
-    <p class="habit-likes">
-      지금까지 인증샷은 총 {{ checkedHabit }}개가 올라왔어요!
-    </p>
+
+    <!-- 통합된 participants와 checkedHabit 정보 -->
+    <div class="habit-info">
+      <p class="participants">
+        현재 이 습관에 {{ participants }} 명이 참여 중이고,<br />
+        지금까지 인증샷은 총 {{ checkedHabit }}개가 올라왔어요!
+      </p>
+    </div>
+
     <img :src="post.imageURL" alt="Post Image" class="post-image" />
     <div class="post-details">
       <p class="post-content">{{ post.content }}</p>
@@ -19,11 +22,14 @@
         {{ new Date(post.createdAt).toLocaleDateString() }}
       </p>
 
+      <!-- 댓글 섹션 -->
       <comment-section
         v-if="post.showComments"
         :post-id="post.postId"
         @comment-change="handleCommentChange"
       ></comment-section>
+
+      <!-- 좋아요 및 댓글 버튼 -->
       <div class="interaction-buttons">
         <div class="like-button" @click="toggleLike">
           <img :src="likeIcon" alt="Like" class="icon" />
@@ -56,6 +62,7 @@ const props = defineProps({
 
 const emit = defineEmits(['toggleLike', 'toggleComments']);
 
+// 좋아요 및 댓글 관련 데이터
 const shotCount = ref(0);
 const habitData = ref({});
 const participants = ref(0);
@@ -64,53 +71,51 @@ const checkedHabit = ref(0);
 const existingPosts = ref([]);
 const commentCounts = ref({});
 
+// 좋아요 아이콘 설정
 const likeIcon = computed(() => {
   return props.post.isLiked ? likeFullIcon : likeEmptyIcon;
 });
 
 const commentIcon = ref(commentIconSrc);
 
+// 좋아요 버튼 클릭 시 이벤트 발생
 const toggleLike = () => {
   emit('toggleLike', props.post);
 };
 
+// 댓글 버튼 클릭 시 이벤트 발생
 const toggleComments = () => {
   emit('toggleComments', props.post);
 };
 
+// 데이터 가져오는 함수
 const fetchData = async () => {
   try {
     const shotResponse = await axios.get(
       `http://localhost:8080/post-community/certification-count?userId=${props.post.userId}`
     );
-    console.log('shot response' + shotResponse.data);
     shotCount.value = shotResponse.data;
 
     const habitResponse = await axios.get(
       `http://localhost:8080/habits/find?habitId=${props.post.habitId}`
     );
-
-    console.log('Habit Data : ', habitResponse.data);
     habitData.value = habitResponse.data;
 
     const habitCommunityResponse = await axios.get(
       `http://localhost:8080/routine-community/${props.post.habitId}`
     );
-
-    console.log('HabitCommunity 데이터 : ', habitCommunityResponse.data);
     participants.value = habitCommunityResponse.data.participants;
 
     const checkedHabitResponse = await axios.get(
       `http://localhost:8080/habits/checked/count?&habitId=${props.post.habitId}`
     );
-
-    console.log('checkedHabitResponse : ', checkedHabitResponse.data);
     checkedHabit.value = checkedHabitResponse.data;
   } catch (error) {
     console.error('인증 횟수를 가져오는 중 오류가 발생했습니다:', error);
   }
 };
 
+// 댓글 개수 가져오는 함수
 const fetchCommentCounts = () => {
   axios
     .get('http://localhost:8080/post-community/posts/comments')
@@ -124,6 +129,7 @@ const fetchCommentCounts = () => {
     });
 };
 
+// 댓글 업데이트 핸들러
 const handleCommentChange = (postId) => {
   axios
     .get(`http://localhost:8080/post-community/posts/${postId}/comments/count`)
@@ -135,6 +141,7 @@ const handleCommentChange = (postId) => {
     });
 };
 
+// 컴포넌트 마운트 시 데이터 로드
 onMounted(() => {
   fetchData();
   fetchCommentCounts();
@@ -144,11 +151,11 @@ onMounted(() => {
 <style scoped>
 .post {
   width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
+  max-width: 700px;
+  margin: 10px auto;
   padding: 20px;
   background-color: #fff;
-  border: 1px solid #e6e6e6;
+  border: 0.5px solid #e6e6e6;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -172,27 +179,41 @@ onMounted(() => {
   font-size: 14px;
 }
 
-.habit-title,
-.shot-count,
-.participants,
-.habit-likes {
-  font-size: 14px;
-  margin-bottom: 10px;
-  color: #555;
-}
-
 .habit-title {
+  background-color: #fdf0ca;
+  border-radius: 8px;
+  padding: 10px 20px;
+  display: inline-block;
+  font-size: 14px;
   font-weight: bold;
-  font-size: 16px;
+  text-align: center;
+  margin-bottom: 15px;
+  position: relative;
 }
 
-.shot-count {
-  color: #ff5c5c;
+.habit-title::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  border-width: 0 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent #fdf0ca transparent;
 }
 
-.participants,
-.habit-likes {
-  color: #888;
+.habit-info {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: -5px;
+  text-align: left;
+  width: max-content;
+  max-width: 100%;
+}
+
+.participants {
+  margin: 0;
+  font-size: 14px;
 }
 
 .post-image {
@@ -207,19 +228,10 @@ onMounted(() => {
   margin-top: 10px;
 }
 
-.post-content {
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.post-hashtag {
-  color: #1e90ff;
-  margin-bottom: 8px;
-}
-
+.post-content,
+.post-hashtag,
 .post-date {
-  font-size: 12px;
-  color: #aaa;
+  margin-bottom: 8px;
 }
 
 .interaction-buttons {
