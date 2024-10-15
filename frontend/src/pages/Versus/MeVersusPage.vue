@@ -13,17 +13,22 @@
             <p>대결할 과거의 날짜를 선택한 후 카드를 클릭하세요</p>
             <div class="button-group">
                 
-                <button class="btn " @click="selectDate(1, '일전')">1일전</button>
-                <button class="btn " @click="selectDate(7, '주전')">1주전</button>
-                <button class="btn  " @click="selectDate(1, '달전')">1달전</button>
-                <button class="btn " @click="selectDate(1, '년전')">1년전</button>
-                <!-- 날짜 선택을 위한 버튼과 달력 -->
-                    <p> 직접 날짜 선택</p>
-                <div class="date-picker-container">
-                    <Datepicker v-model="selectedDate" locale="ko" :enable-time-picker="false" @change="selectCalender"/>
-                    
+                <div>
+                    <button class="btn " @click="selectDate(1, '일전')">1일전</button>
+                    <button class="btn " @click="selectDate(7, '주전')">1주전</button>
+                    <button class="btn  " @click="selectDate(1, '달전')">1달전</button>
+                    <button class="btn " @click="selectDate(1, '년전')">1년전</button>
                 </div>
-                <button class="btn btn-info " @click="selectCalender">기간설정</button>
+                
+                <div class="chooseDate">
+                    <!-- <p> 직접 날짜 선택</p> -->
+                    <div class="date-picker-container">
+                        <Datepicker v-model="selectedDate" locale="ko" :enable-time-picker="false" @change="selectCalender"/>
+                        
+                    </div>
+                    <button class="btn btn-info " @click="selectCalender">기간설정</button>
+                </div>
+                
             </div>
         </div>
 
@@ -505,10 +510,31 @@ onMounted(() => {
 .dateSelect {
     text-align: center;
     /* justify-self: center; */
-    width: 100%;
+    width: 500px;
     display: flex;
     justify-content: center;
     flex-direction: column;
+    margin: 0 auto;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.button-group button {
+    margin: 0 5px;
+}
+.chooseDate {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+}
+.chooseDate button {
+    margin-left: 6px;
+    font-size: 13px;
+    /* padding: 3px; */
 }
 
 

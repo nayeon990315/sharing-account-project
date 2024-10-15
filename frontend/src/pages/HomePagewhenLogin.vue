@@ -44,39 +44,8 @@
     </div>
 
 
-        </div>
-      </div>
-
-      <div class="potBeeContainer">
-        <img class="beeImg" src="@/assets/images/bee/bee_update.png">
-        <img class="pot" :src="getImageForPercent">
-        <div class="potComment">
-          <p class="date">{{ month }}월 {{ day }}일</p>
-          <!-- <p>{{ todayCheckedRoutinesCount }} / {{ todayActiveRoutinesCount }}개 달성</p> -->
-          <p class="percent">{{ todayPercent }}% 달성</p>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div class="monthlyBRTN">
-
-
-    <!-- 달 선택 -->
-    <!-- <select name="month" id="month" v-model="selectedMonth" @change="handleMonthChange">
-      <option value="jan">1월</option>
-      <option value="feb">2월</option>
-      <option value="mar">3월</option>
-      <option value="apr">4월</option>
-      <option value="may">5월</option>
-      <option value="june">6월</option>
-      <option value="july">7월</option>
-      <option value="aug">8월</option>
-      <option value="sep">9월</option>
-      <option value="oct">10월</option>
-      <option value="nov">11월</option>
-      <option value="dec">12월</option>
-    </select> -->
     <!-- 그라데이션 사각형 -->
     <img class="gradation" src="@/assets/images/honeycomb/gradation2.png">
 
@@ -104,15 +73,17 @@
   <div class="community">
     <h1>많이 찾는 벌루틴에 참여해보세요</h1>
     <div class="top-likes-section">
-      <h3>Top 3 Most Liked Routines</h3>
       <div class="grid-container">
         <!-- 좋아요 많은 순서대로 상위 3개 루틴 표시 -->
-        <div class="grid-item" v-for="routine in topLikedRoutines" :key="routine.communityId">
-          <div class="card h-100">
+        <div class="grid-item" v-for="(routine, index) in topLikedRoutines" :key="routine.communityId">
+            <!-- 순위 -->
+            <div class="rank">{{ index + 1 }}</div> 
+
+            <div class="card h-100">
             <div class="card-body">
               <div class="subtitle">
                 <span class="type card-subtitle">{{ routine.categoryTitle }}</span>
-                <span class="date card-subtitle">{{ routine.uploadDate }}</span>
+                <!-- <span class="date card-subtitle">{{ routine.uploadDate }}</span> -->
               </div>
               <h5 class="card-title">{{ routine.habitTitle }}</h5>
               <div class="card-text">
@@ -132,7 +103,7 @@
                 <button @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
                   class="challengeButton btn btn-primary">
                   <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
-                  <span class="challengeButtonText">함께 도전하기</span>
+                  <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
                 </button>
               </div>
             </div>
@@ -759,6 +730,15 @@ onMounted(() => {
 .grid-item {
   display: flex;
   justify-content: center;
+  /* text-align: center; */
+  flex-direction: column;
+}
+
+.rank {
+    font-weight: 900;
+    font-size: 40px;
+    color: #FFB815;
+    text-align: center;
 }
 
 .card {
@@ -800,9 +780,55 @@ onMounted(() => {
   width: 22px;
 }
 
+/* 챌린지 */
+
+.top-likes-section {
+    margin-top: 80px;
+}
+
+.type {
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    padding: 4px 6px;
+    margin-bottom: 10px;
+}
+
 .challengeButton {
   background-color: rgb(0, 0, 0);
   border: 0;
   border-radius: 0;
 }
+
+.challengeContainer {
+  display: flex;
+  /* flexbox 레이아웃 활성화 */
+  flex-direction: column;
+  /* 요소들을 수직으로 쌓기 */
+  justify-content: center;
+  width: 300px;
+}
+
+.challengeComment {
+  font-size: 13px;
+  margin-top: 20%;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.challengeIcon {
+  width: 18px;
+  margin-right: 2px;
+}
+
+.challengeButton {
+  background-color: black;
+  border: 0;
+  border-radius: 0;
+}
+
+.challengeButtonText {
+  font-size: 14px;
+}
+
 </style>

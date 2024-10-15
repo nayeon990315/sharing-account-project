@@ -5,7 +5,7 @@
       <div class="profile-info">
         <div class="nickname-container">
           <h2 id="nickname"><strong>{{ user.nickname }}</strong>님</h2>
-          <button id="changeProfile" @click="openModal()">✎</button>
+          <button id="changeProfile" @click="openModal()"><img src="@/assets/icons/edit.png" style="width: 14px"></button>
         </div>
         <p>오늘도 한 꿀씩 쌓아볼까요?</p>
       </div>
@@ -17,8 +17,8 @@
         <h3><strong>{{ user.reward }}</strong>꿀</h3>
       </div>
       <div class="stat">
-        <p>지금까지 이행한 루틴은</p>
-        <h3><strong>{{ user.completedRoutines }}</strong>건</h3>
+        <p>지금까지 달성한 루틴은</p>
+        <h3><strong>{{ user.completedRoutines }}</strong>개</h3>
       </div>
       <div class="stat">
         <p>지금까지 절약한 금액은</p>
@@ -54,19 +54,22 @@
       </div>
     </div>
 
-    <div class="content">
-      <h5 id="modal-title"><strong>지금까지 이행한 루틴 및 절약 내역</strong></h5>
-      <div class="routine-content">
-        <ul>
-          <li v-for="(item, index) in routine.title" :key="index">
-           <hr>({{ routine.date[index] }})&nbsp;&nbsp; {{ item }}&nbsp; - {{ routine.save[index] }}원 절약
-          </li>
-        </ul>
+    <div class="content-section">
+      <div class="content">
+        <h5 id="modal-title"><strong>지금까지 달성한 루틴 및 절약 내역</strong></h5>
+        <div class="routine-content">
+          <ul>
+            <li v-for="(item, index) in routine.title" :key="index">
+            ({{ routine.date[index] }})&nbsp;&nbsp; {{ item }}&nbsp; - {{ routine.save[index] }}원 절약
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
 
-    <div class="calendar-section">
-      <Calendar :events="calendarEvents" />
+      <div class="calendar-section">
+        <h5 id="modal-title"><strong>달력</strong></h5>
+        <Calendar :events="calendarEvents" />
+      </div>
     </div>
   </div>
 </template>
@@ -281,10 +284,10 @@ onMounted(getUserIdFromLocal);
   display: flex;
   align-items: center;
   margin: 20px;
-  border: 2px solid #ddd; 
+  /* border: 2px solid #ddd;  */
   border-radius: 8px; 
   padding: 20px; 
-  background-color: #f9f9f9; 
+  /* background-color: #f9f9f9;  */
 }
 
 .profile-image {
@@ -299,7 +302,7 @@ onMounted(getUserIdFromLocal);
 }
 
 .nickname-container {
-    display: flex; 
+    display: flex;
 }
 
 #changeProfile {
@@ -311,34 +314,68 @@ onMounted(getUserIdFromLocal);
 .stats-section {
   display: flex;
   justify-content: space-between;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin: 0 auto;
+  width: 70%;
 }
 
 .stat {
-  background-color: #f0f0f0;
+  /* background-color: #ffd73963; */
   padding: 20px;
   width: 32%;
-  border-radius: 5px;
-  border: 2px solid #ddd; 
-  background-color: #f9f9f9; 
+  border-radius: 0;
+  /* border: 3px solid black;  */
   text-align: center;
+}
+
+.stat p {
+  font-weight: 800;
+}
+
+.content-section {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  margin-top: 40px;
 }
 
 .content {
   align-items: center;
-  margin: 20px;
-  border: 2px solid #ddd; 
-  border-radius: 8px; 
+  /* margin: 20px; */
+  /* border: 2px solid black;  */
+  border-radius: 0; 
   padding: 20px; 
-  background-color: #f9f9f9;
+  /* background-color: #ffd73958; */
+  width: 500px;
 }
 
-.content ul {
+
+.routine-content {
+  background-color: #ffd73958;
+  margin-bottom: 60px;
+}
+
+.content ul li {
   list-style-type: none; 
   margin-top: 30px;
   text-align: center;
+  font-size: 17px;
+  /* font-weight: 700; */
 }
+
+.routine-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.calendar-section {
+  margin-top: 20px;
+  border-radius: 0;
+}
+
+
+
+/* 모달 */
 
 .modal {
   position: fixed;
@@ -455,12 +492,5 @@ onMounted(getUserIdFromLocal);
   border: 4px solid #a0983ccd; 
 }
 
-.routine-content {
-  max-height: 300px;
-  overflow-y: auto;
-}
 
-.calendar-section {
-  margin-top: 20px;
-}
 </style>

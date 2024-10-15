@@ -1,9 +1,15 @@
 <template>
+    <div class="info">
+        <h1 >Spending By Routine</h1>
+        <h5>루틴별 지출</h5>
+        <p>내 벌루틴에 대한 지출 내역을 한눈에 확인하고 달성을 체크해 보세요! 루틴을 지키기 위해 어떤 지출을 줄여나갈 수 있을지 함께 고민해요.</p>
+    </div>
+
     <div class="container">
         <div class="row">
             <!-- Left Sidebar (Routine Category) -->
             <aside class="col-md-3 p-3 border-end">
-                <h2 class="h4">루틴 커뮤니티</h2>
+                <h2 class="h4">내 루틴</h2>
                     <div class="info">
                         <span>루틴 목록을 선택하면 해당 카테고리의 지출 내역을 불러옵니다.</span><br/>
                     </div>
@@ -13,7 +19,10 @@
                             'selected-primary': selectedCategory === category,
                         }" 
                             @click="selectCategory(category)">
-                        <h4 class="h6">{{ categoryEmojis[category] }}&nbsp;{{ category }}</h4>
+                        <!-- <span class="h6">{{ categoryEmojis[category] }}&nbsp;{{ category }}</span> -->
+                        <!-- <h4 class="h6"><img src="@/assets/images/check/true.png" style="width:14px">&nbsp;{{ category }}</h4> -->
+                        <span class="h6">{{ category }}</span>
+
                         <ul class="list-group border">
                             <li v-for="routine in filteredRoutines(category)" :key="routine.habitTitle"
                                 class="list-group-item border"
@@ -29,7 +38,7 @@
                     class="mt-5 bg-white d-flex justify-content-center"
                     @click="selectCategory('전체')">
                     <ul class="list-group border">
-                        <li class="list-group-item border">
+                        <li class="list-group-item border reset">
                             <i class="fa-solid fa-arrow-rotate-right"></i>
                             <span>선택 해제</span> <!-- 텍스트 -->
                         </li>
@@ -52,8 +61,9 @@
                                     <li><span class="icon">📊</span> <strong>{{ formatCurrency(maxExpenseCategory.maxAmount) }}</strong>을 사용했어요.</li>
                                 </ul>
                                 <ul v-else>
-                                    <li v-if="selectedCategory">{{categoryEmojis[selectedCategory]}}&nbsp;<strong>{{ selectedCategory }}</strong>을(를) 선택하셨네요!</li>
-                                    <li v-if="selectedCategory">오늘 {{ selectedCategory }}에 총&nbsp;<strong>{{ formatCurrency(selectedCategoryExpenses.amount) }}</strong>을 쓰셨어요.
+                                    <!-- <li v-if="selectedCategory">{{categoryEmojis[selectedCategory]}}&nbsp;<strong>{{ selectedCategory }}</strong>을(를) 선택하셨네요!</li> -->
+                                    <li v-if="selectedCategory"><strong>{{ selectedCategory }}</strong> 을(를) 선택하셨네요!</li>
+                                    <li v-if="selectedCategory">오늘 {{ selectedCategory }}에 총&nbsp;<strong>{{ formatCurrency(selectedCategoryExpenses.amount) }}</strong>을 썼어요.
                                     </li>
                                 </ul>
                             </div>
@@ -387,10 +397,10 @@ section {
 }
 
 .block {
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
     border-radius: 0px;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #ffd7392b;
     margin-bottom: 30px;
 }
 
@@ -425,8 +435,8 @@ align-items: center;
 }
 
 .text-container .icon {
-font-size: 24px;
-margin-right: 10px;
+width: 24px;
+margin-right: 15px;
 }
 
 .text-container strong {
@@ -453,4 +463,42 @@ color: #777; /* 일반 텍스트 색상 */
 }
 
 
+
+
+/* 인포 */
+.info {
+    margin: 6% 8%;
+    color: black;
+}
+
+.info h1{
+    font-weight: 800;
+}
+
+.info p {
+    /* font-weight: 700; */
+    margin-top: 25px;
+}
+
+
+.h4 {
+    font-weight: 700;
+}
+
+.reset {
+    font-size: 13px;
+}
+.reset i {
+    font-size: 13px;
+    margin-right: 2px;
+}
+
+.h6 {
+    /* 카테고리 이름 */
+    background-color: black;
+    color: white;
+    padding: 4px 8px;
+    font-size: 13px;
+    
+}
 </style>

@@ -8,7 +8,7 @@
                 <img src="@/assets/images/header/bee_header3.png">
             </div>
 
-            <div class="dropdown dropdown p-2" id="routine&moneyDropdown">
+            <div class="dropdown dropdown p-2" id="routineMoneyDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Routine & Money
@@ -35,7 +35,7 @@
                     Community
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                    <li><a href="/routine-community" class="dropdown-item">벌루틴 마켓/벌루틴 허브</a></li>
+                    <li><a href="/routine-community" class="dropdown-item">벌루틴 공유</a></li>
                     <li><a href="/post-community/explore" class="dropdown-item" >허니샷 인증</a></li>
                 </ul>
             </div>
@@ -89,26 +89,26 @@ const router = useRouter();
 onMounted(() => {
     checkLoginStatus();
 
-    const dropdowns = ['routineDropdown', 'moneyDropdown', 'communityDropdown']; // 각 드롭다운 ID
+    const dropdowns = ['routineMoneyDropdown', 'communityDropdown', 'myDropdown']; // 각 드롭다운 ID
 
-    dropdowns.forEach(id => {
-        const dropdownElement = document.querySelector(`#${id} button`);
-        const dropdownInstance = new Dropdown(dropdownElement);
+    // dropdowns.forEach(id => {
+    //     const dropdownElement = document.querySelector(`#${id} button`);
+    //     const dropdownInstance = new Dropdown(dropdownElement);
 
-        const dropdownContainer = document.getElementById(id);
+    //     const dropdownContainer = document.getElementById(id);
 
-        dropdownContainer.addEventListener('mouseover', () => {
-            dropdownInstance.show();
-            dropdownElement.style.backgroundColor = "#000000";
-            dropdownElement.style.color = "#FFFFFF";
-        });
+    //     dropdownContainer.addEventListener('mouseover', () => {
+    //         dropdownInstance.show();
+    //         dropdownElement.style.backgroundColor = "#000000";
+    //         dropdownElement.style.color = "#FFFFFF";
+    //     });
 
-        dropdownContainer.addEventListener('mouseleave', () => {
-            dropdownInstance.hide();
-            dropdownElement.style.backgroundColor = "transparent";
-            dropdownElement.style.color = "black";
-        });
-    });
+    //     dropdownContainer.addEventListener('mouseleave', () => {
+    //         dropdownInstance.hide();
+    //         dropdownElement.style.backgroundColor = "transparent";
+    //         dropdownElement.style.color = "black";
+    //     });
+    // });
 
     // 로그아웃 기능
 });
