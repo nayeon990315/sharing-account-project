@@ -158,7 +158,8 @@ footer {
   margin-bottom: 50px;
 }
 .login {
-  background-color: transparent;
+  background: url('@/assets/images/background/background.png');
+  /* background-color: transparent; */
   /* width: 800px; */
   padding: 40px;
   margin: auto;

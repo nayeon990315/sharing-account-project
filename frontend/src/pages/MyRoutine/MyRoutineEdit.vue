@@ -44,7 +44,7 @@
                                                 <img src="@/assets/icons/edit.png" alt="" class="icon" style="width: 14px">
                                             </button>
                                             <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                                @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
+                                                @click="confirmRemove('waiting', element.myHabitId, element.habitId, element.habitTitle)">
                                                 <img src="@/assets/icons/delete.png" alt="" class="icon" style="width: 14px">
 
                                             </button>
@@ -86,7 +86,7 @@
                                                 <img src="@/assets/icons/edit.png" alt=""  class="icon" style="width: 14px">
                                             </button>
                                             <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                                @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
+                                                @click="confirmRemove('inProgress', element.myHabitId, element.habitId, element.habitTitle)">
                                                 <img src="@/assets/icons/delete.png" alt=""  class="icon" style="width: 14px">
 
                                             </button>
@@ -173,26 +173,26 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <label>카테고리 선택</label>
+                    <label>🐝 카테고리를 선택하세요</label>
                     <select v-model="newHabitCategory" class="form-select" aria-label="Category select"
                         id="categorySelect">
-                        <option disabled value="">카테고리를 선택하세요</option>
+                        <option disabled value="">카테고리</option>
                         <option v-for="category in categories" :key="category.value" :value="category.value">
                             {{ category.label }}
                         </option>
                     </select>
-                    <label>이름</label>
-                    <input v-model="newHabitName" type="text" class="form-control" placeholder="이름 입력">
-                    <label>금액</label>
-                    <input v-model="newHabitSaveAmount" type="text" class="form-control" placeholder="금액 입력">
-                    <label>달성 조건</label>
-                    <input v-model="newHabitCertification" type="text" class="form-control" placeholder="달성 조건 입력">
+                    <label>🐝 루틴의 제목을 입력하세요</label>
+                    <input v-model="newHabitName" type="text" class="form-control" placeholder="제목">
+                    <label>🐝 얼마를 아낄 수 있을까요??</label>
+                    <input v-model="newHabitSaveAmount" type="text" class="form-control" placeholder="예상 절약 금액">
+                    <label>🐝 인증샷 조건을 알려주세요</label>
+                    <input v-model="newHabitCertification" type="text" class="form-control" placeholder="인증샷 조건">
                 </div>
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button class="btn" :class="isAddFormValid ? 'btn-dark' : 'btn-secondary'" @click="addHabit"
-                        :disabled="!isAddFormValid">
+                        :disabled="!isAddFormValid" data-bs-dismiss="modal">
                         추가하기
                     </button>
                 </div>
@@ -908,5 +908,44 @@ export default {
 .type {
     font-weight: 700;
     font-size: 18px;
+}
+
+.modal-body {
+  padding: 20px;
+}
+.modal-body label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.modal-body input,
+.modal-body select {
+  margin-bottom: 20px; /* 구성 요소들 사이의 간격을 추가 */
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.modal-header {
+  padding: 15px 20px;
+}
+
+.modal-footer {
+  padding: 10px 20px;
+}
+
+.modal-footer button {
+  margin-right: 10px;
+}
+
+/* 추가적인 모달 컨텐츠 간격 조정 */
+.modal-body input {
+  margin-bottom: 20px; /* 각 입력 필드 사이 간격 */
+}
+
+.modal-body select {
+  margin-bottom: 20px; /* 셀렉트 박스와 다른 필드 간격 */
 }
 </style>
