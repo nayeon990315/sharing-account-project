@@ -1,48 +1,43 @@
 <script setup>
-// import Header from './components/Header.vue'
-// import Footer from './components/Footer.vue'
 import { useRoute } from 'vue-router';
-import { computed } from 'vue';
-
-import { onMounted } from 'vue';
-
+import { computed, ref, onMounted } from 'vue';
+import TodoList from './components/global/TodoList.vue';
+import Header from './components/global/Header.vue';
 
 const route = useRoute();
 const routeKey = computed(() => route.fullPath);
-// const headerKey = computed(() => route.fullPath);
-
-
-import { ref } from 'vue';
-import TodoList from './components/global/TodoList.vue';
-import Header from './components/global/Header.vue';
-// import isHomePagewhenLogin from '@/pages/HomePagewhenLogin.vue'
-
 const isTodoListVisible = ref(false);
 const isHomePagewhenLogin = computed(() => route.name === 'HomePagewhenLogin');
+const userId = ref(null); // userId를 저장할 ref
 
 // To-Do List를 토글하는 함수
 const toggleTodoList = () => {
   isTodoListVisible.value = !isTodoListVisible.value;
 };
+
+// 컴포넌트가 마운트될 때 localStorage에서 userId 확인
+onMounted(() => {
+  userId.value = localStorage.getItem('userId'); // localStorage에서 userId 가져오기
+});
+
 </script>
 
 <template>
-  <!-- <Header :key="headerKey" /> -->
-  <!-- <Header :key="headerKey" /> -->
+  <!-- 헤더는 로그인 페이지가 아닐 때만 표시 -->
   <Header v-if="!isHomePagewhenLogin"/>
-  <!-- <Header/> -->
+  
+  <!-- 페이지의 라우터 뷰 -->
   <router-view :key="routeKey"></router-view>
-  <router-view>
+  
+  <!-- To-Do List는 userId가 있을 때만 보이도록 처리 -->
+  <router-view v-if="userId">
     <!-- To-Do 아이콘 -->
     <button class="btn btn-primary floating-button" @click="toggleTodoList">
       Check<br />List
-      <!-- <i class="bi bi-check2"></i>  -->
     </button>
     <!-- To-Do List 컴포넌트 -->
     <TodoList :show="isTodoListVisible" @close="isTodoListVisible = false" />
   </router-view>
-
-  <!-- <Footer /> -->
 </template>
 
 <style scoped>
@@ -60,7 +55,6 @@ section {
 
 article {
   width: 75%;
-
   background-color: azure;
   margin: 10px;
   height: 90%;
@@ -72,7 +66,6 @@ aside {
   width: 20%;
   background-color: #f4f4f1;
   height: 90%;
-  /* display: inline-block; */
   float: right;
 }
 
