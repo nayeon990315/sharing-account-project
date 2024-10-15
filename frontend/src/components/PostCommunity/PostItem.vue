@@ -1,42 +1,43 @@
 <template>
   <div class="post">
-    <div v-if="post" class="post-content">
-      <div class="user-info">
-        <img :src="userIcon" alt="User Icon" class="user-icon" />
-        <span class="username">{{ post.userName }}</span>
-      </div>
-      <p class="habit-title">{{ habitData.habitTitle }}</p>
-      <p class="participants">
-        현재 이 습관에 {{ participants }} 명이 참여 중이고,
+    <div class="user-info">
+      <img :src="userIcon" alt="User Icon" class="user-icon" />
+      <span class="username">{{ post.userName }}</span>
+    </div>
+    <p class="habit-title">{{ habitData.habitTitle }}</p>
+    <!-- <p class="shot-count">{{ shotCount }} 번째 SHOT</p> -->
+    <p class="participants">
+      현재 이 습관에 {{ participants }} 명이 참여 중이고,
+    </p>
+    <p class="habit-likes">
+      지금까지 인증샷은 총 {{ checkedHabit }}개가 올라왔어요!
+    </p>
+    <img :src="post.imageURL" alt="Post Image" class="post-image" />
+    <div class="post-details">
+      <p class="post-content">{{ post.content }}</p>
+      <p class="post-hashtag">{{ post.hashtag }}</p>
+      <p class="post-date">
+        {{ new Date(post.createdAt).toLocaleDateString() }}
       </p>
-      <p class="habit-likes">
-        지금까지 인증샷은 총 {{ checkedHabit }}개가 올라왔어요!
-      </p>
-      <img :src="post.imageURL" alt="Post Image" class="post-image" />
-      <div class="post-details">
-        <p class="post-content">{{ post.content }}</p>
-        <p class="post-hashtag">{{ post.hashtag }}</p>
-        <p class="post-date">
-          {{ new Date(post.createdAt).toLocaleDateString() }}
-        </p>
 
-        <comment-section v-if="post.showComments" :post-id="post.postId"
-          @comment-change="handleCommentChange"></comment-section>
-        <div class="interaction-buttons">
-          <div class="like-button" @click="toggleLike">
-            <span :class="{ liked: post.isLiked }">{{
-              post.isLiked ? '❤️' : '🤍'
-              }}</span>
-            {{ post.postLikes }}
-          </div>
-          <div class="comment-button" @click="toggleComments(post)">
-            <span class="comment-icon">💬</span>
-            {{ commentCounts[post.postId] || 0 }}
-          </div>
+      <comment-section
+        v-if="post.showComments"
+        :post-id="post.postId"
+        @comment-change="handleCommentChange"
+      ></comment-section>
+      <div class="interaction-buttons">
+        <div class="like-button" @click="toggleLike">
+          <span :class="{ liked: post.isLiked }">{{
+            post.isLiked ? '❤️' : '🤍'
+          }}</span>
+          {{ post.postLikes }}
+        </div>
+        <div class="comment-button" @click="toggleComments(post)">
+          <span class="comment-icon">💬</span>
+          {{ commentCounts[post.postId] || 0 }}
         </div>
       </div>
     </div>
-    <div v-else>로딩 중...</div>
   </div>
 </template>
 
@@ -49,11 +50,7 @@ import userIcon from '@/assets/icons8-user-64.png';
 const props = defineProps({
   post: {
     type: Object,
-    required: false, // post 데이터가 없을 수도 있음
-  },
-  postId: {
-    type: Number,
-    required: false, // postId가 없을 수도 있음
+    required: true,
   },
 });
 
@@ -63,60 +60,47 @@ const shotCount = ref(0);
 const habitData = ref({});
 const participants = ref(0);
 const checkedHabit = ref(0);
-const commentCounts = ref({});
 
-const post = ref(props.post || null); // props에서 post 객체가 있으면 사용, 없으면 null
-const fetchPostData = async () => {
-  if (props.postId && !props.post) {
-    // postId가 있지만 post 객체가 없을 때만 데이터 가져오기
-    try {
-      const postResponse = await axios.get(`http://localhost:8080/post-community/${props.postId}`);
-      post.value = postResponse.data;
-
-      // post 데이터를 가져온 후 fetchData 호출
-      fetchData();
-    } catch (error) {
-      console.error('Post 데이터를 가져오는 중 오류가 발생했습니다:', error);
-    }
-  }
-};
+const existingPosts = ref([]); // 게시물 목록
+const commentCounts = ref({}); // 댓글 수
 
 const toggleLike = () => {
-  emit('toggleLike', post.value);
+  emit('toggleLike', props.post);
 };
 
 const toggleComments = () => {
-  emit('toggleComments', post.value);
+  emit('toggleComments', props.post);
 };
-
 const fetchData = async () => {
-  if (post.value) {
-    try {
-      const shotResponse = await axios.get(
-        `http://localhost:8080/post-community/certification-count?userId=${post.value.userId}`
-      );
-      shotCount.value = shotResponse.data;
+  try {
+    const shotResponse = await axios.get(
+      `http://localhost:8080/post-community/certification-count?userId=${props.post.userId}`
+    );
+    console.log('shot response' + shotResponse.data);
+    shotCount.value = shotResponse.data;
 
-      const habitResponse = await axios.get(
-        `http://localhost:8080/habits/find?habitId=${post.value.habitId}`
-      );
+    const habitResponse = await axios.get(
+      `http://localhost:8080/habits/find?habitId=${props.post.habitId}`
+    );
 
-      habitData.value = habitResponse.data;
+    console.log('Habit Data : ', habitResponse.data);
+    habitData.value = habitResponse.data;
 
-      const habitCommunityResponse = await axios.get(
-        `http://localhost:8080/routine-community/${post.value.habitId}`
-      );
+    const habitCommunityResponse = await axios.get(
+      `http://localhost:8080/routine-community/${props.post.habitId}`
+    );
 
-      participants.value = habitCommunityResponse.data.participants;
+    console.log('HabitCommunity 데이터 : ', habitCommunityResponse.data);
+    participants.value = habitCommunityResponse.data.participants;
 
-      const checkedHabitResponse = await axios.get(
-        `http://localhost:8080/habits/checked/count?&habitId=${post.value.habitId}`
-      );
+    const checkedHabitResponse = await axios.get(
+      `http://localhost:8080/habits/checked/count?&habitId=${props.post.habitId}`
+    );
 
-      checkedHabit.value = checkedHabitResponse.data;
-    } catch (error) {
-      console.error('인증 횟수를 가져오는 중 오류가 발생했습니다:', error);
-    }
+    console.log('checkedHabitResponse : ', checkedHabitResponse.data);
+    checkedHabit.value = checkedHabitResponse.data;
+  } catch (error) {
+    console.error('인증 횟수를 가져오는 중 오류가 발생했습니다:', error);
   }
 };
 
@@ -126,6 +110,10 @@ const fetchCommentCounts = () => {
     .get('http://localhost:8080/post-community/posts/comments')
     .then((response) => {
       commentCounts.value = response.data; // 댓글 수 업데이트
+
+      // 해시맵의 키로 existingPosts 업데이트
+      const postIds = Object.keys(commentCounts.value); // commentCounts의 키 값 (postId)
+      existingPosts.value = postIds.map((id) => ({ id: Number(id) })); // id만 가진 객체 배열로 변환
     })
     .catch((error) => {
       console.error('Error fetching comment counts:', error);
@@ -134,10 +122,12 @@ const fetchCommentCounts = () => {
 
 // 자식 컴포넌트에서 댓글 변경 이벤트를 받으면 댓글 수 다시 불러오기
 const handleCommentChange = (postId) => {
+  // 특정 게시물에 대한 댓글 수만 가져오기
   axios
     .get(`http://localhost:8080/post-community/posts/${postId}/comments/count`)
     .then((response) => {
-      commentCounts.value[postId] = response.data; // 해당 게시물의 댓글 수만 업데이트
+      // 해당 게시물의 댓글 수만 업데이트
+      commentCounts.value[postId] = response.data; // 댓글 수 업데이트
     })
     .catch((error) => {
       console.error('Error fetching comment count:', error);
@@ -146,17 +136,11 @@ const handleCommentChange = (postId) => {
 
 // 컴포넌트가 마운트될 때 호출
 onMounted(() => {
-  if (props.post) {
-    // post 객체가 있다면 바로 데이터를 가져옴
-    fetchData();
-  } else {
-    // post 객체가 없다면 postId로 post 데이터를 가져옴
-    fetchPostData();
-  }
-  fetchCommentCounts(); // 댓글 수는 항상 가져옴
+  fetchData();
+  // getAllPost();
+  fetchCommentCounts();
 });
 </script>
-
 
 <style scoped>
 /* 메인 포스트 컨테이너 */
@@ -228,8 +212,7 @@ onMounted(() => {
 .post-details {
   margin-top: 10px;
 }
-
-.post-content {
+fbar .post-content {
   font-size: 14px;
   margin-bottom: 8px;
 }
@@ -270,7 +253,8 @@ onMounted(() => {
   color: #ff5c5c;
 }
 
-.comment-icon {  margin-right: 5px;
+.comment-icon {
+  margin-right: 5px;
   font-size: 18px;
 }
 </style>

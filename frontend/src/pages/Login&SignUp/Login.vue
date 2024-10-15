@@ -2,72 +2,26 @@
   <div class="login">
     <div class="wrap">
 
-      <!-- LOGIN FORM -->
       <div class="user">
-        <!-- LOGO -->
-        <div class="logo">
-          <p>벌루틴 로고</p>
-        </div>
 
-        <!-- LOGIN, RECOVERY FORMS -->
+        <div class="logo">
+          <img src="@/assets/images/bee/bee4.png" alt="" style="width: 130px">
+        </div>
         <div class="form-wrap">
 
-          <!-- LOGIN FORM -->
           <div v-if="isLogin">
-            <form class="login-form" @submit.prevent="login">
-              <input type="text" class="input" placeholder="아이디" v-model="loginForm.username" />
-              <input type="password" class="input" placeholder="비밀번호" v-model="loginForm.password" />
-              <input type="checkbox" class="checkbox" v-model="loginForm.rememberMe" />
-              <label for="remember_me">로그인 정보 저장</label>
-              <input type="submit" class="button loginButton" value="로그인" />
-            </form>
-
-            <div class="help-action">
-              <p><a href="#" @click.prevent="showPasswordRecovery">아이디/비밀번호 찾기</a></p>
+            <div class="info">
+              <h1>Login</h1>
+              <p>소셜 계정으로 간편하게 시작하세요. 로그인 즉시 가입 및 이용이 가능합니다.</p>
             </div>
 
-            <div class="signUp">
-              <router-link to="/signup"><p>회원가입하기</p></router-link>
-            </div>
-
-            <div class="divider">
-              <hr> <span> or </span> <hr>
-            </div>
-
-            <!-- 소셜 로그인 -->
-            <div>
-              <div class="socialLogin googleLogin"
-              @click="googleLogin"><img src="@/assets/icons/googleIcon.png">구글 계정으로 로그인</div>
+            <div class="socialLoginForm">
               <div class="socialLogin kakaoLogin"
               @click="kakaoLogin"><img src="@/assets/icons/kakaoIcon.png">카카오 계정으로 로그인</div>
+              <div class="socialLogin googleLogin"
+              @click="googleLogin"><img src="@/assets/icons/googleIcon.png">구글 계정으로 로그인</div>
               <div class="socialLogin naverLogin"
               @click="naverLogin"><img src="@/assets/icons/naverIcon.png">네이버 계정으로 로그인</div>
-            </div>
-          </div>
-
-          <!-- PASSWORD/ID RECOVERY TABS -->
-          <div class="recovery" v-if="isPasswordRecovery">
-
-            <!-- ID RECOVERY FORM -->
-            <div class="recoverID">
-              <h2>아이디 찾기<br><br></h2>
-              <p>사용자 이름과 가입한 이메일을 입력하세요.<br></p>
-              <form class="recovery-form" @submit.prevent="findId">
-                <input type="text" class="input" placeholder="사용자 이름" v-model="recoveryForm.username" />
-                <input type="email" class="input" placeholder="가입한 이메일" v-model="recoveryForm.email" />
-                <input type="submit" class="button" value="아이디 찾기" />
-              </form>
-            </div>
-
-            <!-- PASSWORD RECOVERY FORM -->
-            <div  class="recoverPW">
-              <h2>비밀번호 찾기<br><br></h2>
-              <p>아이디와 가입한 이메일을 입력하세요.<br></p>
-              <form class="recovery-form" @submit.prevent="findPassword">
-                <input type="text" class="input" placeholder="아이디" v-model="recoveryForm.username" />
-                <input type="email" class="input" placeholder="가입한 이메일" v-model="recoveryForm.email" />
-                <input type="submit" class="button" value="비밀번호 찾기" />
-              </form>
             </div>
           </div>
 
@@ -155,14 +109,30 @@ const naverLogin = ()=>{
   font-family: 'Wanted Sans';
 }
 
+/* template {
+  background-color: #FFD565;
+} */
+
 body {
   
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ffffff;
+  background-color:#FFD565;
   color: #000000;
+}
+
+.form-wrap {
+  /* border: solid 4px black; */
+  /* padding: 80px; */
+  width: 350px;
+  height: 300px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23333' stroke-width='4' stroke-dasharray='12%2c 15' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: #FFD565; */
 }
 
 .logo {
@@ -177,14 +147,26 @@ footer {
 
 
 /* 전체 모듈 */
+
+.info h1{
+  font-weight: 800;
+  text-align: center;
+  margin: 30px 0;
+}
+
+.info p {
+  margin-bottom: 50px;
+}
 .login {
-  background-color: transparent;
-  width: 400px;
+  background: url('@/assets/images/background/background.png');
+  /* background-color: transparent; */
+  /* width: 800px; */
   padding: 40px;
   margin: auto;
   border-radius: 8px;
   /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); */
 }
+
 
 
 h3 {
@@ -198,6 +180,8 @@ h3 {
 /* 세부 폼 스타일 */
 .form-wrap {
   text-align: left;
+  width: 600px;
+  margin: 0 auto;
 }
 
 input[type="text"],
@@ -237,31 +221,20 @@ input[type="submit"]:hover {
 
 
 
-
-/* Forgot password link */
-.help-action, .signUp {
-  text-align: center;
-}
-
-.help-action a, .signUp a {
-  color: rgb(84, 84, 84);
-  font-size: 13px;
-  text-decoration: none;
-  margin-top: 5px;
-}
-
-.help-action a:hover, .signUp a:hover {
-  text-decoration: underline;
-}
-
-
 /* 소셜 로그인 */
+
+.socialLoginForm {
+  margin-bottom: 60px;
+}
 .socialLogin {
     border: solid 1px rgb(126, 126, 126);
     text-align: center;
     padding: 6px;
     margin-top: 5px;
     /* background-color: #eeeeee; */
+
+    width: 300px;
+    margin: 0 auto;
 }
 
 .socialLogin img {
@@ -306,21 +279,6 @@ input[type="submit"]:hover {
 
 
 
-/* -------------------------------- */
-/* 복구화면 */
-.recovery {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100vh;
-  gap: 20px; /* 그리드 아이템 사이의 간격 추가 */
-}
 
-.recoverID {
-  grid-column: 1;
-}
-
-.recoverPW {
-  grid-column: 2;
-}
 
 </style>

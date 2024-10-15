@@ -50,3 +50,4 @@ export const useHabitStore = defineStore('habitStore', () => {
   }, {
     persist: true,  // persist 활성화
 });
+

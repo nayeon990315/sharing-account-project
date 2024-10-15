@@ -1,20 +1,35 @@
 <template>
   <div class="full-screen-container">
     <div class="container upload-container border rounded">
-      <form @submit.prevent="submitForm" class=" p-4">
-        <h3>인증하기</h3>
+      <form @submit.prevent="submitForm" class="p-4">
+        <h3>Upload</h3>
         <div class="list-group">
-          <div v-for="habit in filteredHabits" :key="habit.myHabitId" class="list-group-item list-group-item-action"
+          <div
+            v-for="habit in filteredHabits"
+            :key="habit.myHabitId"
+            class="list-group-item list-group-item-action"
             :class="{
               'disabled-list': habit.isCheckedToday,
-              'active border list-group-item-light': (formData.myHabitId === habit.myHabitId) && !habit.isCheckedToday,
-            }" @click="!habit.isCheckedToday && (formData.myHabitId = habit.myHabitId)">
+              'active border list-group-item-light':
+                formData.myHabitId === habit.myHabitId && !habit.isCheckedToday,
+            }"
+            @click="
+              !habit.isCheckedToday && (formData.myHabitId = habit.myHabitId)
+            "
+          >
             <div class="d-flex w-100 justify-content-between">
-              <h6 class="mb-1" :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
+              <h6
+                class="mb-1"
+                :class="{
+                  'text-decoration-line-through': habit.isCheckedToday,
+                }"
+              >
                 {{ habit.habitTitle }}
               </h6>
             </div>
-            <small :class="{ 'text-decoration-line-through': habit.isCheckedToday }">
+            <small
+              :class="{ 'text-decoration-line-through': habit.isCheckedToday }"
+            >
               {{ habit.certification || '자유롭게 작성해주세요.' }}
             </small>
           </div>
@@ -22,24 +37,47 @@
 
         <div class="mb-3">
           <label for="content" class="form-label">내용</label>
-          <textarea v-model="formData.content" id="content" class="form-control" placeholder="인증 내용을 작성해주세요."
-            required></textarea>
+          <textarea
+            v-model="formData.content"
+            id="content"
+            class="form-control"
+            placeholder="인증 내용을 작성해주세요."
+            required
+          ></textarea>
         </div>
 
         <div class="mb-3">
           <label class="input-label">해시태그</label>
           <div class="hash-wrapper">
-            <div class="hash-item" v-for="(tag, index) in hashArr" :key="index" @click="removeHashTag(index)"
-              draggable="true" @dragstart="onDragStart(index, $event)" @dragover="onDragOver(index, $event)"
-              @drop="onDrop(index, $event)" @keyup.enter="preventSubmit">
+            <div
+              class="hash-item"
+              v-for="(tag, index) in hashArr"
+              :key="index"
+              @click="removeHashTag(index)"
+              draggable="true"
+              @dragstart="onDragStart(index, $event)"
+              @dragover="onDragOver(index, $event)"
+              @drop="onDrop(index, $event)"
+              @keyup.enter="preventSubmit"
+            >
               <p>#{{ tag }}</p>
               <p class="hash-item-delete">x</p>
             </div>
 
-            <input class="form-control input-tag" type="text" id="hashtag" v-model="hashtag" @keyup.space="onKeyUpSpace"
+            <input
+              class="form-control input-tag"
+              type="text"
+              id="hashtag"
+              v-model="hashtag"
+              @keyup.space="onKeyUpSpace"
               @keyup.delete="onKeyUpBackspace"
-              :placeholder="hashArr.length < 5 ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)' : '최대 5개까지만 입력이 가능합니다'"
-              :disabled="hashArr.length >= 5" />
+              :placeholder="
+                hashArr.length < 5
+                  ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)'
+                  : '최대 5개까지만 입력이 가능합니다'
+              "
+              :disabled="hashArr.length >= 5"
+            />
           </div>
         </div>
 
@@ -47,16 +85,32 @@
           <label class="form-label">사진 업로드</label>
           <div class="d-flex gap-3">
             <div class="flex-grow-1">
-              <input type="file" @change="handleImageUpload" class="form-control" ref="fileInput" />
+              <input
+                type="file"
+                @change="handleImageUpload"
+                class="form-control"
+                ref="fileInput"
+              />
             </div>
 
-            <div class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
-              style="width: 150px; height: 150px; cursor: pointer;" @click="triggerFileInput">
-              <img v-if="imagePreview" :src="imagePreview" alt="Image preview" class="img-thumbnail ms-auto"
-                style="width: 100%; height: 100%;" />
+            <div
+              class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
+              style="width: 150px; height: 150px; cursor: pointer"
+              @click="triggerFileInput"
+            >
+              <img
+                v-if="imagePreview"
+                :src="imagePreview"
+                alt="Image preview"
+                class="img-thumbnail ms-auto"
+                style="width: 100%; height: 100%"
+              />
 
-              <div v-if="!imagePreview" class="img-thumbnail ms-auto d-flex justify-content-center align-items-center"
-                style="width: 150px; height: 150px">
+              <div
+                v-if="!imagePreview"
+                class="img-thumbnail ms-auto d-flex justify-content-center align-items-center"
+                style="width: 150px; height: 150px"
+              >
                 <span class="display-4 text-muted">+</span>
               </div>
             </div>
@@ -64,19 +118,31 @@
         </div>
 
         <div class="d-flex justify-content-end">
-          <button type="submit" class="btn" :class="{
-            'disabled': !isFormValid,
-            'btn-outline-dark': !isFormValid,
-            'btn-dark': isFormValid,
-          }" @keyup.enter="preventSubmit">POST</button>
+          <button
+            type="submit"
+            class="btn"
+            :class="{
+              disabled: !isFormValid,
+              'btn-outline-dark': !isFormValid,
+              'btn-dark': isFormValid,
+            }"
+            @keyup.enter="preventSubmit"
+          >
+            POST
+          </button>
         </div>
       </form>
     </div>
   </div>
   <!-- Alert Modal -->
-  <RewardModal :isVisible="isModalVisible" title="알림" :message="modalMessage" :rewardBefore="originalReward"
-  :rewardAfter="calculatedReward"
-    @close="closeModal" />
+  <RewardModal
+    :isVisible="isModalVisible"
+    title="알림"
+    :message="modalMessage"
+    :rewardBefore="originalReward"
+    :rewardAfter="calculatedReward"
+    @close="closeModal"
+  />
 </template>
 
 <script setup>
@@ -93,7 +159,9 @@ onMounted(() => {
   }
   formData.myHabitId = habitStore.selectedMyHabitId;
   formData.habitId = findSelectedHabit.value[0].habitId;
-  console.log('writerId: ', findSelectedHabit.value[0].writerId)
+  hashArr.value.push(findSelectedHabit.value[0].categoryTitle);
+  console.log('writerId: ', findSelectedHabit.value[0].writerId);
+  console.log('category: ', findSelectedHabit.value[0].categoryTitle);
 });
 const isModalVisible = ref(false);
 const modalMessage = ref('');
@@ -105,7 +173,7 @@ const userReward = ref(0);
 const openModal = (message, rewardBefore, rewardPlus) => {
   modalMessage.value = message;
   isModalVisible.value = true;
-  originalReward.value = rewardBefore
+  originalReward.value = rewardBefore;
   calculatedReward.value = rewardBefore + rewardPlus;
 };
 
@@ -130,17 +198,25 @@ const formData = reactive({
 
 // '진행' 상태인 습관만 필터링
 const filteredHabits = computed(() => {
-  return habitStore.habits.filter(habit => habit.state === '진행');
+  return habitStore.habits.filter((habit) => habit.state === '진행');
 });
 
 // Pinia의 selectedMyHabitId가 바뀔 때 formData.myHabitId에 반영되도록 watch 사용
-watch(() => habitStore.selectedMyHabitId, (newValue) => {
-  formData.myHabitId = newValue;
-  formData.habitId = findSelectedHabit.value[0].habitId;
-});
+watch(
+  () => habitStore.selectedMyHabitId,
+  (newValue) => {
+    formData.myHabitId = newValue;
+    formData.habitId = findSelectedHabit.value[0].habitId;
+    hashArr.value = [];
+    hashArr.value.push(findSelectedHabit.value[0].categoryTitle);
+    console.log(hashArr.value);
+  }
+);
 
 const findSelectedHabit = computed(() => {
-  return filteredHabits.value.filter(habit => habit.myHabitId === formData.myHabitId);
+  return filteredHabits.value.filter(
+    (habit) => habit.myHabitId === formData.myHabitId
+  );
 });
 
 // 이미지 미리보기 상태 저장
@@ -165,7 +241,10 @@ const handleImageUpload = (event) => {
 
 // 폼 제출 핸들러
 const submitForm = async () => {
-  formData.hashtag = hashArr.value.join(',');
+  // 해시태그 처리: '#' 기호 추가 및 쉼표로 구분
+  formData.hashtag = hashArr.value
+    .map((tag) => (tag.startsWith('#') ? tag : `#${tag}`))
+    .join(' ');
 
   const data = new FormData();
   data.append('myHabitId', formData.myHabitId);
@@ -181,36 +260,48 @@ const submitForm = async () => {
   }
 
   try {
-    const response = await axios.post('http://localhost:8080/post-community/add', data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const response = await axios.post(
+      'http://localhost:8080/post-community/add',
+      data,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
 
     if (response.status === 200) {
       console.log(response.data);
-      const targetHabit = habitStore.habits.filter(item => item.habitId === formData.habitId)[0];
+      const targetHabit = habitStore.habits.filter(
+        (item) => item.habitId === formData.habitId
+      )[0];
 
-      const userResponse = await axios.get("http://localhost:8080/users/mypage", {
-        params: { userId: localStorage.getItem('userId') },
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const userResponse = await axios.get(
+        'http://localhost:8080/users/mypage',
+        {
+          params: { userId: localStorage.getItem('userId') },
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
 
       userReward.value = userResponse.data.reward;
       console.log(userReward);
       let message;
       if (response.data == 10) {
-        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!'
+        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!';
         openModal(message, userReward.value, response.data);
-      }
-      else if (response.data == 20) {
-        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!' + '추가로 4일 연속 인증으로 10꿀을 더 얻었습니다.'
+      } else if (response.data == 20) {
+        message =
+          targetHabit.habitTitle +
+          ' 루틴을 인증해 10꿀을 얻었습니다!' +
+          '추가로 4일 연속 인증으로 10꿀을 더 얻었습니다.';
         openModal(message, userReward.value, response.data);
-      }
-      else if (response.data == 30) {
-        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!' + '추가로 7일 연속 인증으로 20꿀을 더 얻었습니다.'
+      } else if (response.data == 30) {
+        message =
+          targetHabit.habitTitle +
+          ' 루틴을 인증해 10꿀을 얻었습니다!' +
+          '추가로 7일 연속 인증으로 20꿀을 더 얻었습니다.';
         openModal(message, userReward.value, response.data);
       }
 
-      
       // alert('Post created successfully!');
       await habitStore.getHabitsFromServer(formData.userId);
     }
@@ -293,13 +384,14 @@ const onDrop = (index, event) => {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  background-color: rgb(255, 255, 255, 0.2)
+  background-color: rgb(255, 255, 255, 0.2);
 }
 
 .upload-container {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+
   background-color: rgb(249, 249, 249);
   border-radius: 10px;
 }
@@ -325,6 +417,11 @@ img {
 .list-group-item-custom {
   background-color: blue;
   color: gray;
+}
+
+.list-group-item-light {
+  background-color: #f7d794;
+  color: rgb(0, 0, 0);
 }
 
 .text-small-custom {

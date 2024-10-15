@@ -1,9 +1,15 @@
 <template>
+    <div class="info">
+        <h1 >Spending By Routine</h1>
+        <h5>루틴별 지출</h5>
+        <p>내 벌루틴에 대한 지출 내역을 한눈에 확인하고 달성을 체크해 보세요! 루틴을 지키기 위해 어떤 지출을 줄여나갈 수 있을지 함께 고민해요.</p>
+    </div>
+
     <div class="container">
         <div class="row">
             <!-- Left Sidebar (Routine Category) -->
             <aside class="col-md-3 p-3 border-end">
-                <h2 class="h4">루틴 커뮤니티</h2>
+                <h2 class="h4">내 루틴</h2>
                     <div class="info">
                         <span>루틴 목록을 선택하면 해당 카테고리의 지출 내역을 불러옵니다.</span><br/>
                     </div>
@@ -13,7 +19,10 @@
                             'selected-primary': selectedCategory === category,
                         }" 
                             @click="selectCategory(category)">
-                        <h4 class="h6">{{ categoryEmojis[category] }}&nbsp;{{ category }}</h4>
+                        <!-- <span class="h6">{{ categoryEmojis[category] }}&nbsp;{{ category }}</span> -->
+                        <!-- <h4 class="h6"><img src="@/assets/images/check/true.png" style="width:14px">&nbsp;{{ category }}</h4> -->
+                        <span class="h6">{{ category }}</span>
+
                         <ul class="list-group border">
                             <li v-for="routine in filteredRoutines(category)" :key="routine.habitTitle"
                                 class="list-group-item border"
@@ -29,7 +38,7 @@
                     class="mt-5 bg-white d-flex justify-content-center"
                     @click="selectCategory('전체')">
                     <ul class="list-group border">
-                        <li class="list-group-item border">
+                        <li class="list-group-item border reset">
                             <i class="fa-solid fa-arrow-rotate-right"></i>
                             <span>선택 해제</span> <!-- 텍스트 -->
                         </li>
@@ -52,14 +61,15 @@
                                     <li><span class="icon">📊</span> <strong>{{ formatCurrency(maxExpenseCategory.maxAmount) }}</strong>을 사용했어요.</li>
                                 </ul>
                                 <ul v-else>
-                                    <li v-if="selectedCategory">{{categoryEmojis[selectedCategory]}}&nbsp;<strong>{{ selectedCategory }}</strong>을(를) 선택하셨네요!</li>
-                                    <li v-if="selectedCategory">오늘 {{ selectedCategory }}에 총&nbsp;<strong>{{ formatCurrency(selectedCategoryExpenses.amount) }}</strong>을 쓰셨어요.
-                                    </li>
+                                    <li>{{categoryEmojis[selectedCategory]}}&nbsp;<strong>{{ selectedCategory }}</strong>을(를) 선택하셨네요!</li>
+                                    <li>선택하신 카테고리에서 사용하신 금액은&nbsp;<strong>{{ formatCurrency(selectedCategoryExpenses.amount) }}</strong>이에요.</li>
+                                    <li><strong style="font-size: medium;">{{nickname}}</strong>님, 오늘 지출의 &nbsp;<strong>{{ formatPercentage(selectedCategoryExpenses.percentage) }}</strong>를 차지하고 있어요!</li>
+                                     
                                 </ul>
                             </div>
 
-                            <div class="text-center mb-3" style="width: 250px; height: 250px;">
-                                <canvas id="expenseChart" width="100" height="100"></canvas>
+                            <div class="text-center mb-3" style="height:30vh; width:22vw">
+                                <canvas id="expenseChart"></canvas>
                             </div>
                             
                         </div>
@@ -108,6 +118,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useHabitStore } from '@/stores/habitStore';
 import { Chart, registerables } from 'chart.js';
 import { bottom, right } from '@popperjs/core';
+import axios from 'axios';
 
 const habitStore = useHabitStore();
 
@@ -124,6 +135,8 @@ const backgroundColors = ref([
     '#FFC300',
     '#DAF7A6',
 ]);
+
+const nickname = ref(null);
 
 const categoryEmojis = {
     "식비": "🍽️",
@@ -145,72 +158,128 @@ const categoryEmojis = {
     "경조사/회비": "🎉"
 };
 
+const categoryBackgrounds = {
+    "식비": "#1D75F6",
+    "카페/간식": "#8B6555",
+    "온라인쇼핑": "#3EBAC2",
+    "패션/쇼핑": "#F5778D",
+    "문화/여가": "#8C46C2",
+    "술/유흥": "#FFAD0D",
+    "교육": "#A2C616",
+    "의료/건강": "#FA4949",
+    "생활": "#76AFF7",
+    "주거/공과금": "#6D5D3F",
+    "금융": "#757E95",
+    "뷰티": "#E659E9",
+    "자동차": "#5B9FF4",
+    "교통": "#949BAD",
+    "반려동물": "#6D5D3F",
+    "여행": "#696E76",
+    "경조사/회비": "#F39C77",
+    "기타": "#ffdfba"
+};
 
-const expenses = ref([
-    {
-        transactionDate: '2024-06-26T18:17',
-        type: '체크카드',
-        category: '식비',
-        recipient: '사나이뚝배기화곡역',
-        withdrawalAmount: 7800,
-        depositAmount: 0,
-        balance: 691,
-    },
-    {
-        transactionDate: '2024-06-26T14:39',
-        type: '체크카드',
-        category: '카페/간식',
-        recipient: '애크로매틱어린이대',
-        withdrawalAmount: 3500,
-        depositAmount: 0,
-        balance: 8491,
-    },
-    {
-        transactionDate: '2024-06-26T13:10',
-        type: '체크카드',
-        category: '카페/간식',
-        recipient: '매머드커피앱_발트_1',
-        withdrawalAmount: 2000,
-        depositAmount: 0,
-        balance: 11991,
-    },
-    {
-        transactionDate: '2024-06-26T12:50',
-        type: '체크카드',
-        category: '식비',
-        recipient: '홈플러스익스프레스',
-        withdrawalAmount: 2590,
-        depositAmount: 0,
-        balance: 13991,
-    },
-    {
-        transactionDate: '2024-06-26T12:00',
-        type: '체크카드',
-        category: '식비',
-        recipient: '맘스터치화곡점',
-        withdrawalAmount: 9800,
-        depositAmount: 0,
-        balance: 16581,
-    },
-    {
-        transactionDate: '2024-06-26T09:11',
-        type: '체크카드',
-        category: '카페/간식',
-        recipient: '메가엠지씨커피우장',
-        withdrawalAmount: 2000,
-        depositAmount: 0,
-        balance: 26381,
-    },
-    {
-        transactionDate: '2024-06-26T09:31',
-        type: '체크카드',
-        category: '뷰티',
-        recipient: '블랭크유',
-        withdrawalAmount: 74000,
-        depositAmount: 0,
-        balance: 28381,
+
+// const expenses = ref([
+//     {
+//         transactionDate: '2024-06-26T18:17',
+//         type: '체크카드',
+//         category: '식비',
+//         recipient: '사나이뚝배기화곡역',
+//         withdrawalAmount: 7800,
+//         depositAmount: 0,
+//         balance: 691,
+//     },
+//     {
+//         transactionDate: '2024-06-26T14:39',
+//         type: '체크카드',
+//         category: '카페/간식',
+//         recipient: '애크로매틱어린이대',
+//         withdrawalAmount: 3500,
+//         depositAmount: 0,
+//         balance: 8491,
+//     },
+//     {
+//         transactionDate: '2024-06-26T13:10',
+//         type: '체크카드',
+//         category: '카페/간식',
+//         recipient: '매머드커피앱_발트_1',
+//         withdrawalAmount: 2000,
+//         depositAmount: 0,
+//         balance: 11991,
+//     },
+//     {
+//         transactionDate: '2024-06-26T12:50',
+//         type: '체크카드',
+//         category: '식비',
+//         recipient: '홈플러스익스프레스',
+//         withdrawalAmount: 2590,
+//         depositAmount: 0,
+//         balance: 13991,
+//     },
+//     {
+//         transactionDate: '2024-06-26T12:00',
+//         type: '체크카드',
+//         category: '식비',
+//         recipient: '맘스터치화곡점',
+//         withdrawalAmount: 9800,
+//         depositAmount: 0,
+//         balance: 16581,
+//     },
+//     {
+//         transactionDate: '2024-06-26T09:11',
+//         type: '체크카드',
+//         category: '카페/간식',
+//         recipient: '메가엠지씨커피우장',
+//         withdrawalAmount: 2000,
+//         depositAmount: 0,
+//         balance: 26381,
+//     },
+//     {
+//         transactionDate: '2024-06-26T09:31',
+//         type: '체크카드',
+//         category: '뷰티',
+//         recipient: '블랭크유',
+//         withdrawalAmount: 74000,
+//         depositAmount: 0,
+//         balance: 28381,
+//     }
+// ]);
+
+const expenses = ref([])
+
+const formatDate2 = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const day = date.getDate().toString().padStart(2, '0'); 
+    return `${year}-${month}-${day}`;
+};
+
+const getBankData = async () => {
+    // const year = date.getFullYear();
+    // const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    // const day = date.getDate().toString().padStart(2, '0'); 
+    const todayDate = formatDate2(new Date())
+    console.log('todayDate: ', todayDate)
+    try {
+        const response = await axios.get(`http://localhost:3000/${todayDate}`);
+        // 데이터가 성공적으로 반환되면 expenses 배열에 저장
+        expenses.value = response.data.map(item => ({
+            transactionDate: item.transactionDate,
+            type: item.type,
+            recipient: item.recipient,
+            withdrawalAmount: item.withdrawalAmount,
+            depositAmount: item.depositAmount,
+            balance: item.balance,
+            category: item.category,
+            id: item.id
+        }));
+        console.log(expenses.value);  // 콘솔에서 데이터 확인
+    } catch (error) {
+        console.error('데이터 요청 실패:', error);
+        // alert('데이터를 불러오는 중 오류가 발생했습니다.');
     }
-]);
+};
 
 const expensesByCategory = computed(() => 
     expenses.value.reduce((acc, expense) => {
@@ -228,6 +297,8 @@ const renderExpenseChart = () => {
     const categories = Object.keys(expensesByCategory.value);
     const amounts = Object.values(expensesByCategory.value);
 
+    const habitsBackgroundColors = categories.map(category => categoryBackgrounds[category] || "#ffdfba");
+
     if (chart.value) chart.value.destroy(); // 기존 차트가 있으면 삭제
 
     chart.value = new Chart(ctx, {
@@ -237,7 +308,7 @@ const renderExpenseChart = () => {
             datasets: [
                 {
                     data: amounts,
-                    backgroundColor: backgroundColors.value,
+                    backgroundColor: habitsBackgroundColors,
                     hoverOffset: 4,
                 },
             ],
@@ -247,22 +318,75 @@ const renderExpenseChart = () => {
             plugins: {
                 legend: { 
                     display: true,
-                    position: right
+                    position: 'right'
                 }, // 범례를 표시하지 않음
             },
         },
     });
 };
+// 차트를 그리는 함수
+const renderExpenseChartSelected = () => {
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    if (!ctx) return;
+
+    const totalAmount = Object.values(expensesByCategory.value).reduce((acc, amount) => acc + amount, 0);  // 전체 지출 총액
+    const selectedAmount = expensesByCategory.value[selectedCategory.value] || 0;  // 선택된 카테고리의 지출 금액
+    const restAmount = totalAmount - selectedAmount;  // 나머지 카테고리의 지출 금액
+
+    const categories = selectedAmount > 0 ? [selectedCategory.value, '나머지'] : ['나머지'];  // 카테고리명 설정
+    const amounts = selectedAmount > 0 ? [selectedAmount, restAmount] : [restAmount];  // 지출 금액 설정
+
+    // const selectedPercentage = selectedAmount > 0 ? (selectedAmount / totalAmount * 100).toFixed(2) : 0;  // 퍼센트 계산
+    // console.log(selectedCategoryPercentage, '123123')
+    // selectedCategoryPercentage.value = selectedPercentage
+    // data.selectedCategoryPercentage.value = selectCategory
+    // selectedCategoryPercentage.value = selectedPercentage
+
+    if (chart.value) chart.value.destroy();  // 기존 차트가 있으면 삭제
+
+    chart.value = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: categories,
+            datasets: [
+                {
+                    data: amounts,
+                    backgroundColor: selectedAmount > 0 ? [categoryBackgrounds[selectedCategory.value], '#E0E0E0'] : ['#E0E0E0'],  // 선택한 카테고리 색상과 나머지 색상
+                    hoverOffset: 4,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { 
+                    display: true,
+                    position: 'right'
+                }, 
+            },
+        },
+    });
+};
+
+const renderExpenseChartHandler = () => {
+    if (selectedCategory.value === '전체' || selectedCategory.value === null) {
+        renderExpenseChart();  // '전체' 또는 카테고리가 선택되지 않은 경우 기본 차트를 표시
+    } else {
+        renderExpenseChartSelected();  // 선택된 카테고리가 있는 경우 선택된 카테고리와 나머지를 표시
+    }
+};
 
 // 차트를 마운트된 후에 생성
 onMounted(() => {
     selectedCategory.value = '전체'
-    renderExpenseChart();
+    getBankData();
+    renderExpenseChartHandler()
+    nickname.value = localStorage.getItem('nickname')
 });
 
 // 지출 데이터가 변경될 때 차트를 업데이트
 watch(expensesByCategory, () => {
-    renderExpenseChart();
+    renderExpenseChartHandler();
 });
 
 const selectedCategory = ref(null);
@@ -276,6 +400,7 @@ const filteredRoutines = (category) => {
 // 카테고리 선택
 const selectCategory = (category) => {
     selectedCategory.value = category;
+    renderExpenseChartHandler()
 };
 
 // 카테고리별 그룹화된 배열
@@ -387,10 +512,10 @@ section {
 }
 
 .block {
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
     border-radius: 0px;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #ffd7392b;
     margin-bottom: 30px;
 }
 
@@ -425,8 +550,8 @@ align-items: center;
 }
 
 .text-container .icon {
-font-size: 24px;
-margin-right: 10px;
+width: 24px;
+margin-right: 15px;
 }
 
 .text-container strong {
@@ -453,4 +578,42 @@ color: #777; /* 일반 텍스트 색상 */
 }
 
 
+
+
+/* 인포 */
+.info {
+    margin: 6% 8%;
+    color: black;
+}
+
+.info h1{
+    font-weight: 800;
+}
+
+.info p {
+    /* font-weight: 700; */
+    margin-top: 25px;
+}
+
+
+.h4 {
+    font-weight: 700;
+}
+
+.reset {
+    font-size: 13px;
+}
+.reset i {
+    font-size: 13px;
+    margin-right: 2px;
+}
+
+.h6 {
+    /* 카테고리 이름 */
+    background-color: black;
+    color: white;
+    padding: 4px 8px;
+    font-size: 13px;
+    
+}
 </style>
