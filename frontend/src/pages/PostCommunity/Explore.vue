@@ -11,12 +11,7 @@
       <!-- 검색창 -->
       <div class="search-routine">
 
-        <input
-          type="text"
-          v-model="displayedQuery"
-          placeholder="해시태그 또는 내용"
-          @keyup.enter="performSearch"
-        />
+        <input type="text" v-model="displayedQuery" placeholder="해시태그 또는 내용" @keyup.enter="performSearch" />
 
         <button @click="performSearch">검색</button>
       </div>
@@ -43,7 +38,6 @@ const categoryOptions = [
   '식비',
   '카페/간식',
   '쇼핑',
-  '교통',
   '문화/여가',
   '술/유흥',
   '주거/공과금',
@@ -125,12 +119,12 @@ const filteredPosts = computed(() => {
     selectedCategory.value === '전체'
       ? posts.value
       : posts.value.filter((post) =>
-          post.hashtag
-            .toLowerCase()
-            .includes(selectedCategory.value.toLowerCase())
-        );
+        post.hashtag
+          .toLowerCase()
+          .includes(selectedCategory.value.toLowerCase())
+      );
 
- // 검색어가 있을 경우 추가 필터링
+  // 검색어가 있을 경우 추가 필터링
   if (query) {
     filtered = filtered.filter(
       (post) =>
@@ -157,7 +151,12 @@ const paginatedPosts = computed(() => {
 
 // 카테고리 변경 핸들러
 const handleCategoryFilterChange = (category) => {
-  selectedCategory.value = category;
+  if (category == "참여루틴") {
+    selectedCategory.value = "전체";
+  }
+  else {
+    selectedCategory.value = category;
+  } 
   currentPage.value = 1;
 };
 
@@ -202,7 +201,8 @@ html {
 }
 
 h1 {
-  text-align: left; /* 텍스트를 왼쪽으로 배치 */
+  text-align: left;
+  /* 텍스트를 왼쪽으로 배치 */
   color: #f39c12;
   font-size: 2.5em;
   margin-bottom: 20px;
@@ -218,13 +218,15 @@ h1 {
 .category-tags {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* 버튼들을 중앙으로 정렬 */
+  justify-content: center;
+  /* 버튼들을 중앙으로 정렬 */
 }
 
 .category-tags button {
   margin-right: 10px;
   margin-bottom: 10px;
-  padding: 12px 20px; /* 공백 추가 */
+  padding: 12px 20px;
+  /* 공백 추가 */
   border-radius: 0px;
   border: none;
   background-color: #f7d794;
@@ -248,7 +250,8 @@ h1 {
 }
 
 .search-routine input[type='text'] {
-  padding: 10px 15px; /* 공백 추가 */
+  padding: 10px 15px;
+  /* 공백 추가 */
   border-radius: 0px;
   border: none;
   background-color: #f3f3f3;
@@ -259,7 +262,8 @@ h1 {
 }
 
 .search-routine button {
-  padding: 10px 15px; /* 공백 추가 */
+  padding: 10px 15px;
+  /* 공백 추가 */
   border-radius: 0px;
   border: none;
   background-color: #f39c12;
@@ -275,7 +279,8 @@ h1 {
 
 .page-item {
   min-width: 32px;
-  padding: 8px 12px; /* 공백 추가 */
+  padding: 8px 12px;
+  /* 공백 추가 */
   text-align: center;
   margin-right: 3px;
   border-radius: 0px;

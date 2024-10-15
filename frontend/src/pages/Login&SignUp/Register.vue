@@ -1,91 +1,209 @@
 <template>
-  <div class="container">
-    <h1>Welcome! Please complete your profile</h1>
+  <div class="container full-screen-container">
+    <div class="profile-card p-4 shadow-lg">
+      <h1 class="text-center mb-4">🐝 환영합니다! 🐝</h1>
 
-    <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="nickname">Nickname:</label>
-        <input type="text" id="nickname" v-model="nickname" class="form-control" placeholder="Enter your nickname"
-          required />
+      <form @submit.prevent="submitForm">
+        <div class="form-group mb-4">
+          <label for="nickname" class="form-label">닉네임:</label>
+          <input
+            type="text"
+            id="nickname"
+            v-model="nickname"
+            class="form-control"
+            placeholder="닉네임을 입력하세요"
+            required
+          />
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="image" class="form-label">프로필 이미지:</label>
+          <input
+            type="file"
+            id="image"
+            @change="onFileChange"
+            class="form-control"
+            accept="image/*"
+            required
+          />
+        </div>
+
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn submit-btn mt-3">벌루틴 시작하기</button>
+        </div>
+      </form>
+
+      <div v-if="previewImage" class="text-center mt-4">
+        <h3>미리보기:</h3>
+        <img
+          :src="previewImage"
+          alt="Profile Image Preview"
+          class="img-thumbnail preview-image"
+        />
       </div>
-
-      <div class="form-group">
-        <label for="image">Profile Image:</label>
-        <input type="file" id="image" @change="onFileChange" class="form-control" accept="image/*" required />
-      </div>
-
-      <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
-
-    <div v-if="previewImage">
-      <h3>Preview:</h3>
-      <img :src="previewImage" alt="Profile Image Preview" class="img-fluid" />
     </div>
+
+    <!-- Alert Modal -->
+    <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
   </div>
 </template>
 
 <script>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
+import CustomModal from '@/components/Modal.vue';
 
 export default {
   name: 'Register',
-  data() {
-    return {
-      nickname: '', // 닉네임
-      image: null, // 업로드된 이미지 파일
-      previewImage: null // 이미지 미리보기 URL
-    };
+  components: {
+    CustomModal
   },
-  methods: {
-    // 파일 선택 시 호출되는 메서드
-    onFileChange(event) {
+  setup() {
+    const nickname = ref('');
+    const image = ref(null);
+    const previewImage = ref(null);
+    const isModalVisible = ref(false);
+    const modalMessage = ref('');
+
+    const router = useRouter();
+
+    const onFileChange = (event) => {
       const file = event.target.files[0];
       if (file) {
-        this.image = file;
-        this.previewImage = URL.createObjectURL(file); // 이미지 미리보기 URL 생성
-        console.log("Selected file:", this.image);
+        image.value = file;
+        previewImage.value = URL.createObjectURL(file);
       }
-    },
-    // 폼 제출 시 호출되는 메서드
-    async submitForm() {
-      if (!this.nickname || !this.image) {
-        alert('Please complete the form.');
+    };
+
+    const closeModal = () => {
+      isModalVisible.value = false;
+      router.push('/loginHome');
+    };
+
+    const submitForm = async () => {
+      if (!nickname.value || !image.value) {
+        modalMessage.value = 'Please complete the form.';
+        isModalVisible.value = true;
         return;
       }
 
-      // 쿠키에서 jwtToken 가져오기 (this.$cookies.get())
-      //토큰 없으면 로그인 페이지로 redirect
-      const jwtToken = this.$cookies.get('jwtToken');
+      const jwtToken = $cookies.get('jwtToken');
       if (!jwtToken) {
-        alert('로그인이 필요합니다!');
-        this.$router.push('/login'); // Vue Router를 사용하여 리다이렉트
+        modalMessage.value = '로그인이 필요합니다!';
+        isModalVisible.value = true;
+        router.push('/login');
         return;
       }
-      console.log(jwtToken);
 
-      // FormData 객체를 생성하여 닉네임과 이미지 파일을 추가
       const formData = new FormData();
-      formData.append('nickname', this.nickname);
-      formData.append('image', this.image);
-      console.log('FormData:', formData);
+      formData.append('nickname', nickname.value);
+      formData.append('image', image.value);
 
       try {
-        // axios로 서버에 요청을 보냄. 헤더에 Authorization에 Bearer 토큰을 포함
         const response = await axios.post('http://localhost:8080/users/updateProfile', formData, {
           headers: {
-            'Authorization': `Bearer ${jwtToken}`, // JWT 토큰을 Authorization 헤더에 추가
-            'Content-Type': 'multipart/form-data' // FormData 전송 시 Content-Type 설정
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'multipart/form-data'
           }
         });
 
-        console.log('Profile updated:', response.data);
-        alert('프로필 수정이 완료되었습니다!');
-        this.$router.push('/myroutine');
+        modalMessage.value = '환영합니다! ' + nickname.value + "님!";
+        isModalVisible.value = true;
+        
       } catch (error) {
-        console.error('Error updating profile:', error);
-        alert('Error updating profile.');
+        modalMessage.value = 'Error updating profile.';
+        isModalVisible.value = true;
       }
-    }
+    };
+
+    return {
+      nickname,
+      image,
+      previewImage,
+      isModalVisible,
+      modalMessage,
+      onFileChange,
+      submitForm,
+      closeModal
+    };
   }
 };
 </script>
+
+<style scoped>
+/* Container 스타일 */
+.full-screen-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #fff7e6;
+  background-image: url('@/assets/images/bee_background.png');
+  background-size: cover;
+  background-position: center;
+}
+
+/* 프로필 카드 스타일 */
+.profile-card {
+  background-color: #ffecb3;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+h1 {
+  color: #ffca28;
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-weight: bold;
+  color: #ffca28;
+}
+
+.form-control {
+  border: 2px solid #ffca28;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.btn.submit-btn {
+  background-color: #fbc02d;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+}
+
+.btn.submit-btn:hover {
+  background-color: #f9a825;
+  cursor: pointer;
+}
+
+.preview-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-top: 15px;
+  border: 3px solid #ffca28;
+}
+
+h3 {
+  color: #f57f17;
+}
+
+img {
+  margin-top: 10px;
+  width: 50px;
+}
+
+</style>
