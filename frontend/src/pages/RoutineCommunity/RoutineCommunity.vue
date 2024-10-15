@@ -17,51 +17,50 @@
 
 
   <nav class="filter">
-
     <div class="accordion-container">
-    <div class="accordion" id="categoryAccordion">
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingOne">
-          <button @click="toggleDropdown" class="accordion-button">
-            카테고리
-          </button>
-        </h2>
-        <div id="collapseOne" class="accordion-collapse collapse">
-          <div v-show="isDropdownOpen" class="accordion-collapse">
-            <div class="row">
-              <div class="col-4">
-                <ul>
-                  <li v-for="category in leftCategories" :key="category.value">
-                    <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
-                      {{ category.label }}
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              <div class="col-4">
-                <ul>
-                  <li v-for="category in middleCategories" :key="category.value">
-                    <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
-                      {{ category.label }}
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              <div class="col-4">
-                <ul>
-                  <li v-for="category in rightCategories" :key="category.value">
-                    <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
-                      {{ category.label }}
-                    </button>
-                  </li>
-                </ul>
+      <div class="accordion" id="categoryAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button @click="toggleDropdown" class="accordion-button">
+              {{ selectedCategory !== 'all' ? categoryTranslations[selectedCategory] : '전체 (카테고리를 선택해주세요!)' }}
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse">
+            <div v-show="isDropdownOpen" class="accordion-collapse">
+              <div class="row">
+                <div class="col-4">
+                  <ul>
+                    <li v-for="category in leftCategories" :key="category.value">
+                      <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                        {{ category.label }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-4">
+                  <ul>
+                    <li v-for="category in middleCategories" :key="category.value">
+                      <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                        {{ category.label }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-4">
+                  <ul>
+                    <li v-for="category in rightCategories" :key="category.value">
+                      <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                        {{ category.label }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
 
     <div class="otherFilter">
@@ -390,8 +389,8 @@ function handleCategoryFilterChange(event) {
   selectedCategory.value = event;
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
 
- // 드롭다운을 닫기
- isDropdownOpen.value = false;;
+  // 드롭다운을 닫기
+  isDropdownOpen.value = false;;
 }
 
 // 페이지 로드 시 기본 정렬된 데이터를 가져오기
@@ -657,6 +656,12 @@ function logImageUrl(imageUrl) {
   height: 100%;
 }
 
+.search-routine button:hover {
+  background-color: rgb(227, 227, 227);
+  color: black;
+  border-color: black;
+}
+
 .accordion-container {
   position: relative;
 }
@@ -665,11 +670,14 @@ function logImageUrl(imageUrl) {
   background-color: white !important;
   position: relative;
   width: 100%;
-  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
 }
-.accordion-header{
+
+.accordion-header {
   width: 100%;
-  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
 }
 
 .accordion-collapse {
@@ -681,12 +689,13 @@ function logImageUrl(imageUrl) {
   opacity: 1;
   /* 불투명하게 */
   transition: opacity 0.3s ease-in-out;
-   /* 굵기를 3px로 하고 검은색 테두리 추가 */
-  border: 3px solid black; 
-  border-top:none;
+  /* 굵기를 3px로 하고 검은색 테두리 추가 */
+  border: 3px solid black;
+  border-top: none;
   display: block;
   visibility: visible;
-  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
   margin: 0%;
   padding: 0%;
 }
@@ -695,10 +704,11 @@ function logImageUrl(imageUrl) {
   background-color: white !important;
   border: 3px solid black;
   border-bottom: none;
-  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
   width: 100%;
 
-   /* 버튼의 외부 그림자 제거 */
+  /* 버튼의 외부 그림자 제거 */
   box-shadow: none !important;
 }
 
@@ -707,9 +717,9 @@ function logImageUrl(imageUrl) {
   border: 3px solid black;
   border-bottom: none;
 
- /* 버튼의 외부 그림자 제거 */
+  /* 버튼의 외부 그림자 제거 */
   box-shadow: none !important;
- 
+
 }
 
 /* 선택적인 hover 상태에서 배경색 수정 */
@@ -764,6 +774,7 @@ function logImageUrl(imageUrl) {
   grid-column: 2;
   /* min-width: 200px; 비었을 때 최소 높이 */
 }
+
 .card-body {
   display: flex;
   flex-direction: column;
@@ -771,6 +782,7 @@ function logImageUrl(imageUrl) {
   flex-grow: 1;
   /* 내용물이 차지하는 공간만큼 높이를 유지 */
 }
+
 /* 1등, 2등, 3등 표시 */
 .cards .col {
   display: flex;
@@ -791,6 +803,10 @@ function logImageUrl(imageUrl) {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.cards .card:hover {
+  transform: translateY(-5px);
 }
 
 .card-img-top {
@@ -964,6 +980,8 @@ function logImageUrl(imageUrl) {
   background-color: transparent;
 }
 
+
+
 .likeImg {
   width: 22px;
   /* 아이콘 크기 조절 */
@@ -1008,6 +1026,11 @@ function logImageUrl(imageUrl) {
   border-radius: 0;
 }
 
+.challengeButton:hover {
+  background-color:  rgba(211, 190, 85, 0.267);
+  color: black;
+}
+
 .challengeButtonText {
   font-size: 14px;
 }
@@ -1050,12 +1073,10 @@ function logImageUrl(imageUrl) {
   object-fit: cover;
   /* 이미지 비율 유지 */
   border-radius: 0;
-  
+
 }
 
-col-6 col-md-6
-
-.col {
+col-6 col-md-6 .col {
   flex-grow: 0;
   flex-shrink: 0;
   /* 자식 요소가 부모의 크기에 맞춰 늘어나지 않도록 설정 */

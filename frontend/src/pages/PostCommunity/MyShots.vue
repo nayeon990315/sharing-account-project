@@ -1,11 +1,13 @@
 <template>
   <div id="my-shots">
-    <div class="header">
-      <h2>MyShot.vue</h2>
-    </div>
+    <!-- <div class="header">
+      <h2>내 사진</h2>
+    </div> -->
 
     <!-- MyShotCalendar 컴포넌트를 사용 -->
-    <MyShotCalendar />
+     <div class ="calendar-section">
+      <MyShotCalendar />
+     </div>
   </div>
 </template>
 
@@ -27,6 +29,11 @@ import MyShotCalendar from '@/components/PostCommunity/MyShotCalendar.vue'; // M
 
 }
 
+.calendar-section{
+  height: 100%;
+  overflow: hidden; /* 부모 영역을 넘어가는 것을 방지 */
+  display: flex; /* 자식 요소가 부모의 크기에 맞추도록 설정 */
+}
 .header {
   display: flex;
   justify-content: space-between;
