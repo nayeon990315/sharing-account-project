@@ -200,51 +200,51 @@ onMounted(() => {
 <style scoped>
 #my-shots {
   padding: 20px;
+  background-color: #fffbee;
 }
 
 .category-tags {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 20px;
+  justify-content: flex-start; /* 왼쪽 정렬 */
 }
 
 .category-tags button {
   margin-right: 10px;
   margin-bottom: 10px;
-  padding: 8px15px;
-  border-radius: 20px;
+  padding: 7px 15px;
+  border-radius: 0px;
   border: none;
-  background-color: #d3d3d3;
+  background-color: #f7d794;
   color: #333;
-  box-shadow: 2px2px5pxrgba (0, 0, 0, 0.2);
-  transition: background-color0.3s, color0.3s, box-shadow0.3s;
 }
 
 .category-tags button.active {
-  background-color: #71b5fe;
+  background-color: #000000; /* 활성화 색상 */
+  color: #fff;
 }
 
 .category-tags button:hover {
-  background-color: #4a90e2;
+  background-color: #fa983a; /* 호버 색상 */
   color: #fff;
-  box-shadow: none;
 }
 
 .routine-calendar {
   background-color: #f9f9f9;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 0px;
   margin-bottom: 20px;
-  box-shadow: 0 4px8pxrgba (0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .routine-header {
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 0px;
   width: calc(100% / 3);
   position: relative;
   top: -10px;
-  background-color: #71b5fe;
+  background-color: #f1a72f8d;
 }
 
 .calendar-grid {
@@ -259,29 +259,14 @@ onMounted(() => {
   position: relative;
   border-radius: 10px;
   background-color: #e0e0e0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
 }
 
 .day-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* 이미지 비율을 유지하며 잘 맞추기 */
 }
 
 .pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.pagination-year {
-  margin-bottom: 5px;
-}
-
-.pagination-month {
-  margin-top: 5px;
 }
 </style>

@@ -208,7 +208,7 @@ html {
 
 h1 {
   text-align: left; /* 텍스트를 왼쪽으로 배치 */
-  color: #f39c12;
+  color: #000000;
   font-size: 2.5em;
   margin-bottom: 20px;
 }
@@ -226,14 +226,19 @@ h1 {
   justify-content: center; /* 버튼들을 중앙으로 정렬 */
 }
 
-.category-tags button {
+.category-tags button,
+.search-routine button {
   margin-right: 10px;
   margin-bottom: 10px;
-  padding: 12px 20px; /* 공백 추가 */
+  padding: 8px 16px; /* 높이를 일관되게 설정 */
   border-radius: 0px;
   border: none;
   background-color: #f7d794;
   color: #333;
+  font-size: 1em; /* 폰트 크기를 동일하게 설정 */
+  line-height: normal; /* 라인 높이 설정 */
+  cursor: pointer;
+  transition: background-color 0.3s; /* 부드러운 전환 효과 */
 }
 
 .category-tags button.active {
@@ -241,7 +246,8 @@ h1 {
   color: #fff;
 }
 
-.category-tags button:hover {
+.category-tags button:hover,
+.search-routine button:hover {
   background-color: #fa983a;
   color: #fff;
   box-shadow: none;
@@ -253,23 +259,14 @@ h1 {
 }
 
 .search-routine input[type='text'] {
-  padding: 10px 15px; /* 공백 추가 */
+  padding: 6px 12px; /* 공백 추가 */
   border-radius: 0px;
   border: none;
   background-color: #f3f3f3;
   margin-right: 10px;
-  border-width: 2px;
+  border-width: px;
   border-style: dashed;
   border-color: #ccc;
-}
-
-.search-routine button {
-  padding: 10px 15px; /* 공백 추가 */
-  border-radius: 0px;
-  border: none;
-  background-color: #f39c12;
-  color: white;
-  cursor: pointer;
 }
 
 .pagination {

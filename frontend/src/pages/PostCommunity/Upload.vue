@@ -2,7 +2,7 @@
   <div class="full-screen-container">
     <div class="container upload-container border rounded">
       <form @submit.prevent="submitForm" class="p-4">
-        <h3>인증하기</h3>
+        <h3>Upload</h3>
         <div class="list-group">
           <div
             v-for="habit in filteredHabits"
@@ -386,6 +386,7 @@ const onDrop = (index, event) => {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+
   background-color: rgb(249, 249, 249);
   border-radius: 10px;
 }
@@ -411,6 +412,11 @@ img {
 .list-group-item-custom {
   background-color: blue;
   color: gray;
+}
+
+.list-group-item-light {
+  background-color: #f7d794;
+  color: rgb(0, 0, 0);
 }
 
 .text-small-custom {

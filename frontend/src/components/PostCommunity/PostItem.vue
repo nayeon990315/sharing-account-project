@@ -5,7 +5,6 @@
       <span class="username">{{ post.userName }}</span>
     </div>
     <p class="habit-title">{{ habitData.habitTitle }}</p>
-    <!-- <p class="shot-count">{{ shotCount }} 번째 SHOT</p> -->
     <p class="participants">
       현재 이 습관에 {{ participants }} 명이 참여 중이고,
     </p>
@@ -27,13 +26,11 @@
       ></comment-section>
       <div class="interaction-buttons">
         <div class="like-button" @click="toggleLike">
-          <span :class="{ liked: post.isLiked }">{{
-            post.isLiked ? '❤️' : '🤍'
-          }}</span>
+          <img :src="likeIcon" alt="Like" class="icon" />
           {{ post.postLikes }}
         </div>
         <div class="comment-button" @click="toggleComments(post)">
-          <span class="comment-icon">💬</span>
+          <img :src="commentIcon" alt="Comment" class="icon" />
           {{ commentCounts[post.postId] || 0 }}
         </div>
       </div>
@@ -42,10 +39,13 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, onMounted } from 'vue';
+import { defineProps, defineEmits, ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import CommentSection from '@/components/PostCommunity/CommentSection.vue';
 import userIcon from '@/assets/icons8-user-64.png';
+import likeEmptyIcon from '@/assets/icons/like.png';
+import likeFullIcon from '@/assets/icons/fulllike2.png';
+import commentIconSrc from '@/assets/icons/comment.png';
 
 const props = defineProps({
   post: {
@@ -61,8 +61,14 @@ const habitData = ref({});
 const participants = ref(0);
 const checkedHabit = ref(0);
 
-const existingPosts = ref([]); // 게시물 목록
-const commentCounts = ref({}); // 댓글 수
+const existingPosts = ref([]);
+const commentCounts = ref({});
+
+const likeIcon = computed(() => {
+  return props.post.isLiked ? likeFullIcon : likeEmptyIcon;
+});
+
+const commentIcon = ref(commentIconSrc);
 
 const toggleLike = () => {
   emit('toggleLike', props.post);
@@ -71,6 +77,7 @@ const toggleLike = () => {
 const toggleComments = () => {
   emit('toggleComments', props.post);
 };
+
 const fetchData = async () => {
   try {
     const shotResponse = await axios.get(
@@ -104,46 +111,37 @@ const fetchData = async () => {
   }
 };
 
-// 게시물별 댓글 수 가져오기 및 existingPosts 업데이트
 const fetchCommentCounts = () => {
   axios
     .get('http://localhost:8080/post-community/posts/comments')
     .then((response) => {
-      commentCounts.value = response.data; // 댓글 수 업데이트
-
-      // 해시맵의 키로 existingPosts 업데이트
-      const postIds = Object.keys(commentCounts.value); // commentCounts의 키 값 (postId)
-      existingPosts.value = postIds.map((id) => ({ id: Number(id) })); // id만 가진 객체 배열로 변환
+      commentCounts.value = response.data;
+      const postIds = Object.keys(commentCounts.value);
+      existingPosts.value = postIds.map((id) => ({ id: Number(id) }));
     })
     .catch((error) => {
       console.error('Error fetching comment counts:', error);
     });
 };
 
-// 자식 컴포넌트에서 댓글 변경 이벤트를 받으면 댓글 수 다시 불러오기
 const handleCommentChange = (postId) => {
-  // 특정 게시물에 대한 댓글 수만 가져오기
   axios
     .get(`http://localhost:8080/post-community/posts/${postId}/comments/count`)
     .then((response) => {
-      // 해당 게시물의 댓글 수만 업데이트
-      commentCounts.value[postId] = response.data; // 댓글 수 업데이트
+      commentCounts.value[postId] = response.data;
     })
     .catch((error) => {
       console.error('Error fetching comment count:', error);
     });
 };
 
-// 컴포넌트가 마운트될 때 호출
 onMounted(() => {
   fetchData();
-  // getAllPost();
   fetchCommentCounts();
 });
 </script>
 
 <style scoped>
-/* 메인 포스트 컨테이너 */
 .post {
   width: 100%;
   max-width: 600px;
@@ -155,7 +153,6 @@ onMounted(() => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 유저 정보 영역 */
 .user-info {
   display: flex;
   align-items: center;
@@ -175,7 +172,6 @@ onMounted(() => {
   font-size: 14px;
 }
 
-/* 텍스트 및 기타 정보 */
 .habit-title,
 .shot-count,
 .participants,
@@ -199,7 +195,6 @@ onMounted(() => {
   color: #888;
 }
 
-/* 포스트 이미지 */
 .post-image {
   width: 100%;
   height: auto;
@@ -208,7 +203,6 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
-/* 포스트 상세 내용 */
 .post-details {
   margin-top: 10px;
 }
@@ -228,7 +222,6 @@ onMounted(() => {
   color: #aaa;
 }
 
-/* 상호작용 버튼들 */
 .interaction-buttons {
   display: flex;
   justify-content: space-between;
@@ -245,17 +238,9 @@ onMounted(() => {
   font-size: 14px;
 }
 
-.like-button span {
+.icon {
+  width: 20px;
+  height: 20px;
   margin-right: 5px;
-  font-size: 20px;
-}
-
-.liked {
-  color: #ff5c5c;
-}
-
-.comment-icon {
-  margin-right: 5px;
-  font-size: 18px;
 }
 </style>
