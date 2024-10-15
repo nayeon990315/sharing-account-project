@@ -1,11 +1,19 @@
-// import './assets/main.css'
+import './assets/main.css'
 import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-import { createApp } from 'vue'
-import App from './App.vue'
-// createApp(App).mount('#app')
+import { createApp } from 'vue';
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-import router from './router/index.js'
+import router from './router';
+import VueCookies from 'vue-cookies';
+import App from './App.vue';
+
 const app = createApp(App)
-app.use(router) //vue인스턴스에 router등록
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+app.use(pinia)
+app.use(router)
+app.use(VueCookies)
 app.mount('#app')
