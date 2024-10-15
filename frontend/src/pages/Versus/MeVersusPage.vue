@@ -393,11 +393,12 @@ const getExpensesPast = async () => {
     }
 };
 
-const selectCalender = () => {
+const selectCalender = async () => {
     showPastRoutines.value = true;
     targetDate.value = formatDate(selectedDate.value);
-    getPastData(); 
-    saveMoneyPast();
+    await getPastData(); 
+    await saveMoneyPast();
+    await getExpensesPast();
 };
 
 const formatDate = (date) => {
