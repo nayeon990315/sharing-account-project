@@ -44,12 +44,12 @@ const routes = [
     component: Register,
   },
   {
-    path: '/myroutine',
+    path: '/spending-by-routine',
     name: 'MyRoutine',
     component: MyRoutine,
   },
   {
-    path: '/myroutine/edit',
+    path: '/myroutine/settings',
     name: 'MyRoutineEdit',
     component: MyRoutineEdit,
   },

@@ -14,18 +14,35 @@
         <!-- <p>오늘, {{ todayActiveRoutinesCount }}개의 루틴에 대한 달성률은 {{ todayPercent }}%입니다.</p>
                 <p></p>
                 <p>{{ totalSavedToday }}원을 절약할 수 있었어요!</p> -->
-        <div class="boxDiv">
-          <!-- <h4>{{formattedDate}}의 벌루틴</h4> -->
-          <h4>"조금만 더 힘내보세요!"</h4>
-          <ul>
-            <li v-for="(habit, index) in todayActiveRoutines" :key="index">
-              <img v-if="habit.isCheckedToday" src="@/assets/images/check/true.png" alt="Checked">
-              <img v-else src="@/assets/images/check/false.png" alt="Unchecked">
-              <span :style="{ textDecoration: habit.isCheckedToday ? 'line-through' : 'none' }">
-                {{ habit.habitTitle }}
-              </span>
-            </li>
-          </ul>
+
+                <div class="boxDiv">
+                    <!-- <h4>{{formattedDate}}의 벌루틴</h4> -->
+                    <h4>"조금만 더 힘내보세요!"</h4>
+                    <ul>
+                        <li v-for="(habit, index) in todayActiveRoutines" :key="index">
+                            <img v-if="habit.isCheckedToday" src="@/assets/images/check/true.png" alt="Checked">
+                            <img v-else src="@/assets/images/check/false.png" alt="Unchecked">
+                            <span :style="{ textDecoration: habit.isCheckedToday ? 'line-through' : 'none' }">
+                                {{ habit.habitTitle }}
+                            </span>
+                        </li>
+                    </ul>
+                    
+                </div>
+            </div>
+            
+            <div class="potBeeContainer">
+                <img class="beeImg" src="@/assets/images/bee/bee_update.png">
+                <img class="pot" :src="getImageForPercent">
+                <div class="potComment">
+                    <p class="date">{{month}}월 {{ day }}일</p>
+                    <!-- <p> {{ todayCheckedRoutinesCount }} / {{ todayActiveRoutinesCount }}개 달성</p> -->
+                    <p class="percent">{{ todayPercent }}% 달성</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
         </div>
       </div>
@@ -292,11 +309,12 @@ import { useHabitStore } from '@/stores/habitStore'; // pinia
 const habitStore = useHabitStore();
 const todayActiveRoutines = habitStore.activeHabits;
 const todayActiveRoutinesCount = ref(todayActiveRoutines.length); // 오늘 진행 중인 루틴 개수
-const todayCheckedRoutinesCount = todayActiveRoutines.filter(habit => habit.isCheckedToday).length; // 오늘 달성한 루틴 개수 
+const todayCheckedRoutinesCount = ref(todayActiveRoutines.filter(habit => habit.isCheckedToday).length); // 오늘 달성한 루틴 개수 
 
 
 const todayPercent = computed(() => {
-  return todayActiveRoutinesCount > 0 ? Math.floor((todayCheckedRoutinesCount / todayActiveRoutinesCount) * 100) : 0;
+  if (todayActiveRoutinesCount.value === 0) return 0;
+  return Math.round((todayCheckedRoutinesCount.value / todayActiveRoutinesCount.value) * 100);
 });
 
 const getUserIdFromToken = async () => {
@@ -335,7 +353,9 @@ onMounted(async () => {
   await habitStore.getHabitsFromServer(localStorage.getItem('userId')); // userId 넣고 !! 꼭 바꿔야 함 !!!!!
   //   todayActiveRoutinesCount.value = habitStore.activeHabits.length;
   console.log("진행 중인 루틴:", todayActiveRoutines);
-  console.log("진행 중인 루틴 개수:", todayActiveRoutinesCount);
+  console.log("진행 중인 루틴 개수:", todayActiveRoutinesCount.value);
+  console.log("완료한 루틴 개수:", todayCheckedRoutinesCount.value);
+  console.log("퍼센트:", todayPercent.value)
 });
 
 // 오늘 절약한 금액 계산
@@ -354,6 +374,7 @@ const totalSavedToday = computed(() => {
 // 달성률에 따른 이미지 변경 로직
 const getImageForPercent = computed(() => {
   const percent = todayPercent.value;
+  console.log("퍼센트:", todayPercent.value);
 
   if (percent === 0) return new URL('@/assets/images/pot/0_update2.png', import.meta.url).href;
   else if (percent > 0 && percent < 30) return new URL('@/assets/images/pot/20~30.png', import.meta.url).href;

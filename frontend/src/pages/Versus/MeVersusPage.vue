@@ -1,78 +1,139 @@
 <template>
+
+    <div class="info">
+        <h1>Savings: Today vs Past</h1>
+        <h5>절약: 나 vs 나</h5>
+        <p>'과거의 나'와 '오늘의 나' 중 누가 더 적게 쓰고, 더 많이 절약했을까요?</p>
+    </div>
+    
+
     <div class="versus-container">
-        <div class="button-group">
-            <button class="btn btn-primary mb-2" @click="selectDate(1, '일전')">1일전</button>
-            <button class="btn btn-primary mb-2" @click="selectDate(7, '주전')">1주전</button>
-            <button class="btn btn-secondary mb-2" @click="selectDate(1, '달전')">1달전</button>
-            <button class="btn btn-success mb-2" @click="selectDate(1, '년전')">1년전</button>
-            <!-- 날짜 선택을 위한 버튼과 달력 -->
-            <div class="date-picker-container">
-                <Datepicker v-model="selectedDate" locale="ko" :enable-time-picker="false" @change="selectCalender"/>
+
+        <div class="dateSelect">
+            <p>대결할 과거의 날짜를 선택한 후 카드를 클릭하세요</p>
+            <div class="button-group">
                 
+                <button class="btn " @click="selectDate(1, '일전')">1일전</button>
+                <button class="btn " @click="selectDate(7, '주전')">1주전</button>
+                <button class="btn  " @click="selectDate(1, '달전')">1달전</button>
+                <button class="btn " @click="selectDate(1, '년전')">1년전</button>
+                <!-- 날짜 선택을 위한 버튼과 달력 -->
+                    <p> 직접 날짜 선택</p>
+                <div class="date-picker-container">
+                    <Datepicker v-model="selectedDate" locale="ko" :enable-time-picker="false" @change="selectCalender"/>
+                    
+                </div>
+                <button class="btn btn-info " @click="selectCalender">기간설정</button>
             </div>
-            <button class="btn btn-info mb-2" @click="selectCalender">기간설정</button>
         </div>
 
+        <!-- 카드 보기 버튼 -->
+        <!-- <button class="btn btn-flip" @click="toggleFlip">카드 보기</button> -->
+        
+
         <!-- 승리 결과 -->
-        <div class="winner-result" v-if="showPastRoutines"
-            :class="{ 'today-win': winnerMessage === true, 'past-win': winnerMessage === false, 'draw': winnerMessage === '무승부!' }">
+        <div class="winner-result" v-show="showPastRoutines && isFlipped"
+            :class="{ 'today-win': winnerMessage === true, 'past-win': winnerMessage === false, 'draw': winnerMessage === '무승부!' }"
+            >
+            
             <template v-if="winnerMessage === true">
                 <p>오늘 더 많은 절약을 했습니다!</p>
             </template>
             <template v-else-if="winnerMessage === false">
-                <p>{{ targetDate }}에 더 많은 절약을 했습니다!</p>
+                <p>{{ formatTemplateDate(targetDate) }}에 더 많은 절약을 했습니다!</p>
             </template>
             <template v-else>
                 <p>{{ winnerMessage }}</p>
             </template>
         </div>
 
-        <div class="container">
-            <div class="left">
-                <div class="profile-section">
-                    <img :src="profileImageUrl" alt="Profile" class="profile-image1" :class="{ 'winner-border': winnerMessage === true && showPastRoutines == true}"/>
+        <div class="container" @click="toggleFlip">
+            <!-- Left 카드 -->
+        <div class="past-section">
+            <div class="dateInfo">
+                    <h3>Past</h3>
+                    <p>{{ formatTemplateDate(targetDate) }}</p>
                 </div>
-                <div class="total">
-                    <div class="stat">
-                        <p>오늘의 총 지출</p>
-                        <h3><strong>{{ totalToday }}</strong>원</h3>
+            <div class="card-container">
+                <div class="card" :class="{ flipped: isFlipped }">
+                    <div class="card-front left">
+                        <img src="@/assets/images/tarot/tarot3.png" alt="Tarot Card">
                     </div>
-                </div>
-                <div class="savings">
-                    <div class="stat">
-                        <p>오늘 절약한 금액</p>
-                        <h3><strong>{{ habit?.savedAmountToday }}</strong>원</h3>
+
+                    <div class="card-back left">
+                    <!-- <div class="profile-section">
+                        <img :src="profileImageUrl" alt="Profile" class="profile-image2" :class="{ 'winner-border': winnerMessage === false}"/>
+                    </div> -->
+                        
+                        <p v-if="winnerMessage === true">Winner</p>
+                        <p v-else-if="winnerMessage === false">Loser</p>
+                        <p v-else>Draw</p>
+                        
+                        <div class="total">
+                            <div class="stat">
+                                <p class="statInfo">총 지출 
+                                    <!-- <span v-if="showPastRoutines">({{ targetDate }})</span> -->
+                                </p>
+                                <p class="statValue"> {{ totalPast }}원</p>
+                            </div>
+                        </div>
+                        <div class="savings">
+                            <div class="stat">
+                                <p class="statInfo">절약한 금액
+                                    <!-- <span v-if="showPastRoutines">({{ targetDate }})</span> -->
+                                </p>
+                                <p class="statValue">{{ habit.savedAmountPast }}원</p>
+                            </div>
+                        </div>
+                        <div id="routine">
+                            <PastRoutinesList :routinesToday="routinesToday" :routinesPast="routinesPast" :showPastRoutines="showPastRoutines" />
+                        </div>
                     </div>
-                </div>
-                <div id="routine">
-                    <PresentRoutinesList :routinesToday="routinesToday" :routinesPast="routinesPast" />
                 </div>
             </div>
-            <div class="right">
-                <div class="profile-section">
-                    <img :src="profileImageUrl" alt="Profile" class="profile-image2" :class="{ 'winner-border': winnerMessage === false}"/>
+        </div>
+
+            <!-- Right 카드 -->
+        <div class="today-section">
+            <div  class="dateInfo">
+                    <h3>Today </h3>
+                    <p>{{ formatTemplateDate(today) }}</p>
                 </div>
-                <div class="total">
-                    <div class="stat">
-                        <p>과거의 총 지출 
-                            <span v-if="showPastRoutines">({{ targetDate }})</span>
-                        </p>
-                        <h3><strong>{{ totalPast }}</strong>원</h3>
+            <div class="card-container" >
+                <div class="card" :class="{ flipped: isFlipped }">
+                    <div class="card-front right">
+                        <img src="@/assets/images/tarot/tarot3.png" alt="Tarot Card">
                     </div>
-                </div>
-                <div class="savings">
-                    <div class="stat">
-                        <p>과거 절약한 금액
-                            <span v-if="showPastRoutines">({{ targetDate }})</span>
-                        </p>
-                        <h3><strong>{{ habit.savedAmountPast }}</strong>원</h3>
+
+                    <div class="card-back right">                        
+                        <!-- <div class="profile-section">
+                            <img :src="profileImageUrl" alt="Profile" class="profile-image1" :class="{ 'winner-border': winnerMessage === true && showPastRoutines == true}"/>
+                        </div> -->
+
+                        <p v-if="winnerMessage === false">Winner</p>
+                        <p v-else-if="winnerMessage === true">Loser</p>
+                        <p v-else>Draw</p>
+
+                        <div class="total">
+                            <div class="stat">
+                                <p class="statInfo">총 지출</p>
+                                <p class="statValue">{{ totalToday }}원</p>
+                            </div>
+                        </div>
+                        <div class="savings">
+                            <div class="stat">
+                                <p class="statInfo">절약한 금액</p>
+                                <p class="statValue">{{ habit?.savedAmountToday }}원</p>
+                            </div>
+                        </div>
+                        <div id="routine">
+                            <PresentRoutinesList :routinesToday="routinesToday" :routinesPast="routinesPast" />
+                        </div>
                     </div>
-                </div>
-                <div id="routine">
-                    <PastRoutinesList :routinesToday="routinesToday" :routinesPast="routinesPast" :showPastRoutines="showPastRoutines" />
                 </div>
             </div>  
         </div>
+    </div>
     </div>
 </template>
 
@@ -98,6 +159,19 @@ const showPastRoutines = ref(false);   // 과거 루틴 랜더링 여부
 const today = new Date();
 const targetDate = ref(new Date());
 const selectedDate = ref(new Date());
+const formatTemplateDate = (date) => {
+    if (typeof(date) === 'string') {
+        const dateResult = date.split('-')
+        const strYear = dateResult[0]
+        const strMonth = dateResult[1]
+        const strDay = dateResult[2]
+        return `${strYear}년 ${strMonth}월 ${strDay}일`;
+    }
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}년 ${month}월 ${day}일`;
+};
 
 const profileImageUrl = ref(defaultProfileImage);
 
@@ -124,6 +198,13 @@ const getUserInfo = async () => {
   } catch (error) {
     console.error('사용자 정보 요청 중 오류 발생:', error);
   }
+};
+
+// 카드 뒤집기
+const isFlipped = ref(false);
+
+const toggleFlip = () => {
+    isFlipped.value = !isFlipped.value;
 };
 
 // 로컬스토리지에서 사용자 아이디 가져오기
@@ -358,20 +439,90 @@ onMounted(() => {
 
 <style scoped>
 
+/* 인포 */
+.info {
+    margin: 6% 8%;
+}
+
+.info h1{
+    font-weight: 800;
+}
+
+.info p {
+    /* font-weight: 700; */
+    margin-top: 25px;
+}
+
+/* .versus-container {
+    display: grid;
+    width: 100%;
+} */
+
+ .versus-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* justify-items: center; */
+ }
+
 .container {
   display: flex;
+  justify-content: space-between;
+  /* flex-direction: column; */
+  /* grid-template-columns: 1fr 1fr; */
+  /* grid-template-rows: 1; */
+  /* gap: 0; */
+  margin: 8% auto;
+  padding: 0;
+  width: 70%;
   /* height: 100vh; 화면 높이 전체 사용 */
 }
 
+.past-section, .today-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 가운데 정렬 */
+  width: 50%; /* 두 섹션이 나란히 배치되게 하기 위해 */
+  text-align: center;
+}
+
 .left {
-  background-color: rgb(213, 242, 252); 
-  flex: 1;
+    width: 50%;
+  background-color: black; 
+  /* grid-column: 1; */
+  /* box-sizing: border-box; */
+
 }
 
 .right {
-  background-color: rgb(235, 193, 193); 
-  flex: 1; 
+    width: 50%;
+  background-color: black; 
+  /* grid-column: 2;  */
+  /* box-sizing: border-box; */
 }
+
+/* 날짜 선택 */
+.dateSelect {
+    text-align: center;
+    /* justify-self: center; */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+
+.btn {
+    background-color: black;
+    color: white;
+    border-radius: 0;
+    border: none;
+}
+
+/* 카드 내부 */
+/* .dateInfo {
+    color: white;
+} */
 
 .profile-section {
     display: flex;
@@ -393,8 +544,8 @@ onMounted(() => {
 .total {
   display: flex;
   justify-content: space-between;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin: 0 20px;
+
 }
 
 .savings {
@@ -405,14 +556,24 @@ onMounted(() => {
 }
 
 .stat {
-  background-color: #f0f0f0;
-  padding: 20px;
+  /* background-color: #f0f0f0; */
+  color: black;
+  /* padding: 20px; */
   width: 100%;
-  margin: 10px;
-  border-radius: 5px;
-  border: 2px solid #ddd; 
-  background-color: #f9f9f9; 
+  /* margin: 10px; */
   text-align: center;
+}
+
+.stat .statInfo {
+    font-weight: 600;
+    margin-bottom: 0;
+    color: rgb(89, 57, 0);
+}
+
+.stat .statValue {
+    font-weight: 900;
+    font-size: 25px;
+    color: rgb(89, 57, 0);
 }
 
 .draw {
@@ -433,7 +594,8 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center; 
-    width: 100%;
+    width: 250px;
+    margin: 0 auto;
 }
 
 .winner-border {
@@ -443,7 +605,19 @@ onMounted(() => {
 
 .winner-result {
     text-align: center;
+    margin-top: 30px;
+    font-weight: 800;
+    font-size: 20px;
+    /* visibility: hidden; */
+    height: 50px;
+    /* visibility: hidden; */
+    /* opacity: 0; 카드가 뒤집히기 전에는 투명하게 설정 */
 }
+.flipped ~ .winner-result {
+    /* visibility: visible; */
+    opacity: 1;
+}
+
 
 @keyframes borderPulse {
     0% {
@@ -455,6 +629,80 @@ onMounted(() => {
     100% {
         border-color: red;
     }
+}
+
+
+/* 뒤집히는 카드 */
+.card-container {
+    width: 300px;
+    height: 500px;
+    perspective: 1500px; /* 3D 효과를 주기 위한 perspective */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; /* 수평 중앙 정렬 */
+    position: relative;
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.6s ease;
+    transform-style: preserve-3d;
+    transform-origin: center;
+
+    border: none;
+}
+
+.flipped {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    backface-visibility: hidden;
+    border-radius: 30px;
+    border: none;
+    top: 0;
+    left: 0;
+}
+
+.card-front img, .card-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 30px;
+    border: none;
+
+    filter: drop-shadow(10px 6px 20px #c3c3c3); /*그림자*/
+}
+
+.card-back {
+    background: url('@/assets/images/tarot/tarot_back.png');
+    background-size: 100% 100%;
+    color: rgb(0, 0, 0);
+    transform: rotateY(180deg);
+    border-radius: 30px;
+    border: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+
+    filter: drop-shadow(10px 6px 20px #c3c3c3); /*그림자*/
+}
+
+.btn-flip {
+    margin-bottom: 20px;
 }
 
 </style>

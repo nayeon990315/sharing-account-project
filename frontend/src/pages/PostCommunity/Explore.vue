@@ -11,6 +11,7 @@
         {{ category === '참여루틴' ? category : `#${category}` }}
       </button>
     </div>
+
     <div>{{ shot }}</div>
     <PostItem
       v-for="post in filteredPosts"
@@ -19,6 +20,7 @@
       @toggle-like="toggleLike"
       @toggle-comments="toggleComments"
     />
+
   </div>
 </template>
 

@@ -8,27 +8,26 @@
                 <img src="@/assets/images/header/bee_header3.png">
             </div>
 
-            <div class="dropdown dropdown p-2" id="routineDropdown">
+            <div class="dropdown dropdown p-2" id="routine&moneyDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    Routine
+                    Routine & Money
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item" href="/myroutine">마이 루틴 관리</a></li>
-                    <li><a class="dropdown-item" href="/myroutine/edit">마이 루틴 편집</a></li>
+                    <li><a href="/spending-by-routine" class="dropdown-item">루틴별 지출</a></li>
+                    <li><a href="/versus" class="dropdown-item" >절약: 나 vs 나</a></li>
                 </ul>
             </div>
 
-            <div class="dropdown dropdown p-2" id="moneyDropdown">
+            <!-- <div class="dropdown dropdown p-2" id="moneyDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Money
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item" href="/versus">지출: 나 vs 나</a></li>
-                    <li><a class="dropdown-item" href="#">가계부</a></li>
+                    <li><a class="dropdown-item" href="/versus">절약: 나 vs 나</a></li>
                 </ul>
-            </div>
+            </div> -->
 
             <div class="dropdown dropdown p-2" id="communityDropdown">
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
@@ -36,18 +35,29 @@
                     Community
                 </button>
                 <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item" href="/routine-community">습관 공유 커뮤니티</a></li>
-                    <li><a class="dropdown-item" href="/post-community/explore">인증 커뮤니티</a></li>
+                    <li><a href="/routine-community" class="dropdown-item">벌루틴 마켓/벌루틴 허브</a></li>
+                    <li><a href="/post-community/explore" class="dropdown-item" >허니샷 인증</a></li>
                 </ul>
             </div>
         </div>
+
+        <div class="dropdown dropdown p-2" id="myDropdown">
+                <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
+                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    My
+                </button>
+                <ul class="dropdown-menu menu-item" aria-labelledby="dropdownMenuButton1">
+                    <li><a href="/myroutine/settings" class="dropdown-item">마이루틴 설정</a></li>
+                    <li><a href="/myreward" class="dropdown-item">마이페이지</a></li>
+                </ul>
+            </div>
 
         
 
         <div class="auth-buttons">
             <template v-if="isLoggedIn">
                 <!-- <span>반갑습니다 {{ userName }}님!</span> -->
-                <router-link to="/myreward"><button class="auth-button">Mypage</button></router-link>
+                <!-- <router-link to="/myreward"><button class="auth-button">Mypage</button></router-link> -->
                 <button class="auth-button" @click="logout">Log out</button>
             </template>
             <template v-else>
@@ -103,6 +113,11 @@ onMounted(() => {
     // 로그아웃 기능
 });
 
+router.beforeEach((to, from, next) => {
+    checkLoginStatus();  // 페이지 이동할 때마다 로그인 상태 확인
+    next();
+});
+
 const checkLoginStatus = () => {
     const storedNickName = localStorage.getItem('nickname');  // localStorage에서 사용자 이름 가져오기
     if (storedNickName) {
@@ -148,7 +163,7 @@ const navigateByLoginStatus = () => {
 
 .navbar {
     height: 45px;
-    background-color:  rgba(204, 204, 204, 0.48) !important;
+    background-color:  rgba(255, 255, 255, 0.48) !important;
     display: flex; 
     align-items: center; /* 세로 가운데 정렬 */
     justify-content: space-between; /* 양쪽 끝으로 로고와 버튼을 배치 */
@@ -204,7 +219,7 @@ const navigateByLoginStatus = () => {
 }
 
 /* 호버 시 드롭다운 버튼 스타일 */
-.dropdown-toggle:hover {
+.dropdown-toggle:hover, .dropdown-toggle:active {
     font-weight: bold; 
     /* background: none; */
     /* color: #FFFFFF; */
@@ -216,7 +231,13 @@ const navigateByLoginStatus = () => {
 .btn:focus {
     outline: none !important;
     box-shadow: none !important;
+    /* background-color: #5a5a5a; */
 }
+
+.dropdown-item:active {
+    background-color: black;
+}
+
 
 .menu-btn {
     width: 120px;
