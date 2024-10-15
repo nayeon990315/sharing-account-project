@@ -2,72 +2,25 @@
   <div class="login">
     <div class="wrap">
 
-      <!-- LOGIN FORM -->
       <div class="user">
-        <!-- LOGO -->
-        <div class="logo">
-          <p>벌루틴 로고</p>
-        </div>
 
-        <!-- LOGIN, RECOVERY FORMS -->
+        <div class="logo">
+          <img src="@/assets/images/bee/bee4.png" alt="" style="width: 150px">
+        </div>
         <div class="form-wrap">
 
-          <!-- LOGIN FORM -->
           <div v-if="isLogin">
-            <form class="login-form" @submit.prevent="login">
-              <input type="text" class="input" placeholder="아이디" v-model="loginForm.username" />
-              <input type="password" class="input" placeholder="비밀번호" v-model="loginForm.password" />
-              <input type="checkbox" class="checkbox" v-model="loginForm.rememberMe" />
-              <label for="remember_me">로그인 정보 저장</label>
-              <input type="submit" class="button loginButton" value="로그인" />
-            </form>
-
-            <div class="help-action">
-              <p><a href="#" @click.prevent="showPasswordRecovery">아이디/비밀번호 찾기</a></p>
-            </div>
-
-            <div class="signUp">
-              <router-link to="/signup"><p>회원가입하기</p></router-link>
-            </div>
-
-            <div class="divider">
-              <hr> <span> or </span> <hr>
-            </div>
-
-            <!-- 소셜 로그인 -->
             <div>
-              <div class="socialLogin googleLogin"
-              @click="googleLogin"><img src="@/assets/icons/googleIcon.png">구글 계정으로 로그인</div>
+              <h1>Login</h1>
+              <p>소셜 계정으로 간편하게 시작하세요. 로그인 즉시 가입 및 이용이 가능합니다.</p>
+            </div>
+            <div>
               <div class="socialLogin kakaoLogin"
               @click="kakaoLogin"><img src="@/assets/icons/kakaoIcon.png">카카오 계정으로 로그인</div>
+              <div class="socialLogin googleLogin"
+              @click="googleLogin"><img src="@/assets/icons/googleIcon.png">구글 계정으로 로그인</div>
               <div class="socialLogin naverLogin"
               @click="naverLogin"><img src="@/assets/icons/naverIcon.png">네이버 계정으로 로그인</div>
-            </div>
-          </div>
-
-          <!-- PASSWORD/ID RECOVERY TABS -->
-          <div class="recovery" v-if="isPasswordRecovery">
-
-            <!-- ID RECOVERY FORM -->
-            <div class="recoverID">
-              <h2>아이디 찾기<br><br></h2>
-              <p>사용자 이름과 가입한 이메일을 입력하세요.<br></p>
-              <form class="recovery-form" @submit.prevent="findId">
-                <input type="text" class="input" placeholder="사용자 이름" v-model="recoveryForm.username" />
-                <input type="email" class="input" placeholder="가입한 이메일" v-model="recoveryForm.email" />
-                <input type="submit" class="button" value="아이디 찾기" />
-              </form>
-            </div>
-
-            <!-- PASSWORD RECOVERY FORM -->
-            <div  class="recoverPW">
-              <h2>비밀번호 찾기<br><br></h2>
-              <p>아이디와 가입한 이메일을 입력하세요.<br></p>
-              <form class="recovery-form" @submit.prevent="findPassword">
-                <input type="text" class="input" placeholder="아이디" v-model="recoveryForm.username" />
-                <input type="email" class="input" placeholder="가입한 이메일" v-model="recoveryForm.email" />
-                <input type="submit" class="button" value="비밀번호 찾기" />
-              </form>
             </div>
           </div>
 
@@ -161,8 +114,19 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ffffff;
+  background-color:#FFD565;
   color: #000000;
+}
+
+.form-wrap {
+  /* border: solid 4px black; */
+  /* padding: 80px; */
+  width: 350px;
+  height: 300px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23333' stroke-width='4' stroke-dasharray='12%2c 15' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo {
@@ -262,6 +226,9 @@ input[type="submit"]:hover {
     padding: 6px;
     margin-top: 5px;
     /* background-color: #eeeeee; */
+
+    width: 300px;
+    margin: 0 auto;
 }
 
 .socialLogin img {

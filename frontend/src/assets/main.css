@@ -16,6 +16,17 @@
   /* padding: 2rem; */
   font-weight: normal;
 }
+/* 폰트 */
+@font-face {
+  font-family: "Wanted Sans";
+  src: url("@/assets/fonts/WantedSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  font-family: "Wanted Sans";
+}
 
 /* @media (hover: hover) {
   a:hover {

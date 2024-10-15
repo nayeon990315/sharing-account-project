@@ -96,7 +96,6 @@
       </form>
     </div>
 
-    <!-- <input type="submit" value="Submit" /> -->
   </nav>
 
   <div class="main">
@@ -126,8 +125,6 @@
     </div>
 
     <!-- 카드들 -->
-    <!-- <div class="cards row row-cols-1 row-cols-md-3 g-4" v-if="(isMyLikesFilterActive ? checkMyLike() : routineCommunityArray).length > 0"> -->
-    <!-- 좋아요 누른 게 없을 때 문구 띄우기 -->
     <div class="cards row row-cols-1 row-cols-md-3 g-4">
       <!-- 카드 하나 -->
       <!-- v-for 문 !!! -->
@@ -231,10 +228,6 @@ import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
 import fullLike from '@/assets/icons/fullLike.png';
 import emptyLike from '@/assets/icons/emptyLike.png';
-import coffeeImg from '@/assets/images/coffee_sample.png';
-import coffeeImg2 from '@/assets/images/coffee_sample2.jpg';
-import foodImg from '@/assets/images/food_sample.jpg';
-import foodImg2 from '@/assets/images/food_sample2.jpg';
 import defaultAvatarImg from '@/assets/images/sample.jpg';
 import Paginate from 'vuejs-paginate-next';
 import { useHabitStore } from '@/stores/habitStore';
@@ -272,6 +265,34 @@ const categoryTranslations = {
   event_fees: '경조사/회비',
 };
 
+const leftCategories = [
+  { value: 'all', label: '전체' },
+  { value: 'food', label: '식비' },
+  { value: 'dessert', label: '카페/간식' },
+  { value: 'online_shopping', label: '온라인쇼핑' },
+  { value: 'health_medical', label: '의료/건강' },
+  { value: 'living', label: '생활' }
+];
+
+const middleCategories = [
+  { value: 'fashion_shopping', label: '패션/쇼핑' },
+  { value: 'culture_leisure', label: '문화/여가' },
+  { value: 'alcohol_entertainment', label: '술/유흥' },
+  { value: 'travel', label: '여행' },
+  { value: 'housing_utilities', label: '주거/공과금' },
+  { value: 'automobile', label: '자동차' }
+];
+
+const rightCategories = [
+  { value: 'pet', label: '반려동물' },
+  { value: 'beauty', label: '뷰티' },
+  { value: 'finance', label: '금융' },
+  { value: 'transportation', label: '교통' },
+  { value: 'event_fees', label: '경조사/회비' },
+  { value: 'education', label: '교육' }
+];
+
+
 const isModalVisible = ref(false);
 const modalMessage = ref('');
 // Modal 표시 함수
@@ -284,6 +305,7 @@ const openModal = (message) => {
 const closeModal = () => {
   isModalVisible.value = false;
 };
+
 // sortType을 상태로 관리할 변수 선언
 const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
 const routineCommunityArray = ref([]);
@@ -414,11 +436,21 @@ function handleFilterChange(event) {
   fetchRoutines(searchQuery.value); // 업데이트된 sortType으로 데이터를 가져옴
 }
 
+// 드롭다운 열기/닫기 토글 함수
+const toggleDropdown = () => {
+  console.log("toggleDropOpen called");
+  isDropdownOpen.value = !isDropdownOpen.value;
+  console.log('isDropdownOpen:', isDropdownOpen.value); // 상태 변화 확인
+};
+
 // 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
 function handleCategoryFilterChange(event) {
   selectedCategory.value = categoryTranslations[event.target.value];
   console.log(selectedCategory.value);
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
+
+ // 드롭다운을 닫기
+ isDropdownOpen.value = false;;
 }
 
 // 페이지 로드 시 기본 정렬된 데이터를 가져오기
@@ -426,6 +458,17 @@ onMounted(() => {
   fetchLikedRoutines();
   fetchRoutines();
 });
+
+// Bootstrap의 Collapse API를 사용하여 드롭다운 닫기
+const closeDropdown = () => {
+  const collapseElement = document.getElementById('collapseOne');
+  if (collapseElement) {
+    const bsCollapse = new bootstrap.Collapse(collapseElement, {
+      toggle: false
+    });
+    bsCollapse.hide();
+  }
+};
 
 // 좋아요 버튼 클릭 시 동작
 async function toggleLike(communityId) {
@@ -609,7 +652,7 @@ function logImageUrl(imageUrl) {
     display: none;
   }
 
-  /* cards는 화면 가운데 */
+  /* cards는 화면 가운데  이거 반응형임*/
   .cards {
     grid-column: 1;
     /* cards도 1열 */
@@ -622,14 +665,15 @@ function logImageUrl(imageUrl) {
 
 /* 전체 배치 */
 
+
 .filter {
-  margin: 3% 8%;
+  margin: 0% 8% 2% 8%;
   display: grid;
   grid-template-columns: 2fr;
 }
 
 .main {
-  margin: 2% 8%;
+  margin: 1% 8% 2% 8%;
 
   display: grid;
   /* grid-template-columns: 20% 80%; */
@@ -648,7 +692,8 @@ function logImageUrl(imageUrl) {
 }
 
 .intro {
-  margin: 3% 8%;
+  margin: 3% 8% 0% 8%;
+  /* 상단 3%, 좌우 8%, 하단 0 */
   grid-column: 1 / span 2;
   /* 소개는 두 열을 모두 차지 */
   display: flex;
@@ -661,13 +706,120 @@ function logImageUrl(imageUrl) {
 }
 
 .search-routine {
-  flex: 0.2;
+  display: flex;
+  align-items: center;
 }
 
-/* .col {
-    flex: 1 1 30%; 
-    min-width: 200px; 
-} */
+.search-routine input {
+  margin-right: 5px;
+  /* 버튼과 입력창 사이 간격 */
+}
+
+.search-routine button {
+  display: inline-block;
+  height: 100%;
+}
+
+.accordion-container {
+  position: relative;
+}
+
+.accordion-item {
+  background-color: white !important;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+}
+.accordion-header{
+  width: 100%;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+}
+
+.accordion-collapse {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: white;
+  opacity: 1;
+  /* 불투명하게 */
+  transition: opacity 0.3s ease-in-out;
+   /* 굵기를 3px로 하고 검은색 테두리 추가 */
+  border: 3px solid black; 
+  border-top:none;
+  display: block;
+  visibility: visible;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  margin: 0%;
+  padding: 0%;
+}
+
+.accordion-button {
+  background-color: white !important;
+  border: 3px solid black;
+  border-bottom: none;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  width: 100%;
+
+   /* 버튼의 외부 그림자 제거 */
+  box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: white !important;
+  border: 3px solid black;
+  border-bottom: none;
+
+ /* 버튼의 외부 그림자 제거 */
+  box-shadow: none !important;
+ 
+}
+
+/* 선택적인 hover 상태에서 배경색 수정 */
+.accordion-button:hover {
+  /* hover 시 원하는 배경색 설정 (회색 예시) */
+  background-color: white !important;
+
+  border-bottom: none;
+
+}
+
+.accordion {
+  /* 첫 번째 열 */
+  grid-column: 1;
+  /* 원하는 너비로 설정 */
+  max-width: 70%;
+  /* 여백 조정 */
+  margin-right: 20px;
+
+  background-color: white !important;
+}
+
+.accordion ul {
+  padding-left: 0;
+  /* 목록의 기본 padding 제거 */
+}
+
+.accordion li {
+  list-style-type: none;
+  /* 점 제거 */
+  text-align: left;
+  /* 왼쪽 정렬 */
+  padding-left: 0;
+  /* 여백 제거 */
+}
+
+.accordion button {
+  width: 100%;
+  text-decoration: none;
+  /* 밑줄 제거 */
+  color: black;
+  /* 글자 색을 검은색으로 변경 */
+  font-weight: bold;
+  /* 글자 강조 */
+  text-align: left;
+  /* 버튼 텍스트 왼쪽 정렬 */
+}
 
 .cards {
   /* width: 80%; */
@@ -678,7 +830,31 @@ function logImageUrl(imageUrl) {
 
 /* 1등, 2등, 3등 표시 */
 .cards .col {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  flex: 1 1 30%;
+  max-width: 33%;
+  min-height: 350px;
+  /* 카드 최소 높이 통일 */
+  overflow: hidden;
+  /* 넘치는 내용 숨기기 */
+
+}
+
+.cards .card {
+  height: 100%;
+  /* 카드 높이 일관성 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-img-top {
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+
 }
 
 .cards .col:nth-child(1) .card::before {
@@ -773,7 +949,9 @@ function logImageUrl(imageUrl) {
 
 /* ************ 카드 세부 ************ */
 .card {
-  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-title {
@@ -913,12 +1091,10 @@ function logImageUrl(imageUrl) {
 }
 
 .shots .card img {
-  width: 130px;
-  height: 130px;
+  aspect-ratio: 1/1;
   /* 이미지 높이를 자동으로 맞추기 */
   object-fit: cover;
   /* 이미지 비율 유지 */
-
   border-radius: 0;
 }
 
@@ -929,6 +1105,8 @@ function logImageUrl(imageUrl) {
   margin-bottom: 0;
   /* 행 간 여백 제거 */
 }
+
+
 
 .pagination {
   margin: 24px;

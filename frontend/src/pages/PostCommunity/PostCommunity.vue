@@ -44,6 +44,7 @@ html {
 
 .content {
   display: flex;
+  min-height: 100vh;
 }
 
 aside {
