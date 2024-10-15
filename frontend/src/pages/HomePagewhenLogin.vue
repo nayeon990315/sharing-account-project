@@ -35,7 +35,7 @@
                 <img class="pot" :src="getImageForPercent">
                 <div class="potComment">
                     <p class="date">{{month}}월 {{ day }}일</p>
-                    <!-- <p>{{ todayCheckedRoutinesCount }} / {{ todayActiveRoutinesCount }}개 달성</p> -->
+                    <!-- <p> {{ todayCheckedRoutinesCount }} / {{ todayActiveRoutinesCount }}개 달성</p> -->
                     <p class="percent">{{ todayPercent }}% 달성</p>
                 </div>
             </div>
@@ -275,18 +275,21 @@ import { useHabitStore } from '@/stores/habitStore'; // pinia
 const habitStore = useHabitStore();
 const todayActiveRoutines = habitStore.activeHabits;
 const todayActiveRoutinesCount = ref(todayActiveRoutines.length); // 오늘 진행 중인 루틴 개수
-const todayCheckedRoutinesCount = todayActiveRoutines.filter(habit => habit.isCheckedToday).length; // 오늘 달성한 루틴 개수 
+const todayCheckedRoutinesCount = ref(todayActiveRoutines.filter(habit => habit.isCheckedToday).length); // 오늘 달성한 루틴 개수 
 
 
 const todayPercent = computed(() => {
-  return todayActiveRoutinesCount > 0 ? Math.floor((todayCheckedRoutinesCount / todayActiveRoutinesCount) * 100) : 0;
+  if (todayActiveRoutinesCount.value === 0) return 0;
+  return Math.round((todayCheckedRoutinesCount.value / todayActiveRoutinesCount.value) * 100);
 });
 
 onMounted(async () => {
   await habitStore.getHabitsFromServer(1); // userId 넣고 !! 꼭 바꿔야 함 !!!!!
 //   todayActiveRoutinesCount.value = habitStore.activeHabits.length;
   console.log("진행 중인 루틴:", todayActiveRoutines);
-  console.log("진행 중인 루틴 개수:", todayActiveRoutinesCount);
+  console.log("진행 중인 루틴 개수:", todayActiveRoutinesCount.value);
+  console.log("완료한 루틴 개수:", todayCheckedRoutinesCount.value);
+  console.log("퍼센트:", todayPercent.value)
 });
 
 // 오늘 절약한 금액 계산
@@ -305,6 +308,7 @@ const totalSavedToday = computed(() => {
 // 달성률에 따른 이미지 변경 로직
 const getImageForPercent = computed(() => {
   const percent = todayPercent.value;
+  console.log("퍼센트:", todayPercent.value);
 
   if (percent === 0) return new URL('@/assets/images/pot/0_update2.png', import.meta.url).href;
   else if (percent > 0 && percent < 30) return new URL('@/assets/images/pot/20~30.png', import.meta.url).href;

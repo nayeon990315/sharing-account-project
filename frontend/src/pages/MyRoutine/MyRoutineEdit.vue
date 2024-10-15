@@ -1,8 +1,144 @@
 <template>
+    <div class="info">
+        <h1 >Routine Settings</h1>
+        <h5>루틴 설정</h5>
+        <p>루틴 설정에 대한 설명</p>
+    </div>
+
     <div class="container mt-5">
         <div class="row">
-            <!-- 사이드바 버튼들 -->
-            <div class="col-2 sidebar">
+            
+
+            <!-- 대기 및 진행 중 리스트 -->
+            <div class="col-10 d-flex justify-content-between">
+                    <div class="row">
+                        <!-- 대기 리스트 -->
+                        <div class="col-6 inactive-box" >
+                            
+                            <h4 class="d-flex align-items-center" >
+                                <img class = "beeImg" src="@/assets/images/bee/bee_sleeping.png" alt="">
+                                비활성화
+                            </h4>
+                            <p>준비 중인 벌루틴! 실행할 준비가 되면 활성화해 보세요.</p>
+
+                            <h6 class="d-flex align-items-center mt-5">
+                                <img src="@/assets/images/check/true.png" style="width: 12px; margin-right: 6px;">
+                                비활성화된 루틴
+                            </h6>
+                            <draggable class="allInactive dragArea list-group" :list="waitingList" group="tasks" item-key="myHabitId"
+                                @start="handleDragStart" @end="onDragEnd('inProgress')">
+                                <template #item="{ element }">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
+                                                {{ element.categoryTitle }}
+                                            </span>
+                                            <span class="task-name mx-3">{{ element.habitTitle }}</span>
+                                        </div>
+                                        <div class="d-flex bd-highlight">
+                                            <button class="btn" @click="confirmAddCommunity(element)">
+                                                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="btn" @click="confirmEdit('waiting', element)">
+                                                <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
+                                                @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
+                                                <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
+                            </draggable>
+                        </div>
+
+                        <!-- 진행 중 리스트 -->
+                        <div class="col-6 active-box">
+                            <h4 class="d-flex align-items-center">
+                                <img class = "beeImg" src="@/assets/images/bee/bee3.png" alt="">
+                                <!-- <i class="fa fa-circle px-2" style="font-size:16px; color:green;" aria-hidden="true"></i> -->
+                                활성화
+                            </h4>
+                            <p>매일 실천할 벌루틴을 활성화된 루틴에 모아보세요.</p>
+
+                            <h6 class="d-flex align-items-center mt-5">
+                                <img src="@/assets/images/check/true.png" style="width: 12px; margin-right: 6px;">
+                                활성화된 루틴
+                            </h6>
+                            <draggable class="allActive dragArea list-group" :list="inProgressList" group="tasks" item-key="myHabitId"
+                                @change="checkListLength" @end="onDragEnd('waiting')">
+                                <template #item="{ element }">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
+                                                {{ element.categoryTitle }}
+                                            </span>
+                                            <span class="task-name mx-3">{{ element.habitTitle }}</span>
+                                        </div>
+                                        <div class="d-flex bd-highlight">
+                                            <button class="btn" @click="confirmEdit('inProgress', element)">
+                                                <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
+                                                @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
+                                                <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
+                            </draggable>
+
+                            <!-- 완료된 리스트도 같은 박스 안에 배치 -->
+                            <h6 class="allTodayChecked d-flex align-items-center mt-5">
+                                <img src="@/assets/images/check/true.png" style="width: 12px; margin-right: 6px;">
+                                오늘 완료한 루틴
+                            </h6>
+                            
+                            <div class="dragArea noRoutine" v-if="completedList.length === 0" style="text-align: center;">
+                                <p>오늘 완료한 루틴이 없습니다</p>
+                            </div>
+
+                            <draggable v-else class="dragArea list-group" :list="completedList" group="tasks" item-key="myHabitId" style="border-radius:0;">
+                                <template #item="{ element }">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
+                                                {{ element.categoryTitle }}
+                                            </span>
+                                            <span class="task-name mx-3">{{ element.habitTitle }}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </draggable>
+                        </div>
+                    <!-- 완료된 리스트 아래로 배치 -->
+                    <!-- <div class="row mt-5">
+                        <div class="col-12">
+                            <h4 class="d-flex align-items-center">
+                                <i class="fa fa-circle px-2" style="font-size:16px; color:blue;" aria-hidden="true"></i>
+                                오늘 완료한 루틴
+                            </h4>
+                            <draggable class="dragArea list-group" :list="completedList" group="tasks" item-key="myHabitId">
+                                <template #item="{ element }">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
+                                                {{ element.categoryTitle }}
+                                            </span>
+                                            <span class="task-name mx-3">{{ element.habitTitle }}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </draggable>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사이드바 버튼들 -->
+    <div class="col-2 sidebar d-flex flex-column align-items-center justify-content-start">
                 <div class="d-flex flex-column">
                     <button type="button" class="btn btn-dark mb-3" data-bs-toggle="modal" data-bs-target="#myModal">
                         루틴 추가하기
@@ -12,98 +148,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- 대기 및 진행 중 리스트 -->
-            <div class="col-10">
-                <div class="row">
-                    <!-- 대기 리스트 -->
-                    <div class="col-6">
-                        <h4 class="d-flex align-items-center">
-                            <i class="fa fa-circle px-2" style="font-size:16px; color:red;" aria-hidden="true"></i>
-                            대기
-                        </h4>
-                        <draggable class="dragArea list-group" :list="waitingList" group="tasks" item-key="myHabitId"
-                            @start="handleDragStart" @end="onDragEnd('inProgress')">
-                            <template #item="{ element }">
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
-                                            {{ element.categoryTitle }}
-                                        </span>
-                                        <span class="task-name mx-3">{{ element.habitTitle }}</span>
-                                    </div>
-                                    <div class="d-flex bd-highlight">
-                                        <button class="btn" @click="confirmAddCommunity(element)">
-                                            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                                        </button>
-                                        <button class="btn" @click="confirmEdit('waiting', element)">
-                                            <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
-                                        </button>
-                                        <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                            @click="confirmRemove('waiting', element.myHabitId, element.habitTitle)">
-                                            <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </template>
-                        </draggable>
-                    </div>
-
-                    <!-- 진행 중 리스트 -->
-                    <div class="col-6">
-                        <h4 class="d-flex align-items-center">
-                            <i class="fa fa-circle px-2" style="font-size:16px; color:green;" aria-hidden="true"></i>
-                            진행중
-                        </h4>
-                        <draggable class="dragArea list-group" :list="inProgressList" group="tasks" item-key="myHabitId"
-                            @change="checkListLength" @end="onDragEnd('waiting')">
-                            <template #item="{ element }">
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
-                                            {{ element.categoryTitle }}
-                                        </span>
-                                        <span class="task-name mx-3">{{ element.habitTitle }}</span>
-                                    </div>
-                                    <div class="d-flex bd-highlight">
-                                        <button class="btn" @click="confirmEdit('inProgress', element)">
-                                            <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
-                                        </button>
-                                        <button class="btn" data-bs-toggle="modal" data-bs-target="#removeModal"
-                                            @click="confirmRemove('inProgress', element.myHabitId, element.habitTitle)">
-                                            <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </template>
-                        </draggable>
-                    </div>
-                </div>
-
-                <!-- 완료된 리스트 아래로 배치 -->
-                <div class="row mt-5">
-                    <div class="col-12">
-                        <h4 class="d-flex align-items-center">
-                            <i class="fa fa-circle px-2" style="font-size:16px; color:blue;" aria-hidden="true"></i>
-                            완료됨
-                        </h4>
-                        <draggable class="dragArea list-group" :list="completedList" group="tasks" item-key="myHabitId">
-                            <template #item="{ element }">
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <span class="category-badge" :class="getCategoryClass(element.categoryTitle)">
-                                            {{ element.categoryTitle }}
-                                        </span>
-                                        <span class="task-name mx-3">{{ element.habitTitle }}</span>
-                                    </div>
-                                </div>
-                            </template>
-                        </draggable>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <!-- 루틴 추가 Modal -->
@@ -592,11 +636,82 @@ export default {
 
 
 <style scoped>
+
+/* 인포 */
+.info {
+    margin: 6% 8%;
+}
+
+.info h1{
+    font-weight: 800;
+}
+
+.info p {
+    /* font-weight: 700; */
+    margin-top: 25px;
+}
+
+/* 활성화, 비활성화 박스 */
+.col-6 {
+    /* border: 1px solid black; */
+    padding: 10px;
+}
+
+.col-6 h4 {
+    font-weight: 800;
+}
+.col-6 h4 img {
+    margin-right: 15px;
+}
+
+
+
+/* 비활성화와 활성화 박스를 나란히 배치 */
+.col-10 {
+    display: flex;
+    gap: 20px; /* 박스 사이의 간격 */
+}
+
+.inactive-box, .active-box {
+    /* border: 1px solid black; */
+    padding: 10px;
+    flex-grow: 1; /* 양쪽 박스를 균등하게 */
+}
+
+/* 사이드바를 오른쪽으로 붙이기 */
+.sidebar {
+    align-items: flex-end; /* 사이드바 버튼들을 오른쪽에 정렬 */
+}
+
 .dragArea {
     min-height: 150px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    /* border: 1px solid #ccc; */
+    /* border-radius: 8px; */
     padding: 10px;
+
+    background: url('@/assets/images/background/honey_textbg.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding: 30px;
+}
+
+/* .allActive, .allInactive {
+    background-color: #ffd739b6;
+} */
+
+/* .allActive, .allInactive {
+    background: url('@/assets/images/background/honey_textbg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 10px;
+}
+
+.allTodayChecked {
+    background: url('@/assets/images/background/honey_textbg.png');
+} */
+
+.allActive, .allInactive, .sidebar button, .list-group-item {
+    border-radius: 0 ;
 }
 
 .list-group-item {
@@ -604,6 +719,10 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 3px;
+    border-radius: 0px;
+
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='black' stroke-width='4' stroke-dasharray='11%2c 10' stroke-dashoffset='27' stroke-linecap='butt'/%3e%3c/svg%3e");
 }
 
 .list-group-item:active {
@@ -613,7 +732,7 @@ export default {
 /* Category badge styling */
 .category-badge {
     padding: 5px 10px;
-    border-radius: 12px;
+    /* border-radius: 12px; */
     color: white;
     font-size: 0.75rem;
     width: 70px;
@@ -622,7 +741,10 @@ export default {
 }
 
 /* Category specific styles */
-.badge-food {
+.category-badge {
+    background-color: black;
+}
+/* .badge-food {
     background-color: #5193F4;
 }
 
@@ -693,11 +815,17 @@ export default {
 .badge-default {
     background-color: #ffdfba;
     color: #d08b44;
-}
+} */
 
 /* 루틴 명 스타일 */
 .task-name {
     font-weight: bold;
     font-size: 1rem;
+}
+
+
+/* 벌 이미지 */
+.beeImg {
+    width: 60px;
 }
 </style>

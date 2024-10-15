@@ -24,7 +24,7 @@
         <p>{{ new Date(post.createdAt).toLocaleDateString() }}</p>
         <!-- 댓글 섹션 -->
          <!-- 자식 comment-section import해서 전달받음  -->
-        <comment-section v-if="post.showComments" :post-id="post.id" @comment-change="handleCommentChange"></comment-section>
+        <comment-section v-if="post.showComments" :post-id="post.postId" @comment-change="handleCommentChange"></comment-section>
         <div class="interaction-buttons">
           <div class="like-button" @click="toggleLike(post)">
             <span :class="{ liked: post.isLiked }">{{
@@ -34,7 +34,7 @@
           </div>
           <div class="comment-button" @click="toggleComments(post)">
             <span class="comment-icon">💬</span>
-            {{ commentCounts[post.id] || 0 }}
+            {{ commentCounts[post.postId] || 0 }}
           </div>
         </div>
       </div>
