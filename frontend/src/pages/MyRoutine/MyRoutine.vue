@@ -248,8 +248,19 @@ const categoryBackgrounds = {
 
 const expenses = ref([])
 
+const formatDate2 = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const day = date.getDate().toString().padStart(2, '0'); 
+    return `${year}-${month}-${day}`;
+};
+
 const getBankData = async () => {
-    const todayDate = '2024-10-15';  // 요청할 날짜
+    // const year = date.getFullYear();
+    // const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    // const day = date.getDate().toString().padStart(2, '0'); 
+    const todayDate = formatDate2(new Date())
+    console.log('todayDate: ', todayDate)
     try {
         const response = await axios.get(`http://localhost:3000/${todayDate}`);
         // 데이터가 성공적으로 반환되면 expenses 배열에 저장
