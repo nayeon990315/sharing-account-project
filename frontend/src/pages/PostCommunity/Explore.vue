@@ -3,44 +3,30 @@
     <h1>Explore</h1>
     <div class="top-bar">
       <div class="category-tags">
-        <button
-          v-for="category in categoryOptions"
-          :key="category"
-          @click="handleCategoryFilterChange(category)"
-          :class="{ active: selectedCategory === category }"
-        >
+        <button v-for="category in categoryOptions" :key="category" @click="handleCategoryFilterChange(category)"
+          :class="{ active: selectedCategory === category }">
           {{ category }}
         </button>
       </div>
       <!-- 검색창 -->
       <div class="search-routine">
+
         <input
           type="text"
           v-model="displayedQuery"
           placeholder="해시태그 또는 내용"
           @keyup.enter="performSearch"
         />
+
         <button @click="performSearch">검색</button>
       </div>
     </div>
-    <PostItem
-      v-for="post in paginatedPosts"
-      :key="post.postId"
-      :post="post"
-      @toggle-like="toggleLike"
-      @toggle-comments="toggleComments"
-    />
+    <PostItem v-for="post in paginatedPosts" :key="post.postId" :post="post" @toggle-like="toggleLike"
+      @toggle-comments="toggleComments" />
     <!-- 페이지네이션 컴포넌트 -->
-    <paginate
-      :page-count="totalPages"
-      :click-handler="changePage"
-      :prev-text="'<'"
-      :next-text="'>'"
-      :container-class="'pagination'"
-      :page-class="'page-item'"
-      :page-link-class="'page-link'"
-      :active-class="'active'"
-    />
+    <paginate :page-count="totalPages" :click-handler="changePage" :prev-text="'<'" :next-text="'>'"
+      :container-class="'pagination'" :page-class="'page-item'" :page-link-class="'page-link'"
+      :active-class="'active'" />
   </div>
 </template>
 
@@ -61,7 +47,13 @@ const categoryOptions = [
   '문화/여가',
   '술/유흥',
   '주거/공과금',
-  '기타',
+  "금융",
+  "뷰티",
+  "자동차",
+  "교통",
+  "반려동물",
+  "여행",
+  "경조사/회비",
 ];
 
 const posts = ref([]);
@@ -77,6 +69,7 @@ const getAllPost = async () => {
     const response = await axios.get(
       'http://localhost:8080/post-community/all'
     );
+
 
     // 각 게시물에 대해 habitTitle을 가져와서 추가
     const postsWithHabitTitle = await Promise.all(
@@ -109,6 +102,7 @@ const getAllPost = async () => {
     );
 
     posts.value = postsWithHabitTitle;
+
   } catch (error) {
     console.error(error);
     alert('게시글을 불러오는 중 에러가 발생했습니다.');
@@ -126,6 +120,7 @@ const filteredPosts = computed(() => {
   const query = searchQuery.value;
 
   // 카테고리 필터링
+
   let filtered =
     selectedCategory.value === '전체'
       ? posts.value
@@ -135,7 +130,7 @@ const filteredPosts = computed(() => {
             .includes(selectedCategory.value.toLowerCase())
         );
 
-  // 검색어가 있을 경우 추가 필터링
+ // 검색어가 있을 경우 추가 필터링
   if (query) {
     filtered = filtered.filter(
       (post) =>

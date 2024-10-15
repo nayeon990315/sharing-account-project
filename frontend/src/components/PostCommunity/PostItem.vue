@@ -212,8 +212,7 @@ onMounted(() => {
 .post-details {
   margin-top: 10px;
 }
-
-.post-content {
+fbar .post-content {
   font-size: 14px;
   margin-bottom: 8px;
 }

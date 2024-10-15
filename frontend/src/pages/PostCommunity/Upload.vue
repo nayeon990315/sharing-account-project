@@ -72,11 +72,11 @@
               @keyup.space="onKeyUpSpace"
               @keyup.delete="onKeyUpBackspace"
               :placeholder="
-                hashArr.length < 5
+                hashArr.length < 6
                   ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)'
                   : '최대 5개까지만 입력이 가능합니다'
               "
-              :disabled="hashArr.length >= 5"
+              :disabled="hashArr.length >= 6"
             />
           </div>
         </div>
@@ -159,7 +159,9 @@ onMounted(() => {
   }
   formData.myHabitId = habitStore.selectedMyHabitId;
   formData.habitId = findSelectedHabit.value[0].habitId;
+  hashArr.value.push(findSelectedHabit.value[0].categoryTitle);
   console.log('writerId: ', findSelectedHabit.value[0].writerId);
+  console.log('category: ', findSelectedHabit.value[0].categoryTitle);
 });
 const isModalVisible = ref(false);
 const modalMessage = ref('');
@@ -205,6 +207,9 @@ watch(
   (newValue) => {
     formData.myHabitId = newValue;
     formData.habitId = findSelectedHabit.value[0].habitId;
+    hashArr.value = [];
+    hashArr.value.push(findSelectedHabit.value[0].categoryTitle);
+    console.log(hashArr.value);
   }
 );
 
@@ -239,7 +244,7 @@ const submitForm = async () => {
   // 해시태그 처리: '#' 기호 추가 및 쉼표로 구분
   formData.hashtag = hashArr.value
     .map((tag) => (tag.startsWith('#') ? tag : `#${tag}`))
-    .join(',');
+    .join(' ');
 
   const data = new FormData();
   data.append('myHabitId', formData.myHabitId);
