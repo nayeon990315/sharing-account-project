@@ -38,21 +38,25 @@ html {
 
 .content {
   display: flex;
+  min-height: 100vh;
 }
 
 aside {
-  width: 200px;
-  background-color: #f0f4f8; /* 배경 색상 */
-  padding: 20px;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  width: 200px; /* 고정 너비 */
+  background-color: #f0f4f8;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); 
+  flex-shrink: 0;
+ 
 }
 
 aside a {
   display: block;
   margin-bottom: 10px;
-  color: #333; /* 링크 색상 */
-  text-decoration: none; /* 밑줄 제거 */
+  color: #333; 
+  text-decoration: none; 
+  text-align: center; /* 텍스트 중앙 정렬 */
 }
+
 
 aside a:hover {
   color: #007bff; /* 호버 시 링크 색상 */

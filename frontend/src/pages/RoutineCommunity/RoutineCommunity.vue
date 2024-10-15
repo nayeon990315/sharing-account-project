@@ -17,32 +17,52 @@
 
 
   <nav class="filter">
-    <div class="categoryFilter">
-      <form action="#">
-        <label for="category_filter">카테고리</label>
-        <select name="category" id="category" @change="handleCategoryFilterChange">
-          <option value="all">전체</option>
-          <option value="food">식비</option>
-          <option value="dessert">카페/간식</option>
-          <option value="online_shopping">온라인쇼핑</option>
-          <option value="fashion_shopping">패션/쇼핑</option>
-          <option value="culture_leisure">문화/여가</option>
-          <option value="alcohol_entertainment">술/유흥</option>
-          <option value="education">교육</option>
-          <option value="health_medical">의료/건강</option>
-          <option value="living">생활</option>
-          <option value="housing_utilities">주거/공과금</option>
-          <option value="travel">여행</option>
-          <option value="automobile">자동차</option>
-          <option value="pet">반려동물</option>
-          <option value="beauty">뷰티</option>
-          <option value="finance">금융</option>
-          <option value="transportation">교통</option>
-          <option value="event_fees">경조사/회비</option>
 
-        </select>
-      </form>
+    <div class="accordion-container">
+    <div class="accordion" id="categoryAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button @click="toggleDropdown" class="accordion-button">
+            카테고리
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse">
+          <div v-show="isDropdownOpen" class="accordion-collapse">
+            <div class="row">
+              <div class="col-4">
+                <ul>
+                  <li v-for="category in leftCategories" :key="category.value">
+                    <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                      {{ category.label }}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-4">
+                <ul>
+                  <li v-for="category in middleCategories" :key="category.value">
+                    <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                      {{ category.label }}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-4">
+                <ul>
+                  <li v-for="category in rightCategories" :key="category.value">
+                    <button @click="handleCategoryFilterChange(category.value)" class="btn btn-link">
+                      {{ category.label }}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+
 
     <div class="otherFilter">
       <form action="#">
@@ -62,7 +82,6 @@
       </form>
     </div>
 
-    <!-- <input type="submit" value="Submit" /> -->
   </nav>
 
   <div class="main">
@@ -84,8 +103,6 @@
     </div>
 
     <!-- 카드들 -->
-    <!-- <div class="cards row row-cols-1 row-cols-md-3 g-4" v-if="(isMyLikesFilterActive ? checkMyLike() : routineCommunityArray).length > 0"> -->
-    <!-- 좋아요 누른 게 없을 때 문구 띄우기 -->
     <div class="cards row row-cols-1 row-cols-md-3 g-4">
       <!-- 카드 하나 -->
       <!-- v-for 문 !!! -->
@@ -130,14 +147,10 @@
                 />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </a> -->
-              <button
-                @click="addHabitToMyHabit(routine.habitId)"
-                class="challengeButton btn btn-primary"
-              >
-                <img
-                  class="challengeIcon"
-                  src="@/assets/icons/together_invertColor.png"
-                />
+
+              <button @click="addHabitToMyHabit(routine.habitId, routine.communityId)"
+                class="challengeButton btn btn-primary">
+                <img class="challengeIcon" src="@/assets/icons/together_invertColor.png" />
                 <span class="challengeButtonText">내 루틴에 담고 함께 도전하기</span>
               </button>
             </div>
@@ -155,6 +168,7 @@
   <paginate :page-count="totalPages" :click-handler="changePage" :prev-text="'<'" :next-text="'>'"
     :container-class="'pagination'" :page-class="'page-item'" :page-link-class="'page-link'" :active-class="'active'" />
 
+  <CustomModal :isVisible="isModalVisible" title="알림" :message="modalMessage" @close="closeModal" />
 
 </template>
 
@@ -163,13 +177,10 @@ import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
 import fullLike from '@/assets/icons/fullLike.png';
 import emptyLike from '@/assets/icons/emptyLike.png';
-import coffeeImg from '@/assets/images/coffee_sample.png';
-import coffeeImg2 from '@/assets/images/coffee_sample2.jpg';
-import foodImg from '@/assets/images/food_sample.jpg';
-import foodImg2 from '@/assets/images/food_sample2.jpg';
 import defaultAvatarImg from '@/assets/images/sample.jpg';
 import Paginate from 'vuejs-paginate-next';
 import { useHabitStore } from '@/stores/habitStore';
+import CustomModal from '@/components/Modal.vue';
 
 const defaultAvatar = defaultAvatarImg;
 const habitStore = useHabitStore();
@@ -203,10 +214,52 @@ const categoryTranslations = {
   event_fees: '경조사/회비'
 };
 
+const leftCategories = [
+  { value: 'all', label: '전체' },
+  { value: 'food', label: '식비' },
+  { value: 'dessert', label: '카페/간식' },
+  { value: 'online_shopping', label: '온라인쇼핑' },
+  { value: 'health_medical', label: '의료/건강' },
+  { value: 'living', label: '생활' }
+];
+
+const middleCategories = [
+  { value: 'fashion_shopping', label: '패션/쇼핑' },
+  { value: 'culture_leisure', label: '문화/여가' },
+  { value: 'alcohol_entertainment', label: '술/유흥' },
+  { value: 'travel', label: '여행' },
+  { value: 'housing_utilities', label: '주거/공과금' },
+  { value: 'automobile', label: '자동차' }
+];
+
+const rightCategories = [
+  { value: 'pet', label: '반려동물' },
+  { value: 'beauty', label: '뷰티' },
+  { value: 'finance', label: '금융' },
+  { value: 'transportation', label: '교통' },
+  { value: 'event_fees', label: '경조사/회비' },
+  { value: 'education', label: '교육' }
+];
+
+
+const isModalVisible = ref(false);
+const modalMessage = ref('');
+// Modal 표시 함수
+const openModal = (message) => {
+  modalMessage.value = message;
+  isModalVisible.value = true;
+};
+
+// Modal 닫기 함수
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
 // sortType을 상태로 관리할 변수 선언
 const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
 const routineCommunityArray = ref([]);
 const selectedCategory = ref('all');  // 카테고리 필터
+const isDropdownOpen = ref(false);
 const likesArray = ref([]);
 
 // 카테고리 타이틀을 한국어로 변환하는 함수
@@ -323,10 +376,22 @@ function handleFilterChange(event) {
   fetchRoutines(searchQuery.value);  // 업데이트된 sortType으로 데이터를 가져옴
 }
 
+// 드롭다운 열기/닫기 토글 함수
+const toggleDropdown = () => {
+  console.log("toggleDropOpen called");
+  isDropdownOpen.value = !isDropdownOpen.value;
+  console.log('isDropdownOpen:', isDropdownOpen.value); // 상태 변화 확인
+};
+
 // 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
 function handleCategoryFilterChange(event) {
-  selectedCategory.value = event.target.value;
+
+  console.log('selected category', event)
+  selectedCategory.value = event;
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
+
+ // 드롭다운을 닫기
+ isDropdownOpen.value = false;;
 }
 
 // 페이지 로드 시 기본 정렬된 데이터를 가져오기
@@ -334,6 +399,17 @@ onMounted(() => {
   fetchLikedRoutines();
   fetchRoutines();
 });
+
+// Bootstrap의 Collapse API를 사용하여 드롭다운 닫기
+const closeDropdown = () => {
+  const collapseElement = document.getElementById('collapseOne');
+  if (collapseElement) {
+    const bsCollapse = new bootstrap.Collapse(collapseElement, {
+      toggle: false
+    });
+    bsCollapse.hide();
+  }
+};
 
 // 좋아요 버튼 클릭 시 동작
 async function toggleLike(communityId) {
@@ -383,7 +459,7 @@ async function toggleLike(communityId) {
     } catch (error) {
       console.error('좋아요 추가 실패', error);
       if (error.response && error.response.status === 400) {
-        alert('이미 좋아요한 루틴입니다!');
+        openModal('이미 좋아요한 루틴입니다!');
       }
       routine.habitLikes -= 1;  // 실패 시 복구
       likesArray.value = likesArray.value.filter(
@@ -403,24 +479,25 @@ function isLiked(communityId) {
   return likesArray.value.includes(communityId);
 }
 
-async function addHabitToMyHabit(habitId) {
+async function addHabitToMyHabit(habitId, communityId) {
   const userId = localStorage.getItem('userId');  // 실제 로그인된 사용자 ID로 변경
 
 
   // 먼저 habitStore에 해당 habitId가 이미 존재하는지 확인
   const existingHabit = habitStore.habits.find(habit => habit.habitId === habitId);
-  
+
   //이미 공유한 루틴인지 확인
   if (existingHabit) {
-    alert('이미 추가한 루틴입니다!');
-    return; 
+    openModal('이미 추가한 루틴입니다!');
+    return;
   }
   try {
     // POST 요청에서 params를 통해 userId와 habitId 전달
     await axios.post('http://localhost:8080/routine-community/challenge', null, {
       params: {
         userId: userId,
-        habitId: habitId,  // communityId를 habitId로 전달
+        habitId: habitId,
+        communityId: communityId  // communityId를 habitId로 전달
       }
     });
     console.log('내 루틴에 추가되었습니다.');
@@ -445,7 +522,7 @@ async function addHabitToMyHabit(habitId) {
       checkDate: null
     });
 
-    alert('습관이 MyHabit에 추가되었습니다.');  // 성공 시 알림 표시
+    openModal('MyRoutine에 추가되었습니다.');  // 성공 시 알림 표시
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
   }
@@ -512,7 +589,7 @@ function logImageUrl(imageUrl) {
     display: none;
   }
 
-  /* cards는 화면 가운데 */
+  /* cards는 화면 가운데  이거 반응형임*/
   .cards {
     grid-column: 1;
     /* cards도 1열 */
@@ -525,14 +602,15 @@ function logImageUrl(imageUrl) {
 
 /* 전체 배치 */
 
+
 .filter {
-  margin: 3% 8%;
+  margin: 0% 8% 2% 8%;
   display: grid;
   grid-template-columns: 2fr;
 }
 
 .main {
-  margin: 2% 8%;
+  margin: 1% 8% 2% 8%;
 
   display: grid;
   /* grid-template-columns: 20% 80%; */
@@ -551,7 +629,8 @@ function logImageUrl(imageUrl) {
 }
 
 .intro {
-  margin: 3% 8%;
+  margin: 3% 8% 0% 8%;
+  /* 상단 3%, 좌우 8%, 하단 0 */
   grid-column: 1 / span 2;
   /* 소개는 두 열을 모두 차지 */
   display: flex;
@@ -564,13 +643,120 @@ function logImageUrl(imageUrl) {
 }
 
 .search-routine {
-  flex: 0.2;
+  display: flex;
+  align-items: center;
 }
 
-/* .col {
-    flex: 1 1 30%; 
-    min-width: 200px; 
-} */
+.search-routine input {
+  margin-right: 5px;
+  /* 버튼과 입력창 사이 간격 */
+}
+
+.search-routine button {
+  display: inline-block;
+  height: 100%;
+}
+
+.accordion-container {
+  position: relative;
+}
+
+.accordion-item {
+  background-color: white !important;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+}
+.accordion-header{
+  width: 100%;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+}
+
+.accordion-collapse {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: white;
+  opacity: 1;
+  /* 불투명하게 */
+  transition: opacity 0.3s ease-in-out;
+   /* 굵기를 3px로 하고 검은색 테두리 추가 */
+  border: 3px solid black; 
+  border-top:none;
+  display: block;
+  visibility: visible;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  margin: 0%;
+  padding: 0%;
+}
+
+.accordion-button {
+  background-color: white !important;
+  border: 3px solid black;
+  border-bottom: none;
+  box-sizing: border-box; /* padding과 border를 포함한 너비 계산 */
+  width: 100%;
+
+   /* 버튼의 외부 그림자 제거 */
+  box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: white !important;
+  border: 3px solid black;
+  border-bottom: none;
+
+ /* 버튼의 외부 그림자 제거 */
+  box-shadow: none !important;
+ 
+}
+
+/* 선택적인 hover 상태에서 배경색 수정 */
+.accordion-button:hover {
+  /* hover 시 원하는 배경색 설정 (회색 예시) */
+  background-color: white !important;
+
+  border-bottom: none;
+
+}
+
+.accordion {
+  /* 첫 번째 열 */
+  grid-column: 1;
+  /* 원하는 너비로 설정 */
+  max-width: 70%;
+  /* 여백 조정 */
+  margin-right: 20px;
+
+  background-color: white !important;
+}
+
+.accordion ul {
+  padding-left: 0;
+  /* 목록의 기본 padding 제거 */
+}
+
+.accordion li {
+  list-style-type: none;
+  /* 점 제거 */
+  text-align: left;
+  /* 왼쪽 정렬 */
+  padding-left: 0;
+  /* 여백 제거 */
+}
+
+.accordion button {
+  width: 100%;
+  text-decoration: none;
+  /* 밑줄 제거 */
+  color: black;
+  /* 글자 색을 검은색으로 변경 */
+  font-weight: bold;
+  /* 글자 강조 */
+  text-align: left;
+  /* 버튼 텍스트 왼쪽 정렬 */
+}
 
 .cards {
   /* width: 80%; */
@@ -578,14 +764,40 @@ function logImageUrl(imageUrl) {
   grid-column: 2;
   /* min-width: 200px; 비었을 때 최소 높이 */
 }
-
-
-
-
-
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  /* 내용물이 차지하는 공간만큼 높이를 유지 */
+}
 /* 1등, 2등, 3등 표시 */
 .cards .col {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  flex: 1 1 30%;
+  max-width: 33%;
+  min-height: 350px;
+  /* 카드 최소 높이 통일 */
+  overflow: hidden;
+  /* 넘치는 내용 숨기기 */
+
+}
+
+.cards .card {
+  height: 100%;
+  /* 카드 높이 일관성 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-img-top {
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+
 }
 
 .cards .col:nth-child(1) .card::before {
@@ -689,7 +901,9 @@ function logImageUrl(imageUrl) {
 
 /* ************ 카드 세부 ************ */
 .card {
-  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-title {
@@ -831,23 +1045,31 @@ function logImageUrl(imageUrl) {
 }
 
 .shots .card img {
-  width: 130px;
-  height: 130px;
+  aspect-ratio: 1/1;
   /* 이미지 높이를 자동으로 맞추기 */
   object-fit: cover;
   /* 이미지 비율 유지 */
-
   border-radius: 0;
+  
+}
+
+col-6 col-md-6
+
+.col {
+  flex-grow: 0;
+  flex-shrink: 0;
+  /* 자식 요소가 부모의 크기에 맞춰 늘어나지 않도록 설정 */
+  height: auto;
+  /* 높이를 자동으로 조정 */
+  min-height: 200px;
+  /* 카드의 최소 높이 설정 */
+  max-height: 400px;
+  /* 카드의 최대 높이 설정 */
+  overflow: hidden;
+  /* 컨텐츠가 넘칠 경우 숨김 */
 }
 
 
-/* 카드를 조밀하게 배치 */
-.shots .row .col {
-  padding: 0;
-  /* 여백 제거 */
-  margin-bottom: 0;
-  /* 행 간 여백 제거 */
-}
 
 .pagination {
   margin: 24px;

@@ -1,300 +1,456 @@
 <template>
     <div class="container">
-        <h1>Daily Report</h1>
-
-        <!-- Today's Expense Report Section -->
-        <div class="report-section block">
-            <h2 class="section-title">오늘의 소비 내역 리포트</h2>
-            <p class="description">
-                오늘의 소비를 카테고리별로 확인하고, 달성률을 %로 한눈에 확인하세요.
-            </p>
-            <div class="flex-container expense-container">
-                <div class="report-graph">
-                    <canvas id="expenseChart"></canvas>
+        <div class="row">
+            <!-- Left Sidebar (Routine Category) -->
+            <aside class="col-md-3 p-3 border-end">
+                <h2 class="h4">루틴 커뮤니티</h2>
+                    <div class="info">
+                        <span>루틴 목록을 선택하면 해당 카테고리의 지출 내역을 불러옵니다.</span><br/>
+                    </div>
+                <div class="">
+                    <div v-for="(category, index) in routineCategories" :key="index" class="mb-3 bg-white"
+                        :class="{ 
+                            'selected-primary': selectedCategory === category,
+                        }" 
+                            @click="selectCategory(category)">
+                        <h4 class="h6">{{ categoryEmojis[category] }}&nbsp;{{ category }}</h4>
+                        <ul class="list-group border">
+                            <li v-for="routine in filteredRoutines(category)" :key="routine.habitTitle"
+                                class="list-group-item border"
+                                :class="{'border-black border-2': routine.categoryTitle === selectedCategory}"
+                                >
+                                {{ routine.habitTitle }}
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <ul class="category-list">
-                    <li v-for="(amount, category, index) in expensesByCategory" :key="category">
-                        <span :style="{
-                            backgroundColor: backgroundColors[index],
-                            width: '25px',
-                            height: '15px',
-                            display: 'inline-block',
-                            marginRight: '15px',
-                        }"></span>
-                        <span class="category-text">{{ category }}: {{ formatCurrency(amount) }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                <div 
+                    v-if="selectedCategory !== '전체'"
+                    class="mt-5 bg-white d-flex justify-content-center"
+                    @click="selectCategory('전체')">
+                    <ul class="list-group border">
+                        <li class="list-group-item border">
+                            <i class="fa-solid fa-arrow-rotate-right"></i>
+                            <span>선택 해제</span> <!-- 텍스트 -->
+                        </li>
+                    </ul>
+                </div>
 
-        <!-- Savings & Routine Report Section -->
-        <div class="report-section block">
-            <h2 class="section-title">오늘의 루틴 & 절약 리포트</h2>
-            <p class="description">
-                루틴 달성 정도를 확인하고, 카테고리별 절약 목표와 달성 금액을
-                비교해보세요.
-            </p>
-            <div class="flex-container graph-right">
-                <canvas id="savingsChart"></canvas>
-            </div>
-        </div>
+            </aside>
 
-        <!-- Details Section -->
-        <div class="block">
-            <h2 class="section-title">Details</h2>
-            <div class="flex-container details-container">
-                <ul class="routine-list">
-                    <li><input type="checkbox" /> 루틴 1</li>
-                    <li><input type="checkbox" /> 루틴 2</li>
-                    <li><input type="checkbox" /> 루틴 3</li>
-                </ul>
-                <div class="details-list">관련 지출 내역 리스트</div>
-            </div>
+            <!-- Main Content -->
+            <main class="col-md-9 main-content p-3">
+                <div class="row">
+                    <!-- Daily Report Section -->
+                    <section class="col-md-12">
+                        <h2 class="h4">데일리 리포트</h2>
+                        <div class="d-flex border p-3 block justify-content-between align-items-center" style="height: 250px;">
+                            <div class="text-container">
+                                <ul v-if="!selectedCategory || selectedCategory === '전체'">
+                                    <li><span class="icon">💰</span>오늘 쓴 돈은 &nbsp;총&nbsp;<strong>{{ formatCurrency(totalExpenses)}}</strong>&nbsp;입니다.</li>
+                                    <li><span class="icon">🏆</span> <strong>{{ maxExpenseCategory.maxCategory }}</strong>&nbsp;카테고리에서 제일 많이 쓰셨네요!</li>
+                                    <li><span class="icon">📊</span> <strong>{{ formatCurrency(maxExpenseCategory.maxAmount) }}</strong>을 사용했어요.</li>
+                                </ul>
+                                <ul v-else>
+                                    <li v-if="selectedCategory">{{categoryEmojis[selectedCategory]}}&nbsp;<strong>{{ selectedCategory }}</strong>을(를) 선택하셨네요!</li>
+                                    <li v-if="selectedCategory">오늘 {{ selectedCategory }}에 총&nbsp;<strong>{{ formatCurrency(selectedCategoryExpenses.amount) }}</strong>을 쓰셨어요.
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="text-center mb-3" style="width: 250px; height: 250px;">
+                                <canvas id="expenseChart" width="100" height="100"></canvas>
+                            </div>
+                            
+                        </div>
+                    </section>
+                    
+                    <!-- Spending Details Section -->
+                    <section class="col-md-12 mt-2">
+                        <h2 class="h4">지출 상세 내역</h2>
+                        <!-- <div class="block"> -->
+                            <table class="table table-bordered border border-2">
+                                <thead class="">
+                                    <tr>
+                                        <th style="width: 20%;">시간</th>
+                                        <th style="width: 50%;">지출 내역</th>
+                                        <th style="width: 15%;">지출액</th>
+                                        <th style="width: 15%;">잔액</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr v-if="!selectedCategory">
+                                        <td colspan="4" class="text-center">카테고리를 고르세요</td>
+                                    </tr>
+                                    <tr v-else-if="filteredExpenses.length == 0">
+                                        <td colspan="4" class="text-center">지출 내역이 없습니다.</td>
+                                    </tr>
+                                    <tr v-else v-for="(expense, index) in filteredExpenses" :key="index">
+                                        <td>{{ formatTime(expense.transactionDate) }}</td>
+                                        <td>{{ expense.recipient }}</td>
+                                        <td>{{ expense.withdrawalAmount }}원</td>
+                                        <td>{{ expense.balance }}원</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <!-- </div> -->
+                        
+                    </section>
+                </div>
+            </main>
         </div>
     </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </template>
 
-<script>
-import axios from 'axios';
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
 import { useHabitStore } from '@/stores/habitStore';
 import { Chart, registerables } from 'chart.js';
+import { bottom, right } from '@popperjs/core';
+
+const habitStore = useHabitStore();
+
 Chart.register(...registerables);
+const chart = ref(null);
 
-export default {
-    setup() {
-        const storedUserId = localStorage.getItem('userId');
-        if (storedUserId) {
-            const habitStore = useHabitStore()
-            habitStore.getHabitsFromServer(storedUserId);
-        }
+const backgroundColors = ref([
+    '#FF6384',
+    '#36A2EB',
+    '#FFCE56',
+    '#9966FF',
+    '#4BC0C0',
+    '#FF9F40',
+    '#FFC300',
+    '#DAF7A6',
+]);
+
+const categoryEmojis = {
+    "식비": "🍽️",
+    "카페/간식": "☕",
+    "온라인쇼핑": "🖥️",
+    "패션/쇼핑": "👗",
+    "문화/여가": "🎨",
+    "술/유흥": "🍻",
+    "교육": "📚",
+    "의료/건강": "💊",
+    "생활": "🧹",
+    "주거/공과금": "💡",
+    "금융": "💰",
+    "뷰티": "💄",
+    "자동차": "🚗",
+    "교통": "🚋",
+    "반려동물": "🐶",
+    "여행": "✈️",
+    "경조사/회비": "🎉"
+};
+
+
+const expenses = ref([
+    {
+        transactionDate: '2024-06-26T18:17',
+        type: '체크카드',
+        category: '식비',
+        recipient: '사나이뚝배기화곡역',
+        withdrawalAmount: 7800,
+        depositAmount: 0,
+        balance: 691,
     },
-    data() {
-        return {
-            expenses: [
-                { category: '카페/간식', amount: 5000 },
-                { category: '쇼핑', amount: 12000 },
-                { category: '교통', amount: 7000 },
-                { category: '식비', amount: 23000 },
-                { category: '문화/여가', amount: 15000 },
-                { category: '술/유흥', amount: 8000 },
-                { category: '주거/공과금', amount: 20000 },
-                { category: '기타', amount: 5000 },
+    {
+        transactionDate: '2024-06-26T14:39',
+        type: '체크카드',
+        category: '카페/간식',
+        recipient: '애크로매틱어린이대',
+        withdrawalAmount: 3500,
+        depositAmount: 0,
+        balance: 8491,
+    },
+    {
+        transactionDate: '2024-06-26T13:10',
+        type: '체크카드',
+        category: '카페/간식',
+        recipient: '매머드커피앱_발트_1',
+        withdrawalAmount: 2000,
+        depositAmount: 0,
+        balance: 11991,
+    },
+    {
+        transactionDate: '2024-06-26T12:50',
+        type: '체크카드',
+        category: '식비',
+        recipient: '홈플러스익스프레스',
+        withdrawalAmount: 2590,
+        depositAmount: 0,
+        balance: 13991,
+    },
+    {
+        transactionDate: '2024-06-26T12:00',
+        type: '체크카드',
+        category: '식비',
+        recipient: '맘스터치화곡점',
+        withdrawalAmount: 9800,
+        depositAmount: 0,
+        balance: 16581,
+    },
+    {
+        transactionDate: '2024-06-26T09:11',
+        type: '체크카드',
+        category: '카페/간식',
+        recipient: '메가엠지씨커피우장',
+        withdrawalAmount: 2000,
+        depositAmount: 0,
+        balance: 26381,
+    },
+    {
+        transactionDate: '2024-06-26T09:31',
+        type: '체크카드',
+        category: '뷰티',
+        recipient: '블랭크유',
+        withdrawalAmount: 74000,
+        depositAmount: 0,
+        balance: 28381,
+    }
+]);
+
+const expensesByCategory = computed(() => 
+    expenses.value.reduce((acc, expense) => {
+        if (!acc[expense.category]) acc[expense.category] = 0;
+        acc[expense.category] += expense.withdrawalAmount;
+        return acc;
+    }, {})
+);
+
+// 차트를 그리는 함수
+const renderExpenseChart = () => {
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    if (!ctx) return;
+
+    const categories = Object.keys(expensesByCategory.value);
+    const amounts = Object.values(expensesByCategory.value);
+
+    if (chart.value) chart.value.destroy(); // 기존 차트가 있으면 삭제
+
+    chart.value = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: categories,
+            datasets: [
+                {
+                    data: amounts,
+                    backgroundColor: backgroundColors.value,
+                    hoverOffset: 4,
+                },
             ],
-            targets: [10000, 15000, 8000, 25000, 18000, 10000, 22000, 6000],
-            chart: null,
-            backgroundColors: [
-                '#FF6384',
-                '#36A2EB',
-                '#FFCE56',
-                '#9966FF',
-                '#4BC0C0',
-                '#FF9F40',
-                '#FFC300',
-                '#DAF7A6',
-            ],
-        };
-    },
-    mounted() {
-        this.getUserIdFromToken();
-        this.renderExpenseChart();
-        this.renderSavingsChart();
-    },
-    computed: {
-        expensesByCategory() {
-            return this.expenses.reduce((acc, expense) => {
-                if (!acc[expense.category]) acc[expense.category] = 0;
-                acc[expense.category] += expense.amount;
-                return acc;
-            }, {});
         },
-    },
-    methods: {
-            renderExpenseChart() {
-                const ctx = document.getElementById('expenseChart').getContext('2d');
-                if (!ctx) return;
-
-                const categories = Object.keys(this.expensesByCategory);
-                const amounts = Object.values(this.expensesByCategory);
-
-                if (this.chart) this.chart.destroy();
-
-                this.chart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: categories,
-                        datasets: [
-                            {
-                                data: amounts,
-                                backgroundColor: this.backgroundColors,
-                                hoverOffset: 4,
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false },
-                        },
-                    },
-                });
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { 
+                    display: true,
+                    position: right
+                }, // 범례를 표시하지 않음
             },
-            renderSavingsChart() {
-                const ctx = document.getElementById('savingsChart').getContext('2d');
-                if (!ctx) return;
-
-                const categories = Object.keys(this.expensesByCategory);
-                const amounts = Object.values(this.expensesByCategory);
-
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: categories,
-                        datasets: [
-                            {
-                                label: '목표 금액',
-                                data: this.targets,
-                                backgroundColor: '#cccccc',
-                            },
-                            {
-                                label: '달성 금액',
-                                data: amounts,
-                                backgroundColor: this.backgroundColors,
-                            },
-                        ],
-                    },
-                    options: {
-                        indexAxis: 'y', // Horizontal bar chart
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'top' },
-                        },
-                        scales: {
-                            xAxes: [
-                                {
-                                    ticks: { beginAtZero: true },
-                                },
-                            ],
-                        },
-                    },
-                });
-            },
-            formatCurrency(value) {
-                return new Intl.NumberFormat('ko-KR').format(value) + '원';
-            },
-            async getUserIdFromToken() {
-                const jwtToken = this.$cookies.get('jwtToken');
-                if (!jwtToken) {
-                    alert('로그인이 필요합니다!');
-                    this.$router.push('/login'); // Vue Router를 사용하여 리다이렉트
-                    return;
-                }
-                console.log(jwtToken); try {
-                    // axios를 이용해 백엔드의 findId 컨트롤러에 JWT 토큰을 전송
-                    const response = await axios.post('http://localhost:8080/users/findId', {}, {
-                        headers: {
-                            'Authorization': `Bearer ${jwtToken}` // JWT 토큰을 Authorization 헤더에 추가
-                        }
-                    });
-                    console.log(response.data)
-                    // 응답으로 받은 userId를 localStorage에 저장
-                    const userId = response.data.userId;
-                    const nickname = response.data.nickname;
-                    localStorage.setItem('userId', userId);
-                    localStorage.setItem('nickname', nickname);
-                    console.log('사용자 ID가 localStorage에 저장되었습니다:', userId);
-                } catch (error) {
-                    console.error('사용자 정보를 가져오지 못했습니다:', error);
-                    if (error.response && error.response.status === 401) {
-                        alert('인증 오류: 로그인이 필요합니다.');
-                        this.$router.push('/login');
-                    }
-                }
-            }
         },
-}
+    });
+};
+
+// 차트를 마운트된 후에 생성
+onMounted(() => {
+    selectedCategory.value = '전체'
+    renderExpenseChart();
+});
+
+// 지출 데이터가 변경될 때 차트를 업데이트
+watch(expensesByCategory, () => {
+    renderExpenseChart();
+});
+
+const selectedCategory = ref(null);
+
+// 카테고리별 루틴 필터링
+const filteredRoutines = (category) => {
+    return habitStore.habits.filter(routine => routine.categoryTitle === category)
+    // return routinesArray.value.filter(routine => routine.category === category);
+};
+
+// 카테고리 선택
+const selectCategory = (category) => {
+    selectedCategory.value = category;
+};
+
+// 카테고리별 그룹화된 배열
+const routineCategories = computed(() => {
+    return [...new Set(habitStore.habits.map(routine => routine.categoryTitle))];
+});
+
+// 선택된 카테고리에 따른 지출 내역 필터링 및 날짜순 정렬
+const filteredExpenses = computed(() => {
+    if (!selectedCategory.value) return [];
+    console.log('hi')
+    if (selectedCategory.value === '전체') {
+        return expenses
+                .value.sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate));
+    }
+    console.log('hi2', selectedCategory)
+    return expenses.value
+        .filter(expense => expense.category === selectedCategory.value)
+        .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)); // 날짜 내림차순으로 정렬
+});
+
+// 오늘의 지출 총액 계산
+const totalExpenses = computed(() => {
+    return expenses.value.reduce((total, expense) => total + expense.withdrawalAmount, 0);
+});
+
+// 오늘의 최다 지출에 대한 카테고리, 총지출, 비율 계산
+const maxExpenseCategory = computed(() => {
+    const maxCategory = Object.keys(expensesByCategory.value).reduce((max, category) => {
+        return expensesByCategory.value[category] > expensesByCategory.value[max] ? category : max;
+    }, Object.keys(expensesByCategory.value)[0]);
+
+    return {
+        maxCategory,
+        maxAmount: expensesByCategory.value[maxCategory],
+        maxPercentage: expensesByCategory.value[maxCategory] / totalExpenses.value * 100
+    };
+});
+
+// 선택한 카테고리의 총지출, 비율 계산
+const selectedCategoryExpenses = computed(() => {
+    const amount = expensesByCategory.value[selectedCategory.value] || 0;
+    const percentage = (amount / totalExpenses.value) * 100;
+    return { amount, percentage };
+});
+
+// 숫자를 원화로 변환
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('ko-KR').format(value) + '원';
+};
+
+// 시간을 HH:mm 형식으로 변환
+const formatTime = (date) => {
+    const d = new Date(date);
+    return d.toLocaleTimeString('ko-KR', {
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+// 확률을 소수점 1자리까지 표시
+const formatPercentage = (value) => {
+    return value.toFixed(1) + '%';
+};
 </script>
 
 <style scoped>
-.container {
-    max-width: 1200px;
-    /* 전체 컨테이너 크기 */
-    margin: 40px auto;
-    /* Daily Report 아래에 공백 추가 */
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-}
-
-.section-title {
-    font-size: 1.6em;
+header {
+    font-size: 2.5rem;
     font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
 }
 
-.description {
+aside {
+    /*background-color: #f8f9fa;*/
+    width: 30%;
+    max-width: 300px;
+    min-height: 100vh;
+}
+
+.info {
+    display: block;
     margin-bottom: 20px;
-    color: #666;
+    color: gray;
+    
 }
 
-.report-section {
-    margin-bottom: 50px;
+section {
+    max-height: 100%;
+    min-width: 650px;
+    
 }
 
-.flex-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
+.table-bordered th,
+.table-bordered td {
+    text-align: center;
+    
 }
 
-.graph-right {
-    justify-content: flex-end;
-    /* 그래프를 오른쪽으로 이동 */
+.category-block {
+    cursor: pointer;
+    
 }
 
-.details-container {
-    flex-direction: column;
+.selected-category {
+    /*background-color: lightslategray;*/
+    background-color: red;
+    border: 0px;
+    
 }
 
-.report-graph {
-    flex-grow: 1;
-}
-
-canvas {
-    max-width: 500px;
-    /* 그래프 크기 증가 */
-    max-height: 500px;
-}
-
-.category-list,
-.routine-list {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-.category-list li,
-.routine-list li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    /* 항목 간의 간격을 넓힘 */
-}
-
-.category-text {
-    font-size: 1.2em;
-    /* 카테고리 텍스트의 크기를 증가 */
-}
-
-.details-list {
-    margin-top: 20px;
-}
-
-/* 모서리가 둥근 블럭 스타일 */
 .block {
     border: 1px solid #ddd;
-    border-radius: 10px;
+    border-radius: 0px;
     padding: 20px;
     background-color: #f9f9f9;
     margin-bottom: 30px;
 }
+
+.main-content {
+    width: 70%;
+    
+}
+
+i {
+    font-size: 1.2rem; /* 아이콘 크기 */
+}
+
+.me-2 {
+    margin-right: 8px; /* 텍스트와 아이콘 간 간격 */
+}
+
+.card-container {
+    padding: 20px;
+}
+
+.text-container ul {
+list-style-type: none;
+padding: 0;
+margin: 0;
+}
+
+.text-container li {
+font-size: 16px;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+}
+
+.text-container .icon {
+font-size: 24px;
+margin-right: 10px;
+}
+
+.text-container strong {
+font-weight: 600;
+color: #333; /* 강조 색상 */
+font-size: large;
+}
+
+.text-container span {
+font-size: 18px;
+color: #777; /* 일반 텍스트 색상 */
+}
+
+
+.chart-box {
+    min-width: 280px;
+    min-height: 280px;
+    width: 30%;
+    height: 30%;
+}
+
+.list-group {
+    border-radius: 0px;
+}
+
+
 </style>

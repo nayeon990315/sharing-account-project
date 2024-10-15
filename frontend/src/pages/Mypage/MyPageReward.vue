@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <Modal :isVisible="isModalVisible" title="프로필 수정 완료" message="프로필 수정이 완료되었습니다." @close="closeAlertModal"/>
+    <CustomModal :isVisible="isModalVisible" title="프로필 수정 완료" message="프로필 수정이 완료되었습니다." @close="closeAlertModal"/>
 
     <div v-if="isModalOpen" class="modal">
       <div class="modal-content">
@@ -77,7 +77,7 @@ import axios from 'axios';
 import defaultProfileImage from '@/assets/profile.png'; 
 import profileImage from '@/assets/profile.png'; 
 import Calendar from '@/components/Calendar.vue';
-import Modal from '@/components/Modal.vue';
+import CustomModal from '@/components/Modal.vue';
 
 const API_URL = 'http://localhost:8080';
 
