@@ -3,25 +3,44 @@
     <h1>Explore</h1>
     <div class="top-bar">
       <div class="category-tags">
-        <button v-for="category in categoryOptions" :key="category" @click="handleCategoryFilterChange(category)"
-          :class="{ active: selectedCategory === category }">
+        <button
+          v-for="category in categoryOptions"
+          :key="category"
+          @click="handleCategoryFilterChange(category)"
+          :class="{ active: selectedCategory === category }"
+        >
           {{ category }}
         </button>
       </div>
       <!-- 검색창 -->
       <div class="search-routine">
-
-        <input type="text" v-model="displayedQuery" placeholder="해시태그 또는 내용" @keyup.enter="performSearch" />
-
+        <input
+          type="text"
+          v-model="displayedQuery"
+          placeholder="해시태그 또는 내용"
+          @keyup.enter="performSearch"
+        />
         <button @click="performSearch">검색</button>
       </div>
     </div>
-    <PostItem v-for="post in paginatedPosts" :key="post.postId" :post="post" @toggle-like="toggleLike"
-      @toggle-comments="toggleComments" />
+    <PostItem
+      v-for="post in paginatedPosts"
+      :key="post.postId"
+      :post="post"
+      @toggle-like="toggleLike"
+      @toggle-comments="toggleComments"
+    />
     <!-- 페이지네이션 컴포넌트 -->
-    <paginate :page-count="totalPages" :click-handler="changePage" :prev-text="'<'" :next-text="'>'"
-      :container-class="'pagination'" :page-class="'page-item'" :page-link-class="'page-link'"
-      :active-class="'active'" />
+    <paginate
+      :page-count="totalPages"
+      :click-handler="changePage"
+      :prev-text="'<'"
+      :next-text="'>'"
+      :container-class="'pagination'"
+      :page-class="'page-item'"
+      :page-link-class="'page-link'"
+      :active-class="'active'"
+    />
   </div>
 </template>
 
@@ -38,16 +57,11 @@ const categoryOptions = [
   '식비',
   '카페/간식',
   '쇼핑',
+  '교통',
   '문화/여가',
   '술/유흥',
   '주거/공과금',
-  "금융",
-  "뷰티",
-  "자동차",
-  "교통",
-  "반려동물",
-  "여행",
-  "경조사/회비",
+  '기타',
 ];
 
 const posts = ref([]);
@@ -63,7 +77,6 @@ const getAllPost = async () => {
     const response = await axios.get(
       'http://localhost:8080/post-community/all'
     );
-
 
     // 각 게시물에 대해 habitTitle을 가져와서 추가
     const postsWithHabitTitle = await Promise.all(
@@ -96,7 +109,6 @@ const getAllPost = async () => {
     );
 
     posts.value = postsWithHabitTitle;
-
   } catch (error) {
     console.error(error);
     alert('게시글을 불러오는 중 에러가 발생했습니다.');
@@ -114,15 +126,14 @@ const filteredPosts = computed(() => {
   const query = searchQuery.value;
 
   // 카테고리 필터링
-
   let filtered =
     selectedCategory.value === '전체'
       ? posts.value
       : posts.value.filter((post) =>
-        post.hashtag
-          .toLowerCase()
-          .includes(selectedCategory.value.toLowerCase())
-      );
+          post.hashtag
+            .toLowerCase()
+            .includes(selectedCategory.value.toLowerCase())
+        );
 
   // 검색어가 있을 경우 추가 필터링
   if (query) {
@@ -201,9 +212,8 @@ html {
 }
 
 h1 {
-  text-align: left;
-  /* 텍스트를 왼쪽으로 배치 */
-  color: #f39c12;
+  text-align: left; /* 텍스트를 왼쪽으로 배치 */
+  color: #000000;
   font-size: 2.5em;
   margin-bottom: 20px;
 }
@@ -218,19 +228,22 @@ h1 {
 .category-tags {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  /* 버튼들을 중앙으로 정렬 */
+  justify-content: center; /* 버튼들을 중앙으로 정렬 */
 }
 
-.category-tags button {
+.category-tags button,
+.search-routine button {
   margin-right: 10px;
   margin-bottom: 10px;
-  padding: 12px 20px;
-  /* 공백 추가 */
+  padding: 8px 16px; /* 높이를 일관되게 설정 */
   border-radius: 0px;
   border: none;
   background-color: #f7d794;
   color: #333;
+  font-size: 1em; /* 폰트 크기를 동일하게 설정 */
+  line-height: normal; /* 라인 높이 설정 */
+  cursor: pointer;
+  transition: background-color 0.3s; /* 부드러운 전환 효과 */
 }
 
 .category-tags button.active {
@@ -238,7 +251,8 @@ h1 {
   color: #fff;
 }
 
-.category-tags button:hover {
+.category-tags button:hover,
+.search-routine button:hover {
   background-color: #fa983a;
   color: #fff;
   box-shadow: none;
@@ -250,25 +264,14 @@ h1 {
 }
 
 .search-routine input[type='text'] {
-  padding: 10px 15px;
-  /* 공백 추가 */
+  padding: 6px 12px; /* 공백 추가 */
   border-radius: 0px;
   border: none;
   background-color: #f3f3f3;
   margin-right: 10px;
-  border-width: 2px;
+  border-width: px;
   border-style: dashed;
   border-color: #ccc;
-}
-
-.search-routine button {
-  padding: 10px 15px;
-  /* 공백 추가 */
-  border-radius: 0px;
-  border: none;
-  background-color: #f39c12;
-  color: white;
-  cursor: pointer;
 }
 
 .pagination {
@@ -279,8 +282,7 @@ h1 {
 
 .page-item {
   min-width: 32px;
-  padding: 8px 12px;
-  /* 공백 추가 */
+  padding: 8px 12px; /* 공백 추가 */
   text-align: center;
   margin-right: 3px;
   border-radius: 0px;

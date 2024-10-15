@@ -130,7 +130,7 @@
                             <div class="savings">
                                 <div class="stat">
                                     <p class="statInfo">절약한 금액</p>
-                                    <p class="statValue">{{ habit?.savedAmountToday }}원</p>
+                                    <p class="statValue">{{ habit.savedAmountToday }}원</p>
                                 </div>
                             </div>
                             <div id="routine">

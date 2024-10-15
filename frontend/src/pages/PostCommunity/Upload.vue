@@ -2,7 +2,7 @@
   <div class="full-screen-container">
     <div class="container upload-container border rounded">
       <form @submit.prevent="submitForm" class="p-4">
-        <h3>인증하기</h3>
+        <h3>Upload</h3>
         <div class="list-group">
           <div
             v-for="habit in filteredHabits"
@@ -72,11 +72,11 @@
               @keyup.space="onKeyUpSpace"
               @keyup.delete="onKeyUpBackspace"
               :placeholder="
-                hashArr.length < 6
+                hashArr.length < 5
                   ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)'
                   : '최대 5개까지만 입력이 가능합니다'
               "
-              :disabled="hashArr.length >= 6"
+              :disabled="hashArr.length >= 5"
             />
           </div>
         </div>
@@ -391,6 +391,7 @@ const onDrop = (index, event) => {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+
   background-color: rgb(249, 249, 249);
   border-radius: 10px;
 }
@@ -416,6 +417,11 @@ img {
 .list-group-item-custom {
   background-color: blue;
   color: gray;
+}
+
+.list-group-item-light {
+  background-color: #f7d794;
+  color: rgb(0, 0, 0);
 }
 
 .text-small-custom {
