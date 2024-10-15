@@ -3,43 +3,23 @@
     <h1>Explore</h1>
     <div class="top-bar">
       <div class="category-tags">
-        <button
-          v-for="category in categoryOptions"
-          :key="category"
-          @click="handleCategoryFilterChange(category)"
-          :class="{ active: selectedCategory === category }"
-        >
+        <button v-for="category in categoryOptions" :key="category" @click="handleCategoryFilterChange(category)"
+          :class="{ active: selectedCategory === category }">
           {{ category }}
         </button>
       </div>
       <!-- 검색창 -->
       <div class="search-routine">
-        <input
-          type="text"
-          v-model="displayedQuery"
-          placeholder="해시태그 또는 내용"
-        />
+        <input type="text" v-model="displayedQuery" placeholder="해시태그 또는 내용" />
         <button @click="performSearch">검색</button>
       </div>
     </div>
-    <PostItem
-      v-for="post in paginatedPosts"
-      :key="post.postId"
-      :post="post"
-      @toggle-like="toggleLike"
-      @toggle-comments="toggleComments"
-    />
+    <PostItem v-for="post in paginatedPosts" :key="post.postId" :post="post" @toggle-like="toggleLike"
+      @toggle-comments="toggleComments" />
     <!-- 페이지네이션 컴포넌트 -->
-    <paginate
-      :page-count="totalPages"
-      :click-handler="changePage"
-      :prev-text="'<'"
-      :next-text="'>'"
-      :container-class="'pagination'"
-      :page-class="'page-item'"
-      :page-link-class="'page-link'"
-      :active-class="'active'"
-    />
+    <paginate :page-count="totalPages" :click-handler="changePage" :prev-text="'<'" :next-text="'>'"
+      :container-class="'pagination'" :page-class="'page-item'" :page-link-class="'page-link'"
+      :active-class="'active'" />
   </div>
 </template>
 
@@ -115,7 +95,13 @@ const paginatedPosts = computed(() => {
 });
 
 const handleCategoryFilterChange = (category) => {
-  selectedCategory.value = category;
+  if (category == '참여루틴') {
+    selectedCategory.value = '전체';
+  }
+  else {
+    selectedCategory.value = category;
+  }
+  console.log(selectedCategory.value);
 };
 
 const toggleLike = (post) => {
@@ -166,7 +152,8 @@ html {
 }
 
 h1 {
-  text-align: left; /* 텍스트를 왼쪽으로 배치 */
+  text-align: left;
+  /* 텍스트를 왼쪽으로 배치 */
   color: #f39c12;
   font-size: 2.5em;
   margin-bottom: 20px;
@@ -182,7 +169,8 @@ h1 {
 .category-tags {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* 버튼들을 중앙으로 정렬 */
+  justify-content: center;
+  /* 버튼들을 중앙으로 정렬 */
 }
 
 .category-tags button {

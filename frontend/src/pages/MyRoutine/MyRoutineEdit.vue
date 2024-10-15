@@ -78,6 +78,9 @@
                                             <span class="task-name mx-3">{{ element.habitTitle }}</span>
                                         </div>
                                         <div class="d-flex bd-highlight">
+                                            <button class="btn" @click="confirmAddCommunity(element)">
+                                                <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                            </button>
                                             <button class="btn" @click="confirmEdit('inProgress', element)">
                                                 <i class="fa fa-pencil text-primary" aria-hidden="true"></i>
                                             </button>
@@ -471,7 +474,7 @@ export default {
             }
         };
 
-        const confirmEdit = (type, element) => {
+        const confirmEdit = async (type, element) => {
             if (type === 'inProgress') {
                 // alert('진행중인 루틴은 수정할 수 없습니다!');
                 openModal('진행중인 루틴은 수정할 수 없습니다!');
@@ -483,6 +486,13 @@ export default {
                 // alert('루틴의 작성자가 아닙니다!');
                 openModal('루틴의 작성자가 아닙니다!');
                 return;  // 모달을 띄우지 않음
+            }
+
+            const sharedHabitResponse = await axios.get(`http://localhost:8080/routine-community/${editHabitId.value}`);
+
+            if (sharedHabitResponse != null){
+                openModal('이미 공유된 루틴은 수정할 수 없습니다!');
+                return;
             }
 
             else {
@@ -499,6 +509,7 @@ export default {
         };
 
         const editItem = async () => {
+            
             const request = {
                 myHabitId: editHabitId.value,
                 habitId: editHabitId.value,
@@ -523,7 +534,7 @@ export default {
                         certification: editHabitCertification.value
                     });
                 }
-                openModal("결과: " + response.data);
+                openModal('루틴을 수정했습니다!');
             }
             catch (error) {
                 console.error("루틴 수정 중 오류 발생:", error);

@@ -56,7 +56,7 @@
 
         <div class="auth-buttons">
             <template v-if="isLoggedIn">
-                <!-- <span>반갑습니다 {{ userName }}님!</span> -->
+                <span>반갑습니다 {{ userName }}님!</span>
                 <!-- <router-link to="/myreward"><button class="auth-button">Mypage</button></router-link> -->
                 <button class="auth-button" @click="logout">Log out</button>
             </template>
@@ -173,7 +173,7 @@ const navigateByLoginStatus = () => {
 
 .auth-buttons {
     display: flex;
-    align-items: center;
+    align-items:end;
     justify-content: space-around; /* 버튼들 간격을 균등하게 배치 */
     flex-grow: 1; /* 버튼들이 navbar 안에서 균등한 간격을 유지 */
 }
