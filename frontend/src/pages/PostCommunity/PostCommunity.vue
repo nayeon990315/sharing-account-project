@@ -48,11 +48,11 @@ html {
 }
 
 aside {
-  width: 200px; /* Adjusted width for consistency */
-  background-color: #ffcc00; /* Changed to a bright yellow */
+  width: 200px;
+  background-color: #ffe270;
   padding: 20px;
-  border-radius: 15px; /* Rounded corners */
-  box-shadow: 2px0px5pxrgba (0, 0, 0, 0.1);
+  border-radius: 0; /* 둥근 모서리를 제거하고 각진 모서리로 변경 */
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
 }
 
 .nav-item {
@@ -62,10 +62,10 @@ aside {
   color: #2d2d2d;
   text-decoration: none;
   background-color: #ffffff;
-  border-radius: 20px;
+  border-radius: 0; /* 둥근 모서리를 제거하고 각진 모서리로 변경 */
   text-align: center;
-  box-shadow: 1px1px3pxrgba (0, 0, 0, 0.1);
-  transition: background-color0.3s, color0.3s, box-shadow0.3s;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
 .nav-item:hover {
