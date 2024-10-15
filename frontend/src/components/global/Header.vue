@@ -9,6 +9,7 @@
             </div>
 
             <div class="dropdown dropdown p-2" id="routineMoneyDropdown">
+
                 <button class="btn dropdown-toggle btn-outline-dark rounded-pill menu-btn" type="button"
                     id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     Routine & Money
@@ -56,7 +57,7 @@
 
         <div class="auth-buttons">
             <template v-if="isLoggedIn">
-                <!-- <span>반갑습니다 {{ userName }}님!</span> -->
+                <span>반갑습니다 {{ userName }}님!</span>
                 <!-- <router-link to="/myreward"><button class="auth-button">Mypage</button></router-link> -->
                 <button class="auth-button" @click="logout">Log out</button>
             </template>
@@ -89,28 +90,12 @@ const router = useRouter();
 onMounted(() => {
     checkLoginStatus();
 
+
     const dropdowns = ['routineMoneyDropdown', 'communityDropdown', 'myDropdown']; // 각 드롭다운 ID
 
-    // dropdowns.forEach(id => {
-    //     const dropdownElement = document.querySelector(`#${id} button`);
-    //     const dropdownInstance = new Dropdown(dropdownElement);
-
-    //     const dropdownContainer = document.getElementById(id);
-
-    //     dropdownContainer.addEventListener('mouseover', () => {
-    //         dropdownInstance.show();
-    //         dropdownElement.style.backgroundColor = "#000000";
-    //         dropdownElement.style.color = "#FFFFFF";
-    //     });
-
-    //     dropdownContainer.addEventListener('mouseleave', () => {
-    //         dropdownInstance.hide();
-    //         dropdownElement.style.backgroundColor = "transparent";
-    //         dropdownElement.style.color = "black";
-    //     });
-    // });
 
     // 로그아웃 기능
+
 });
 
 router.beforeEach((to, from, next) => {
@@ -196,7 +181,7 @@ const navigateByLoginStatus = () => {
 
 .auth-buttons {
     display: flex;
-    align-items: center;
+    align-items:end;
     justify-content: space-around; /* 버튼들 간격을 균등하게 배치 */
     flex-grow: 1; /* 버튼들이 navbar 안에서 균등한 간격을 유지 */
 }

@@ -16,7 +16,7 @@
         <p>카테고리별 지출 내역, 총 지출금액, 그리고 체크리스트까지 한 번에 관리하세요.</p>
         <p>오늘 절약할 수 있는 총 예상 금액과 실제로 절약한 금액도 확인해보세요.</p>
         <br>
-        <router-link to="/myroutine" class="link"><small>> 마이 루틴 관리 페이지로 이동하기</small></router-link>
+        <router-link to="/spending-by-routine" class="link"><small>> 마이 루틴 관리 페이지로 이동하기</small></router-link>
       </div>
       <img :src="computerImageUrl" alt="Computer Picture" v-if="computerImageUrl" />
     </section>
@@ -29,7 +29,7 @@
         <p>지출을 줄이기 위한 새로운 습관을 작성해보세요.</p>
         <p>제목, 카테고리, 절약 예상 금액, 인증 방법을 입력하여 습관을 추가하고 관리할 수 있어요.</p>
         <br>
-        <router-link to="/myroutine/edit" class="link"><small>> 마이 루틴 편집 페이지로 이동하기</small></router-link>
+        <router-link to="/myroutine/settings" class="link"><small>> 마이 루틴 편집 페이지로 이동하기</small></router-link>
       </div>
     </section>
     <br><br><hr>

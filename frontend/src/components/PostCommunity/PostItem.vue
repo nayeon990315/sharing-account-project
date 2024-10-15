@@ -5,9 +5,13 @@
       <span class="username">{{ post.userName }}</span>
     </div>
     <p class="habit-title">{{ habitData.habitTitle }}</p>
-    <p class="shot-count">{{ shotCount }} 번째 SHOT</p>
-    <p class="participants">이 습관에 {{ participants }} 명이 참여 중이고,</p>
-    <p class="habit-likes">총 {{ checkedHabit }} SHOT 이 올라왔어요!</p>
+    <!-- <p class="shot-count">{{ shotCount }} 번째 SHOT</p> -->
+    <p class="participants">
+      현재 이 습관에 {{ participants }} 명이 참여 중이고,
+    </p>
+    <p class="habit-likes">
+      지금까지 인증샷은 총 {{ checkedHabit }}개가 올라왔어요!
+    </p>
     <img :src="post.imageURL" alt="Post Image" class="post-image" />
     <div class="post-details">
       <p class="post-content">{{ post.content }}</p>
@@ -69,11 +73,10 @@ const toggleComments = () => {
 };
 const fetchData = async () => {
   try {
-    
     const shotResponse = await axios.get(
       `http://localhost:8080/post-community/certification-count?userId=${props.post.userId}`
     );
-    console.log('shot response' + shotResponse.data)
+    console.log('shot response' + shotResponse.data);
     shotCount.value = shotResponse.data;
 
     const habitResponse = await axios.get(
@@ -209,8 +212,7 @@ onMounted(() => {
 .post-details {
   margin-top: 10px;
 }
-
-.post-content {
+fbar .post-content {
   font-size: 14px;
   margin-bottom: 8px;
 }

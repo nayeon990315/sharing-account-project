@@ -2,9 +2,15 @@
   <div id="post-community">
     <div class="content">
       <aside>
-        <router-link to="/post-community/explore">Explore</router-link>
-        <router-link to="/post-community/my-shots">My Shots</router-link>
-        <router-link to="/post-community/upload">Upload</router-link>
+        <router-link to="/post-community/explore" class="nav-item"
+          >🧭 피드 탐색</router-link
+        >
+        <router-link to="/post-community/my-shots" class="nav-item"
+          >📸 인증샷</router-link
+        >
+        <router-link to="/post-community/upload" class="nav-item"
+          >📤 업로드</router-link
+        >
       </aside>
       <main>
         <router-view />
@@ -33,7 +39,7 @@ html {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #F3F3F3;
+  background-color: #e2e2e285;
 }
 
 .content {
@@ -42,24 +48,30 @@ html {
 }
 
 aside {
-  width: 200px; /* 고정 너비 */
-  background-color: #f0f4f8;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); 
-  flex-shrink: 0;
- 
+  width: 200px;
+  background-color: #ffe270;
+  padding: 20px;
+  border-radius: 0; /* 둥근 모서리를 제거하고 각진 모서리로 변경 */
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
 }
 
-aside a {
+.nav-item {
   display: block;
-  margin-bottom: 10px;
-  color: #333; 
-  text-decoration: none; 
-  text-align: center; /* 텍스트 중앙 정렬 */
+  margin-bottom: 15px;
+  padding: 10px;
+  color: #2d2d2d;
+  text-decoration: none;
+  background-color: #ffffff;
+  border-radius: 0; /* 둥근 모서리를 제거하고 각진 모서리로 변경 */
+  text-align: center;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
-
-aside a:hover {
-  color: #007bff; /* 호버 시 링크 색상 */
+.nav-item:hover {
+  color: #f8c952;
+  background-color: #e9ecef;
+  box-shadow: none;
 }
 
 main {
