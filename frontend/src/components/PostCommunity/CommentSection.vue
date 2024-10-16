@@ -2,42 +2,48 @@
   <div class="comment-section">
     <h3>Comments</h3>
     <div v-for="(comment, index) in comments" :key="index" class="comment-item">
-      <div class="comment-header">
-        <strong class="writer">{{ comment.commentWriter }}</strong>
-        <span class="time"> {{ timeAgo(comment.createdAt) }}</span>
+      <div class="comment-content">
+        <div class="comment-header">
+          <strong class="writer">{{ comment.commentWriter }}</strong>
+          <span class="time"> {{ timeAgo(comment.createdAt) }}</span>
+        </div>
+        <div class="content" v-if="!comment.isEditing">
+          {{ comment.commentContent }}
+        </div>
+        <input v-else v-model="comment.commentContent" />
       </div>
+      <div class="button-group">
+        <button
+          class="editBtn"
+          v-if="!comment.isEditing"
+          @click="editComment(index)"
+        >
+          Edit
+        </button>
+        <button
+          class="deleteBtn"
+          v-if="!comment.isEditing"
+          @click="deleteComment(index)"
+        >
+          Delete
+        </button>
 
-      <div class="content" v-if="!comment.isEditing">
-        {{ comment.commentContent }}
+        <!-- 수정 중일 때의 save / cancel 버튼 -->
+        <button
+          class="saveBtn"
+          v-if="comment.isEditing"
+          @click="saveEdit(index)"
+        >
+          Save
+        </button>
+        <button
+          class="cancelBtn"
+          v-if="comment.isEditing"
+          @click="cancelEdit(index)"
+        >
+          Cancel
+        </button>
       </div>
-      <input v-else v-model="comment.commentContent" />
-
-      <button
-        class="editBtn"
-        v-if="!comment.isEditing"
-        @click="editComment(index)"
-      >
-        Edit
-      </button>
-      <button
-        class="deleteBtn"
-        v-if="!comment.isEditing"
-        @click="deleteComment(index)"
-      >
-        Delete
-      </button>
-
-      <!-- 수정 중일 때의 save / cancel 버튼 -->
-      <button class="saveBtn" v-if="comment.isEditing" @click="saveEdit(index)">
-        Save
-      </button>
-      <button
-        class="cancelBtn"
-        v-if="comment.isEditing"
-        @click="cancelEdit(index)"
-      >
-        Cancel
-      </button>
     </div>
 
     <div class="comment-input">
@@ -49,8 +55,10 @@
   </div>
 </template>
 
+
+
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   props: {
@@ -65,6 +73,7 @@ export default {
       newComment: '',
       currentUser: localStorage.getItem('nickname'), // 현재 로그인한 사용자 닉네임 가져오기
       // commentCounts: {}, // 게시물별 댓글 수 저장
+
     };
   },
   mounted() {
@@ -75,10 +84,7 @@ export default {
     // 댓글 목록을 서버에서 불러오기
     fetchComments() {
       // const postId = 1;
-      axios
-        .get(
-          `http://localhost:8080/post-community/posts/${this.postId}/comments`
-        )
+      axios.get(`http://localhost:8080/post-community/posts/${this.postId}/comments`)
         .then((response) => {
           this.comments = response.data; // 서버로부터 댓글을 불러와 리스트에 추가
           console.log('comments:', this.comments); // comments 확인하기 ok
@@ -107,16 +113,13 @@ export default {
       const commentWriter = this.currentUser;
 
       if (this.newComment.trim()) {
-        console.log('commentWriter:', commentWriter); // commentWriter 확인하기 ok
 
-        axios
-          .post(
-            `http://localhost:8080/post-community/posts/${this.postId}/comments`,
-            {
-              commentContent: this.newComment,
-              commentWriter: commentWriter,
-            }
-          )
+        console.log('commentWriter:', commentWriter); // commentWriter 확인하기 ok 
+
+        axios.post(`http://localhost:8080/post-community/posts/${this.postId}/comments`, {
+          commentContent: this.newComment,
+          commentWriter: commentWriter
+        })
           .then((response) => {
             // 서버에 댓글이 성공적으로 추가되면 로컬에 추가
             this.comments.push({
@@ -124,17 +127,17 @@ export default {
               commentWriter: commentWriter,
               commentContent: this.newComment,
               createdAt: new Date().toISOString(), // 현재 시간을 createdAt으로 임시 설정
-              isEditing: false,
+              isEditing: false
             });
             this.fetchComments();
 
             // 부모에게 댓글 변경 이벤트 전송
             this.$emit('comment-change', this.postId); // 댓글이 추가되었음을 부모에게 알림
 
-            this.newComment = ''; // 입력 필드 초기화
+            this.newComment = ""; // 입력 필드 초기화
           })
           .catch((error) => {
-            console.error('Error adding comment:', error);
+            console.error("Error adding comment:", error);
           });
       }
     },
@@ -143,8 +146,7 @@ export default {
     editComment(index) {
       const comment = this.comments[index];
 
-      if (comment.commentWriter === this.currentUser) {
-        // 본인 댓글만 수정 가능
+      if (comment.commentWriter === this.currentUser) { // 본인 댓글만 수정 가능
         // 수정 모드 진입 시 원래 content를 저장해둠
         comment.originalContent = comment.commentContent;
         comment.isEditing = true; // 수정 모드로 전환
@@ -159,12 +161,9 @@ export default {
 
       if (comment.commentWriter === this.currentUser) {
         axios
-          .put(
-            `http://localhost:8080/post-community/posts/${this.postId}/comments/${comment.commentId}`,
-            {
-              commentContent: comment.commentContent, // 수정된 댓글 내용 전송
-            }
-          )
+          .put(`http://localhost:8080/post-community/posts/${this.postId}/comments/${comment.commentId}`, {
+            commentContent: comment.commentContent, // 수정된 댓글 내용 전송
+          })
           .then(() => {
             console.log('Comment updated successfully');
             comment.isEditing = false; // 수정 완료 후 편집 모드 해제
@@ -185,14 +184,13 @@ export default {
       delete comment.originalContent; // 임시 저장된 원본 삭제
     },
 
+
     deleteComment(index) {
       const comment = this.comments[index];
 
       if (comment.commentWriter === this.currentUser) {
         axios
-          .delete(
-            `http://localhost:8080/post-community/posts/${this.postId}/comments/${comment.commentId}`
-          )
+          .delete(`http://localhost:8080/post-community/posts/${this.postId}/comments/${comment.commentId}`)
           .then(() => {
             this.comments.splice(index, 1); // 서버에서 성공적으로 삭제된 후 로컬에서도 삭제
 
@@ -208,6 +206,7 @@ export default {
       }
     },
 
+
     // 기타
     // 시간 차이 계산
     timeAgo(createdAt) {
@@ -216,7 +215,7 @@ export default {
       const diffTime = Math.abs(currentDate - createdDate);
       const diffHours = Math.floor(diffTime / (1000 * 60 * 60)); // 시간 차이 계산, 분은 버림
 
-      return diffHours === 0 ? '방금' : `${diffHours}시간`;
+      return diffHours === 0 ? "방금" : `${diffHours}시간`;
     },
   },
 
@@ -230,6 +229,7 @@ export default {
   //       console.error('Error fetching comment counts:', error);
   //     });
   // },
+
 };
 </script>
 
@@ -239,26 +239,19 @@ export default {
 }
 
 .comment-item {
+  display: flex;
+  justify-content: space-between; /* Align content and buttons to ends */
+  align-items: center;
   margin-bottom: 20px;
 }
 
-.comment-item {
+.comment-content {
+  flex-grow: 1; /* Allow content to take available space */
+}
+
+.button-group {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.comment-item button {
-  margin-left: 5px;
-  padding: 5px;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.comment-item button:hover {
-  background-color: #369f6b;
+  gap: 10px; /* Space between buttons */
 }
 
 .comment-input {
@@ -282,24 +275,23 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #ccc; /* 기본 비활성화 상태 색상 */
+  cursor: not-allowed; /* 기본 커서 스타일 */
+  opacity: 0.5; /* 비활성화 시 불투명도 */
+  transition: background-color 0.3s, opacity 0.3s; /* 애니메이션 추가 */
+}
+
+/* 댓글 입력란에 텍스트가 있을 때 활성화 */
+.comment-input textarea:focus + .comment-submit-button,
+.comment-input textarea:not(:placeholder-shown) + .comment-submit-button {
+  background-color: #ffe26c; /* 활성화 상태 색상 */
+  cursor: pointer; /* 활성화 시 커서 스타일 변경 */
+  opacity: 1; /* 활성화 시 불투명도 */
 }
 
 .arrow-icon {
-  color: white; /* White arrow */
+  color: white;
   font-size: 20px;
-}
-
-/* 댓글 내 위치 조정 */
-.comment-header {
-  display: block;
-}
-
-.content {
-  display: block; /* 줄바꿈을 위한 block 처리 */
-  margin-top: 10px; /* 작성자 및 시간과의 간격 */
-  font-size: 14px;
-  line-height: 1.5;
-  color: #444;
 }
 
 .time {
@@ -312,50 +304,31 @@ export default {
   color: #333;
 }
 
-.time {
-  color: #888;
-  font-size: 12px;
-}
-
-.content {
-  margin: 10px 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #444;
-}
-
-.input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-.button-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
-}
-
+button.saveBtn,
+button.cancelBtn,
 button.editBtn,
 button.deleteBtn {
-  padding: 5px 10px;
+  padding: 0.5px 5px;
   background-color: #42b983;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 3px;
 }
 
+button.saveBtn:hover,
 button.editBtn:hover {
   background-color: #369f6b;
 }
 
+button.cancelBtn,
 button.deleteBtn {
   background-color: #ff4d4d;
 }
 
+button.cancelBtn:hover,
 button.deleteBtn:hover {
   background-color: #cc3b3b;
 }
 </style>
+

@@ -2,8 +2,12 @@
   <div class="full-screen-container">
     <div class="container upload-container border rounded">
       <form @submit.prevent="submitForm" class="p-4">
-        <h3>Upload</h3>
-        <div class="list-group">
+        <h3 class="upload-title">Upload</h3>
+        <label class="input-label section-title">카테고리</label>
+        <p class="subtitle">
+          참여 중인 내 별루틴 중에서 인증할 1개의 카테고리를 골라주세요.
+        </p>
+        <div class="list-group mb-4">
           <div
             v-for="habit in filteredHabits"
             :key="habit.myHabitId"
@@ -35,8 +39,8 @@
           </div>
         </div>
 
-        <div class="mb-3">
-          <label for="content" class="form-label">내용</label>
+        <div class="mb-4">
+          <label for="content" class="form-label section-title">내용</label>
           <textarea
             v-model="formData.content"
             id="content"
@@ -46,8 +50,13 @@
           ></textarea>
         </div>
 
-        <div class="mb-3">
-          <label class="input-label">해시태그</label>
+        <div class="mb-4">
+          <label class="input-label section-title">해시태그</label>
+          <p class="subtitle">
+            인증할 벌루틴의 기본 카테고리는 해시태그로 자동
+            입력되며(ex.카페/간식),<br />
+            그 밖에 추가 해시태그는 자유롭게 작성해주세요.
+          </p>
           <div class="hash-wrapper">
             <div
               class="hash-item"
@@ -58,7 +67,7 @@
               @dragstart="onDragStart(index, $event)"
               @dragover="onDragOver(index, $event)"
               @drop="onDrop(index, $event)"
-              @keyup.enter="preventSubmit"
+              @keyup.enter.prevent
             >
               <p>#{{ tag }}</p>
               <p class="hash-item-delete">x</p>
@@ -69,8 +78,8 @@
               type="text"
               id="hashtag"
               v-model="hashtag"
-              @keyup.space="onKeyUpSpace"
-              @keyup.delete="onKeyUpBackspace"
+              @keyup.space.prevent
+              @keyup.delete.prevent
               :placeholder="
                 hashArr.length < 5
                   ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)'
@@ -81,8 +90,8 @@
           </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">사진 업로드</label>
+        <div class="mb-4">
+          <label class="form-label section-title">사진 업로드</label>
           <div class="d-flex gap-3">
             <div class="flex-grow-1">
               <input
@@ -96,7 +105,7 @@
             <div
               class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
               style="width: 150px; height: 150px; cursor: pointer"
-              @click="triggerFileInput"
+              @click.prevent.stop
             >
               <img
                 v-if="imagePreview"
@@ -117,23 +126,15 @@
           </div>
         </div>
 
-        <div class="d-flex justify-content-end">
-          <button
-            type="submit"
-            class="btn"
-            :class="{
-              disabled: !isFormValid,
-              'btn-outline-dark': !isFormValid,
-              'btn-dark': isFormValid,
-            }"
-            @keyup.enter="preventSubmit"
-          >
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="btn btn-dark" :disabled="!isFormValid">
             POST
           </button>
         </div>
       </form>
     </div>
   </div>
+
   <!-- Alert Modal -->
   <RewardModal
     :isVisible="isModalVisible"
@@ -141,7 +142,7 @@
     :message="modalMessage"
     :rewardBefore="originalReward"
     :rewardAfter="calculatedReward"
-    @close="closeModal"
+    @close.prevent.stop
   />
 </template>
 
@@ -163,6 +164,7 @@ onMounted(() => {
   console.log('writerId: ', findSelectedHabit.value[0].writerId);
   console.log('category: ', findSelectedHabit.value[0].categoryTitle);
 });
+
 const isModalVisible = ref(false);
 const modalMessage = ref('');
 const originalReward = ref(0);
@@ -182,8 +184,8 @@ const closeModal = () => {
   isModalVisible.value = false;
 };
 
-const hashtag = ref(''); // 현재 입력 중인 태그
-const hashArr = ref([]); // 태그 배열
+const hashtag = ref('');
+const hashArr = ref([]);
 
 const habitStore = useHabitStore();
 
@@ -193,15 +195,13 @@ const formData = reactive({
   habitId: '',
   content: '',
   hashtag: '',
-  image: null, // 이미지 파일 저장
+  image: null,
 });
 
-// '진행' 상태인 습관만 필터링
 const filteredHabits = computed(() => {
   return habitStore.habits.filter((habit) => habit.state === '진행');
 });
 
-// Pinia의 selectedMyHabitId가 바뀔 때 formData.myHabitId에 반영되도록 watch 사용
 watch(
   () => habitStore.selectedMyHabitId,
   (newValue) => {
@@ -219,29 +219,25 @@ const findSelectedHabit = computed(() => {
   );
 });
 
-// 이미지 미리보기 상태 저장
 const imagePreview = ref(null);
 const fileInput = ref(null);
 
-// 이미지 업로드 핸들러
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    formData.image = file; // 이미지 파일 저장
+    formData.image = file;
     const reader = new FileReader();
     reader.onload = (e) => {
-      imagePreview.value = e.target.result; // 이미지 미리보기
+      imagePreview.value = e.target.result;
     };
-    reader.readAsDataURL(file); // 이미지 미리보기 데이터 URL 생성
+    reader.readAsDataURL(file);
   } else {
-    imagePreview.value = null; // 파일이 없으면 미리보기 초기화
-    formData.image = null; // 이미지 데이터도 초기화
+    imagePreview.value = null;
+    formData.image = null;
   }
 };
 
-// 폼 제출 핸들러
 const submitForm = async () => {
-  // 해시태그 처리: '#' 기호 추가 및 쉼표로 구분
   formData.hashtag = hashArr.value
     .map((tag) => (tag.startsWith('#') ? tag : `#${tag}`))
     .join(' ');
@@ -283,26 +279,16 @@ const submitForm = async () => {
       );
 
       userReward.value = userResponse.data.reward;
-      console.log(userReward);
+
       let message;
       if (response.data == 10) {
-        message = targetHabit.habitTitle + ' 루틴을 인증해 10꿀을 얻었습니다!';
+        message = targetHabit.habitTitle + ' 루틴을 인증해 꿀을 얻었습니다!';
         openModal(message, userReward.value, response.data);
       } else if (response.data == 20) {
-        message =
-          targetHabit.habitTitle +
-          ' 루틴을 인증해 10꿀을 얻었습니다!' +
-          '추가로 4일 연속 인증으로 10꿀을 더 얻었습니다.';
-        openModal(message, userReward.value, response.data);
-      } else if (response.data == 30) {
-        message =
-          targetHabit.habitTitle +
-          ' 루틴을 인증해 10꿀을 얻었습니다!' +
-          '추가로 7일 연속 인증으로 20꿀을 더 얻었습니다.';
+        message = targetHabit.habitTitle + ' 루틴을 인증해 꿀을 얻었습니다!';
         openModal(message, userReward.value, response.data);
       }
 
-      // alert('Post created successfully!');
       await habitStore.getHabitsFromServer(formData.userId);
     }
   } catch (error) {
@@ -311,12 +297,10 @@ const submitForm = async () => {
   }
 };
 
-// 이미지 클릭해서 파일 업로드
 const triggerFileInput = () => {
   fileInput.value.click();
 };
 
-// 폼 제출 검증
 const isFormValid = computed(() => {
   return !(
     formData.content.trim() === '' ||
@@ -386,7 +370,6 @@ const onDrop = (index, event) => {
   box-sizing: border-box;
   background-color: rgb(255, 255, 255, 0.2);
 }
-
 .upload-container {
   max-width: 600px;
   margin: 0 auto;
@@ -395,13 +378,27 @@ const onDrop = (index, event) => {
   background-color: rgb(249, 249, 249);
   border-radius: 10px;
 }
-
-img {
-  object-fit: cover;
+.upload-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
 }
-
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px; /* 소제목 아래 여백 */
+}
 .form-control {
   border-radius: 8px;
+  margin-bottom: 15px;
 }
 
 .btn-success {
@@ -432,25 +429,26 @@ img {
   display: flex;
   flex-wrap: wrap;
 }
-
 .hash-item {
   background-color: #e0e0e0;
   border-radius: 8px;
-  padding: 5px 10px;
+  padding: 5px10px;
   margin-right: 5px;
   margin-bottom: 5px;
   display: flex;
   align-items: center;
 }
-
 .hash-item-delete {
   margin-left: 10px;
   color: red;
   cursor: pointer;
 }
-
 .input-tag {
   padding: 5px;
   border: 1px solid #ddd;
+}
+.list-group-item-light {
+  background-color: #f7d794;
+  color: rgb(0, 0, 0);
 }
 </style>
