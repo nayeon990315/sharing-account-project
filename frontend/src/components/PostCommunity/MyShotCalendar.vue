@@ -29,17 +29,19 @@
             :key="dayIndex" 
             class="calendar-day" 
             :class="{
-              saturday: day.date.getDay() === 6,
-              sunday: day.date.getDay() === 0
+              saturday: day && day.date.getDay() === 6,
+              sunday: day && day.date.getDay() === 0
             }" 
             @click="() => {
-              console.log('dt=', day.date.getDate()); 
-              openPostModal( day.date.getFullYear(), day.date.getMonth()+1,  day.date.getDate() ); // 날짜 클릭 시 모달 열기
-              // openPostModal('2024-11-1'); // 날짜 클릭 시 모달 열기
+              if (day) {
+                openPostModal(day.date.getFullYear(), day.date.getMonth()+1, day.date.getDate());
+              }
             }"
           >
-            <div class="day-number">{{ day.date.getDate() }}</div>
-            <div class="day-events">
+            <div v-if="day" class="day-number">{{ day.date.getDate() }}</div>
+            <div v-else class="day-number"></div> <!-- 빈 날짜 셀 -->
+            
+            <div class="day-events" v-if="day">
               <img 
                 v-if="imagesByDate[day.date.getDate()]" 
                 :src="imagesByDate[day.date.getDate()]" 
@@ -60,8 +62,7 @@
 
     <!-- 모달창 -->
     <Modal :isVisible="isModalOpen" @close="closeModal">
-      <!-- <PostItem2 :selectedDate="selectedDate" /> -->
-      <PostItem2 :selectedYear="selectedYear"   :selectedMonth="selectedMonth"  :selectedDt="selectedDt"  />
+      <PostItem2 :selectedYear="selectedYear" :selectedMonth="selectedMonth" :selectedDt="selectedDt" />
     </Modal>
   </div>
 </template>
@@ -71,7 +72,7 @@
 import { ref, watch } from 'vue';
 import axios from 'axios';
 import Modal from '@/components/PostCommunity/MyShotsModal.vue';
-import PostItem2 from '@/components/PostCommunity/PostItem2.vue'; // postItem2 컴포넌트 import
+import PostItem2 from '@/components/PostCommunity/PostItem2.vue';
 
 const props = defineProps({
   events: {
@@ -92,9 +93,7 @@ const years = Array.from({ length: 21 }, (_, i) => currentYear.value - 10 + i);
 const imagesByDate = ref({});
 const post = ref([]);
 const isModalOpen = ref(false);
-
-const selectedDt =ref(null);
-
+const selectedDt = ref(null);
 
 const toggleMonthSelector = () => {
   monthSelectorVisible.value = !monthSelectorVisible.value;
@@ -102,23 +101,37 @@ const toggleMonthSelector = () => {
 
 const createCalendar = (events = [], posts = []) => {
   const startDate = new Date(currentYear.value, currentMonthIndex.value, 1);
-  const startDay = startDate.getDay();
+  const endDate = new Date(currentYear.value, currentMonthIndex.value + 1, 0);  // 현재 달의 마지막 날 계산
+  const startDay = startDate.getDay();  // 첫째 날의 요일
+  const daysInMonth = endDate.getDate();  // 현재 달의 일 수 계산
 
-  // 35일간의 날짜 배열 생성
-  const totalDays = Array.from({ length: 35 }, (_, i) => {
-    const date = new Date(startDate);                                 //date객체 선언되는 부분
-    date.setDate(i - startDay + 1);
+  const totalDays = [];
 
-    // 각 날짜에 해당하는 post 데이터를 찾아 할당 (여기서 날짜에 맞는 post를 찾음)
+  // 첫 주의 빈 공간 채우기
+  for (let i = 0; i < startDay; i++) {
+    totalDays.push(null);  // null로 빈 공간 표시
+  }
+
+  // 해당 월의 날짜 추가
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(currentYear.value, currentMonthIndex.value, day);
     const postForThisDay = posts.find(post => {
-      const postDate = new Date(post.date);  // post 데이터의 날짜
+      const postDate = new Date(post.date);
       return postDate.getFullYear() === date.getFullYear() &&
              postDate.getMonth() === date.getMonth() &&
              postDate.getDate() === date.getDate();
     });
+    console.log(`Calendar Day: ${day}, Image:`, imagesByDate.value[day]);
+    totalDays.push({ date, events: [], post: postForThisDay || null });
+  }
 
-    return { date, events: [], post: postForThisDay || null }; // post 데이터가 있으면 할당
-  });
+  // 마지막 주의 빈 공간 채우기
+  const remainingDays = 7 - (totalDays.length % 7);
+  if (remainingDays < 7) {
+    for (let i = 0; i < remainingDays; i++) {
+      totalDays.push(null);  // null로 빈 공간 표시
+    }
+  }
 
   // 주 단위로 분리하여 weeks 배열에 할당
   weeks.value = [];
@@ -126,8 +139,6 @@ const createCalendar = (events = [], posts = []) => {
     weeks.value.push(totalDays.slice(i, i + 7));
   }
 };
-
-
 
 const fetchImagesByDate = async () => {
   const userId = localStorage.getItem('userId');
@@ -139,8 +150,8 @@ const fetchImagesByDate = async () => {
         year: currentYear.value,
       },
     });
+    console.log('Fetched image data:', response.data); // 가져온 이미지 데이터를 확인하는 로그
 
-    console.log('resoponse.data',response.data);
     const imageMap = {};
     response.data.forEach((imageData) => {
       const createdAt = new Date(imageData.createdAt);
@@ -198,30 +209,15 @@ watch(() => props.events, (newEvents) => {
   fetchImagesByDate();
 }, { immediate: true });
 
-/* 모달부분 */
-// 모달 상태와 선택된 포스트 데이터 관리
-const isModalVisible = ref(false); // 모달 보이기 상태
-const selectedPost = ref(null); // 선택된 포스트 정보
-
-// 날짜 셀 클릭 시 모달창 열고, 선택된 날짜를 설정
-// const openPostModal = (date) => {
-//   selectedDate.value = date.toISOString();  // Date 객체를 ISO 형식의 문자열로 변환
- 
-//   isModalOpen.value = true;   // 모달 열기
-// };
-const openPostModal = ( year, month, dt) => {
-  // selectedDate.value = date.toISOString();  // Date 객체를 ISO 형식의 문자열로 변환
+const openPostModal = (year, month, dt) => {
   selectedDt.value = dt;
   selectedMonth.value = month;
   selectedYear.value = year;
-  isModalOpen.value = true;   // 모달 열기
+  isModalOpen.value = true;
 };
-// 모달 닫기 함수
+
 const closeModal = () => {
   isModalOpen.value = false;
-  isModalVisible.value = false;
-  console.log('Closing modal');
-  console.log(isModalOpen.value);
 };
 </script>
 
