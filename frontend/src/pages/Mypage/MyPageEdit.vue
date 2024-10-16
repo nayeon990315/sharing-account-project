@@ -197,7 +197,7 @@ h1 {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 0;
   box-sizing: border-box;
   margin-bottom: 15px;
 }
@@ -216,13 +216,13 @@ h1 {
 .save-btn, .cancel-btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 0;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .save-btn {
-  background-color: #28a745;
+  background-color: #ffd739;
   color: white;
 }
 

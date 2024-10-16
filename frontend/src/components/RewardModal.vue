@@ -100,7 +100,7 @@ const closeModal = () => {
 .modal-content {
     background-color: white;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 0;
     width: 500px;
     height: 300px;
     text-align: center;
@@ -114,7 +114,7 @@ const closeModal = () => {
 
 #reward-content {
     margin-top: 10px;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 #modal-title {
@@ -124,7 +124,7 @@ const closeModal = () => {
 
 #modal-content {
     margin-top: 10px;
-    font-size: 1.2rem;
+    font-size: normal;
 }
 
 button {
@@ -132,13 +132,15 @@ button {
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
-    border: 3px solid #f7bb14;
-    background-color: #f7bb14;
+    border-radius: 0 !important;
+    background-color: #000000;
     color: white;
 }
 
 button:hover {
-    background-color: white;
-    color: #c29519;
+    border: none;
+  border-radius: 0 !important;
+  color: white;
+  background-color: #5a5542d3;
 }
 </style>

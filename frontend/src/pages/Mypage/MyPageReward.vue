@@ -54,22 +54,27 @@
       </div>
     </div>
 
-    <div class="content-section">
-      <div class="content">
-        <h5 id="modal-title"><strong>지금까지 달성한 루틴 및 절약 내역</strong></h5>
-        <div class="routine-content">
-          <ul>
-            <li v-for="(item, index) in routine.title" :key="index">
-            ({{ routine.date[index] }})&nbsp;&nbsp; {{ item }}&nbsp; - {{ routine.save[index] }}원 절약
-            </li>
-          </ul>
-        </div>
-      </div>
+    <div class="wrapper">
+      <p id="modal-title">전체 달성 루틴 및 절약 내역</p>
 
-      <div class="calendar-section">
-        <h5 id="modal-title"><strong>달력</strong></h5>
-        <Calendar :events="calendarEvents" />
+      <div class="content-calendar">
+        <div class="content-section">
+          <div class="content">
+            
+            <div class="routine-content">
+              <ul>
+                <li v-for="(item, index) in routine.title" :key="index">
+                {{ routine.date[index] }}<br> {{ item }}&nbsp; - {{ routine.save[index] }}원 절약
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="calendar-section">
+            <Calendar :events="calendarEvents" />
+          </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -331,12 +336,36 @@ onMounted(getUserIdFromLocal);
   font-weight: 800;
 }
 
+/* 컨텐츠랑 캘린더 */
+.wrapper {
+  margin: 0 8%;
+}
+
+.wrapper h5 {
+  margin-bottom: 0;
+}
+
+.wrapper #modal-title {
+  margin-top: 40px
+}
+
+.content-calendar {
+  /* display: grid; */
+  width: 100%;
+  grid-template-columns: 1fr 2fr;
+  /* display: flex; */
+  justify-content: center;
+  align-items: stretch; /* 두 요소의 높이를 동일하게 맞춤 */
+}
+
 .content-section {
+  grid-column: 1;
   display: flex;
   flex-direction: row;
   width: 100%;
+  height: 100%;
   justify-content: center;
-  margin-top: 40px;
+  /* margin-top: 40px; */
 }
 
 .content {
@@ -347,19 +376,25 @@ onMounted(getUserIdFromLocal);
   padding: 20px; 
   /* background-color: #ffd73958; */
   width: 500px;
+  height: 100%;
 }
 
 
 .routine-content {
   background-color: #ffd73958;
   margin-bottom: 60px;
+  /* height: 100%; */
+}
+
+.content ul {
+  margin-bottom: 30px;
 }
 
 .content ul li {
   list-style-type: none; 
   margin-top: 30px;
   text-align: center;
-  font-size: 17px;
+  font-size: normal;
   /* font-weight: 700; */
 }
 
@@ -369,8 +404,15 @@ onMounted(getUserIdFromLocal);
 }
 
 .calendar-section {
+  /* flex-grow: 8; */
+  grid-column: 2;
   margin-top: 20px;
   border-radius: 0;
+  width: 100%;
+}
+.calendar-section > div {
+  width: 100%; /* 달력 너비를 100%로 설정 */
+  /* height: 100%; */
 }
 
 
@@ -402,6 +444,8 @@ onMounted(getUserIdFromLocal);
 #modal-title{
   text-align: center;
   margin-top: 10px;
+  margin-bottom: 0;
+  font-weight: 800;
 }
 
 .image-upload {
@@ -451,6 +495,7 @@ onMounted(getUserIdFromLocal);
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+  gap: 8px;
 }
 
 .btn {
@@ -466,30 +511,40 @@ onMounted(getUserIdFromLocal);
   width: 100%;
 }
 
+
+
 .btn-primary {
-  border: 3px solid #90893dcd;
-  background-color: #90893dcd;
-  color: white;
+  /* border: 3px solid #90893dcd; */
+  border-radius: 0;
+  background-color: #ffd6346c;
+  color: black;
+  font-weight: 800;
 }
 
 .btn-secondary {
-  border: 3px solid #6c757d;
-  background-color: #6c757d;
-  color: white;
+  /* border: 3px solid #6c757d; */
+  border-radius: 0;
+  background-color: #7d786c60;
+  color: black;
+  font-weight: 800;
 }
 
 .btn-primary:hover {
-  background-color: white;
-  color: #90893dcd;
+  border-radius: 0;
+  background-color: #ffd634b4;
+  color: black;
+  font-weight: 800;
 }
 
 .btn-secondary:hover {
-  background-color: white;
-  color: #5a6268;
+  border-radius: 0;
+  background-color: #7d786c8a;
+  color: black;
+  font-weight: 800;
 }
 
 .border-blue {
-  border: 4px solid #a0983ccd; 
+  border: 4px solid #ffd634b4; 
 }
 
 

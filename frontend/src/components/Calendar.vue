@@ -188,7 +188,7 @@
   <style scoped>
   .calendar {
     margin: 20px;
-    border-radius: 5px;
+    border-radius: 0;
     overflow: hidden;
     border: 2px solid #ddd;
   }
@@ -197,8 +197,10 @@
     text-align: center;
     font-size: 20px;
     font-weight: bold;
-    background-color: #f0f0f0; 
+    background-color: #ffd7399a
+    ; 
     padding: 15px 0;
+    margin: 0;
   }
   
   .month-button {
@@ -224,7 +226,7 @@
   
   .calendar-header {
     display: flex;
-    background-color: #f9f9f9; 
+    background-color: #ffd7395e; 
   }
   
   .calendar-header-cell {
@@ -268,6 +270,7 @@
   
   .event-count {
     cursor: pointer; 
+    font-size: 14px;
   }
   
   .modal {
@@ -312,15 +315,16 @@
 
   .close-btn {
     padding: 10px;
-    border-radius: 5px;
-    border: 3px solid #6c757d;
-    background-color: #6c757d;
+    border-radius: 0;
+    /* border: 3px solid #6c757d; */
+    border: none;
+    background-color: black;
     color: white;
   }
 
   .close-btn:hover {
-    background-color: white;
-    color: #5a6268;
+    color: white;
+    background-color: #6c757d;
   }
   
   </style>

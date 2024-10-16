@@ -1,7 +1,13 @@
 <template>
   <div class="container full-screen-container">
     <div class="profile-card p-4 shadow-lg">
-      <h1 class="text-center mb-4">🐝 환영합니다! 🐝</h1>
+      <div class="info">
+        <div class="logo">
+            <img src="@/assets/images/bee/bee4.png" alt="" style="width: 110px">
+          </div>
+          <h1 class="text-center mb-4">Welcome!</h1>
+      </div>
+      
 
       <form @submit.prevent="submitForm">
         <div class="form-group mb-4">
@@ -27,20 +33,21 @@
             required
           />
         </div>
-
-        <div class="d-flex justify-content-center">
-          <button type="submit" class="btn submit-btn mt-3">벌루틴 시작하기</button>
-        </div>
-      </form>
-
-      <div v-if="previewImage" class="text-center mt-4">
-        <h3>미리보기:</h3>
+        <div v-if="previewImage" class="text-center mt-4">
+        <!-- <h3>미리보기:</h3> -->
         <img
           :src="previewImage"
           alt="Profile Image Preview"
           class="img-thumbnail preview-image"
         />
       </div>
+
+        <div class="d-flex justify-content-center">
+          <button type="submit" class="btn submit-btn mt-3">벌루틴 시작하기</button>
+        </div>
+      </form>
+
+      
     </div>
 
     <!-- Alert Modal -->
@@ -138,26 +145,29 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #fff7e6;
-  background-image: url('@/assets/images/bee_background.png');
-  background-size: cover;
-  background-position: center;
+
+
+  /* background-color: #fff7e6; */
+  /* background-image: url('@/assets/images/bee_background.png'); */
+  /* background-size: cover; */
+  /* background-position: center; */
 }
 
 /* 프로필 카드 스타일 */
 .profile-card {
   background-color: #ffecb3;
   border-radius: 15px;
-  width: 100%;
-  max-width: 500px;
+  /* width: 100%; */
+  width: 450px;
   text-align: center;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
   position: relative;
+  padding-top: 30px;
+  margin-top: 52px;
 }
 
 h1 {
-  color: #ffca28;
-  font-family: 'Roboto', sans-serif;
+  color: black;
   font-weight: bold;
   font-size: 1.8rem;
   margin-bottom: 20px;
@@ -165,22 +175,23 @@ h1 {
 
 .form-label {
   font-weight: bold;
-  color: #ffca28;
+  color: black;
 }
 
 .form-control {
   border: 2px solid #ffca28;
-  border-radius: 10px;
+  border-radius: 0;
   padding: 10px;
 }
 
 .btn.submit-btn {
   background-color: #fbc02d;
   color: white;
-  font-weight: bold;
+  /* font-weight: bold; */
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: 0px;
   border: none;
+  margin-bottom: 30px;
 }
 
 .btn.submit-btn:hover {
@@ -206,4 +217,17 @@ img {
   width: 50px;
 }
 
+
+.info {
+  margin-bottom: 50px;
+}
+
+
+.info h1{
+  font-weight: 800;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+}
 </style>

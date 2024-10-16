@@ -1,7 +1,7 @@
 <template>
   <div class="modal" v-if="isVisible">
     <div class="modal-content">
-      <h4 id="modal-title"><strong>{{ title }}</strong></h4>
+      <h4 id="modal-title">{{ title }}</h4>
       <p id="modal-content">{{ message }}</p>
       <button @click="closeModal">확인</button>
     </div>
@@ -48,9 +48,11 @@ export default {
 .modal-content {
   background-color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 0;
   width: 500px;
   height: 300px;
+
+  font-size: 15px;
   text-align: center;
   align-items: center;
   background-image: url('@/assets/images/background/background.png');
@@ -68,22 +70,23 @@ export default {
 
 #modal-content {
   margin-top: 10px;
-  font-size: 1.2rem;
+  font-size: normal;
 }
 
 button {
   margin-top: 10px;
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
-  border: 3px solid #f7bb14;
-  background-color: #f7bb14;
+  border-radius: 0 !important;
+  background-color: #000000;
   color: white;
 }
 
 button:hover {
-  background-color: white;
-  color: #c29519;
+  border: none;
+  border-radius: 0 !important;
+  color: white;
+  background-color: #5a5542d3;
 }
 /* 슬라이드 인 애니메이션 */
 @keyframes slideIn {

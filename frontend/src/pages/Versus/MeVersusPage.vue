@@ -37,20 +37,7 @@
         <!-- <button class="btn btn-flip" @click="toggleFlip">카드 보기</button> -->
 
 
-        <!-- 승리 결과 -->
-        <div class="winner-result" v-show="showPastRoutines && isFlipped"
-            :class="{ 'today-win': winnerMessage === 'true', 'past-win': winnerMessage === 'false', 'draw': winnerMessage === '무승부!' }">
-
-            <template v-if="winnerMessage === 'true'">
-                <p>오늘 더 많은 절약을 했습니다!</p>
-            </template>
-            <template v-else-if="winnerMessage === 'false'">
-                <p>{{ formatTemplateDate(targetDate) }}에 더 많은 절약을 했습니다!</p>
-            </template>
-            <template v-else>
-                <p>{{ winnerMessage }}</p>
-            </template>
-        </div>
+    
 
         <div class="container" @click="toggleFlip">
             <!-- Left 카드 -->
@@ -140,6 +127,21 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- 승리 결과 -->
+        <div class="winner-result" v-show="showPastRoutines && isFlipped"
+            :class="{ 'today-win': winnerMessage === 'true', 'past-win': winnerMessage === 'false', 'draw': winnerMessage === '무승부!' }">
+
+            <template v-if="winnerMessage === 'true'">
+                <p>오늘 더 많은 절약을 했습니다!</p>
+            </template>
+            <template v-else-if="winnerMessage === 'false'">
+                <p>{{ formatTemplateDate(targetDate) }}에 더 많은 절약을 했습니다!</p>
+            </template>
+            <template v-else>
+                <p>{{ winnerMessage }}</p>
+            </template>
         </div>
     </div>
 </template>
@@ -675,7 +677,7 @@ onMounted(() => {
 
 .winner-result {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 0px;
     font-weight: 800;
     font-size: 20px;
     /* visibility: hidden; */

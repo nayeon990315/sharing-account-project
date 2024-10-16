@@ -68,7 +68,7 @@
                                 </ul>
                             </div>
 
-                            <div class="text-center mb-3" style="height:30vh; width:22vw">
+                            <div class="text-center mb-3" style="height:30vh; width:25vw">
                                 <canvas id="expenseChart"></canvas>
                             </div>
                             
@@ -449,6 +449,9 @@ const selectedCategoryExpenses = computed(() => {
 
 // 숫자를 원화로 변환
 const formatCurrency = (value) => {
+    if (value === null || value === undefined) {
+        return '0원';
+    }
     return new Intl.NumberFormat('ko-KR').format(value) + '원';
 };
 
@@ -615,5 +618,9 @@ color: #777; /* 일반 텍스트 색상 */
     padding: 4px 8px;
     font-size: 13px;
     
+}
+
+#expenseChart {
+    width: 100%;
 }
 </style>

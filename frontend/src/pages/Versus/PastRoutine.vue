@@ -67,6 +67,7 @@
       background-color: rgb(89, 57, 0) !important ;
       color: white;
       border-radius: 0;
+      margin-right: 3px;
   }
   
   .routine-list {
