@@ -52,7 +52,7 @@ html {
 aside {
   width: 200px; /* 고정 너비 */
   min-width: 200px; /* 최소 너비 설정 */
-  background-color: #ffe26c;
+  background-color: #fbe382;
   padding: 20px;
   border-radius: 0px;
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);

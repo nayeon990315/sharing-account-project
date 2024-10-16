@@ -87,6 +87,7 @@ const getAllPost = async () => {
       'http://localhost:8080/post-community/all'
     );
 
+    
     // 각 게시물에 대해 habitTitle을 가져와서 추가
     const postsWithHabitTitle = await Promise.all(
       response.data.map(async (post) => {
