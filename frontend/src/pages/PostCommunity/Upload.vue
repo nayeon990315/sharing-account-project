@@ -67,7 +67,7 @@
               @dragstart="onDragStart(index, $event)"
               @dragover="onDragOver(index, $event)"
               @drop="onDrop(index, $event)"
-              @keyup.enter.prevent
+              @keyup.enter="preventSubmit"
             >
               <p>#{{ tag }}</p>
               <p class="hash-item-delete">x</p>
@@ -78,8 +78,8 @@
               type="text"
               id="hashtag"
               v-model="hashtag"
-              @keyup.space.prevent
-              @keyup.delete.prevent
+              @keyup.space="onKeyUpSpace"
+              @keyup.delete="onKeyUpBackspace"t
               :placeholder="
                 hashArr.length < 5
                   ? '해시태그를 스페이스바를 눌러 추가하세요 (최대 5개)'
@@ -105,7 +105,7 @@
             <div
               class="flex-shrink-0 position-relative d-flex justify-content-center align-items-center"
               style="width: 150px; height: 150px; cursor: pointer"
-              @click.prevent.stop
+              @click="triggerFileInput"
             >
               <img
                 v-if="imagePreview"
@@ -142,7 +142,7 @@
     :message="modalMessage"
     :rewardBefore="originalReward"
     :rewardAfter="calculatedReward"
-    @close.prevent.stop
+    @close="closeModal"
   />
 </template>
 
