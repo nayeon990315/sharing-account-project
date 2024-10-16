@@ -4,15 +4,16 @@
 
       <div class="user">
 
-        <div class="logo">
-          <img src="@/assets/images/bee/bee4.png" alt="" style="width: 130px">
-        </div>
+        
         <div class="form-wrap">
 
           <div v-if="isLogin">
             <div class="info">
+              <div class="logo">
+                <img src="@/assets/images/bee/bee4.png" alt="" style="width: 110px">
+              </div>
               <h1>Login</h1>
-              <p>소셜 계정으로 간편하게 시작하세요. 로그인 즉시 가입 및 이용이 가능합니다.</p>
+              <p>소셜 계정으로 간편하게 시작하세요.<br>로그인 즉시 가입 및 이용이 가능합니다.</p>
             </div>
 
             <div class="socialLoginForm">
@@ -119,53 +120,63 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color:#FFD565;
+  /* background-color:#FFD565; */
   color: #000000;
 }
 
 .form-wrap {
   /* border: solid 4px black; */
   /* padding: 80px; */
-  width: 350px;
-  height: 300px;
-  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23333' stroke-width='4' stroke-dasharray='12%2c 15' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+  width: 300px;
+  /* height: 300px; */
+  height: 100%;
+  /* background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' stroke='%23333' stroke-width='4' stroke-dasharray='12%2c 15' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e"); */
   display: flex;
   align-items: center;
   justify-content: center;
   /* background-color: #FFD565; */
+  border-radius: 15px;
+  background-color: #ffecb3;
+
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
-    margin-bottom: 70px;
+    /* margin-bottom: 70px; */
     text-align: center;
 }
 
-footer {
-    height: 80px;
-}
 
 
 
 /* 전체 모듈 */
+.info {
+  padding-top: 30px;
+  text-align: center;
+}
 
 .info h1{
   font-weight: 800;
-  text-align: center;
-  margin: 30px 0;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  
 }
 
 .info p {
   margin-bottom: 50px;
 }
 .login {
-  background: url('@/assets/images/background/background.png');
-  /* background-color: transparent; */
+  /* background: url('@/assets/images/background/background.png'); */
+  /* background-color: #ffd8154c; */
   /* width: 800px; */
   padding: 40px;
   margin: auto;
   border-radius: 8px;
   /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); */
 }
+
+
 
 
 
@@ -180,7 +191,7 @@ h3 {
 /* 세부 폼 스타일 */
 .form-wrap {
   text-align: left;
-  width: 600px;
+  width: 450px;
   margin: 0 auto;
 }
 
@@ -190,7 +201,7 @@ input[type="email"] {
   width: 100%;
   padding: 10px;
   margin-bottom: 20px;
-  background: transparent;
+  /* background-color white; */
   border: solid 1px rgb(50, 50, 50);
   color:black;
 }
@@ -227,14 +238,15 @@ input[type="submit"]:hover {
   margin-bottom: 60px;
 }
 .socialLogin {
-    border: solid 1px rgb(126, 126, 126);
+    border: solid 2px rgb(126, 126, 126);
     text-align: center;
     padding: 6px;
     margin-top: 5px;
+    background-color: white;
     /* background-color: #eeeeee; */
 
     width: 300px;
-    margin: 0 auto;
+    margin: 10px auto;
 }
 
 .socialLogin img {

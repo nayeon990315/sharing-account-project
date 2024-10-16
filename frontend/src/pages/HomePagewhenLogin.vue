@@ -60,7 +60,13 @@
         </div>
         <div class="monthlyComment">
             <h1>이달의 벌루틴 모으기</h1>
-            <p>이번 한달의 벌집은 얼마나 채워졌을까요?</p>
+            <p>이번 {{ month }}월의 벌집은 얼마나 채워졌을까요?</p>
+
+            <div class="honeycombComment">
+                <p>{{ month }}월에는 평균 <span class="strong">{{ averageCompletion }}번</span> 루틴을 달성했어요.</p>
+                <p>5개의 루틴을 모두 달성한 날은 총 <span class="strong">{{ fullCompletionDays }}일</span>이고,</p>
+                <p>한 번도 달성하지 못한 날은 총 <span class="strong">{{ noCompletionDays }}일</span>이에요.</p>
+            </div>
         </div>
     </div>
 
@@ -163,7 +169,8 @@ const getImageForRoutine = (completedRoutines) => {
     else if (completedRoutines === 2) return new URL('@/assets/images/honeycomb/40.png?timestamp=${timestamp}', import.meta.url).href;
     else if (completedRoutines === 3) return new URL('@/assets/images/honeycomb/60.png?timestamp=${timestamp}', import.meta.url).href;
     else if (completedRoutines === 4) return new URL('@/assets/images/honeycomb/80.png?timestamp=${timestamp}', import.meta.url).href;
-    else return new URL('@/assets/images/honeycomb/100.png?timestamp=${timestamp}', import.meta.url).href;
+    else if (completedRoutines === 5) return new URL('@/assets/images/honeycomb/100.png?timestamp=${timestamp}', import.meta.url).href;
+    else return new URL('@/assets/images/honeycomb/notYet.png', import.meta.url).href;
 };
 
 // // 초기화 시 이미지 경로 설정
@@ -241,7 +248,9 @@ const setImageSources = () => {
 
     // 오늘 이후 날짜에는 "notYet"
     for (let i = currentDay; i < daysInMonth.value; i++) {
-        imageSources.value.push(new URL('@/assets/images/honeycomb/notYet.png?timestamp=${new Date().getTime()}', import.meta.url).href);
+        imageSources.value.push(new URL('@/assets/images/honeycomb/notYet.png', import.meta.url).href);
+        // const routineCount = null;
+        // imageSources.value.push(getImageForRoutine(routineCount));
     }
 };
 
@@ -274,6 +283,20 @@ const handleMonthChange = (event) => {
 // 페이지 로드 시 기본적으로 현재 달 데이터를 가져옴
 // fetchRoutineData(new Date().getFullYear(), new Date().getMonth() + 1, 1);
 
+// 평균 루틴 달성 횟수, 모두 달성한 날, 한 번도 달성하지 못한 날을 계산
+const averageCompletion = computed(() => {
+    if (routineData.value.length === 0) return 0;
+    const totalCompletion = routineData.value.reduce((sum, habit) => sum + habit, 0);
+    return (totalCompletion / routineData.value.length).toFixed(1); // 소수점 2자리까지 표시
+});
+
+const fullCompletionDays = computed(() => {
+    return routineData.value.filter(habitCount => habitCount === 5).length;
+});
+
+const noCompletionDays = computed(() => {
+    return routineData.value.filter(habitCount => habitCount === 0).length;
+});
 
 
 // 오늘 '진행중인' 루틴 불러오기 - pinia & 달성 개수, 달성률
@@ -599,7 +622,7 @@ onMounted(() => {
 /* 데일리 꿀단지 */
 .dailyBRTN {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 1fr;
     justify-items: center;
     /* align-items: center; */
 
@@ -699,13 +722,19 @@ onMounted(() => {
     grid-template-columns: 1fr 5fr 4fr;
     align-items: center;
     /* 벌집이 수직으로 가운데 정렬되도록 조정 */
+    align-content: center;
 
-    margin: 5% 8%;
+    margin-top: 5%;
+    margin-right: 8%;
+    margin-left: 8%;
+    margin-bottom: 10%;
 }
 
 .gradation {
-    width: 70px;
+    width: 50px;
+    height: 300px;
     grid-column: 1;
+    justify-self: end;
 }
 
 #month {
@@ -718,7 +747,8 @@ onMounted(() => {
     grid-template-columns: repeat(6, calc(100px - 39px));
     /*너비를 1fr이 아니라 딱 들어맞게 줄임 */
     grid-gap: 8px;
-    justify-content: left;
+    justify-content: center;
+    align-content: center;
 }
 
 .hexagon {
@@ -756,7 +786,16 @@ onMounted(() => {
     grid-column: 3;
 }
 
+.honeycombComment {
+    margin-top: 70px;
+    font-size: 18px;
+    font-weight: 500;
+    /* text-align: center; */
+}
 
+.strong {
+    font-weight: 900;
+}
 
 
 
@@ -766,11 +805,14 @@ onMounted(() => {
 
 /* 커뮤니티 섹션 */
 .community {
-    margin: 80px 8%;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 130px;
+    margin-bottom: 30px;
 }
 
 .top-likes-section {
-    margin: 3% 8%;
+    width: 100%;
 }
 
 .grid-container {
@@ -799,6 +841,10 @@ onMounted(() => {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.card-body {
+    padding: 22px 15px;
+}
+
 .card-title {
     font-weight: 900;
 }
@@ -820,8 +866,11 @@ onMounted(() => {
 
 .likeContainer {
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    flex-direction: column;
+    /* align-items: center; */
+    align-items: flex-end;
+    /* align-self: flex-end */
+    width: 100%;
 }
 
 .likeButton {
@@ -831,6 +880,10 @@ onMounted(() => {
 
 .likeImg {
     width: 22px;
+}
+
+.likeComment {
+    margin-right: 10px;
 }
 
 /* 챌린지 */
@@ -883,4 +936,6 @@ onMounted(() => {
 .challengeButtonText {
     font-size: 14px;
 }
+
+
 </style>

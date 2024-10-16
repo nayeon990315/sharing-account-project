@@ -176,7 +176,7 @@ const navigateByLoginStatus = () => {
 }
 
 .logo img{
-    width: 30px;
+    width: 28px;
 }
 
 .auth-buttons {
@@ -201,6 +201,8 @@ const navigateByLoginStatus = () => {
     color: black;
     border: none; 
     font-weight: normal; 
+
+    width: 200px;
 }
 
 /* 호버 시 드롭다운 버튼 스타일 */
@@ -238,10 +240,19 @@ const navigateByLoginStatus = () => {
     background-color: rgba(255, 255, 255, 0.502);
     border: none; 
     color: black;
+
+    width: 200px; /* 드롭다운 메뉴의 너비를 버튼과 일치시킴 */
+    margin-top: 0; /* 버튼과 메뉴의 간격을 줄이기 위해 margin-top 조정 */
+    left: 0; /* 드롭다운 메뉴를 버튼과 같은 위치에 맞추기 위해 설정 */
+    transform: translateX(0); /* 메뉴를 좌우로 이동하지 않도록 설정 */
+
+    position: absolute; /* 메뉴가 버튼을 기준으로 절대 위치에 배치됨 */
+    top: 100%; /* 버튼 바로 아래에 메뉴가 나타나도록 설정 */
+    left: 0; /* 버튼의 왼쪽과 맞추기 위해 설정 */
 }
 
 .menu-item {
-    width: 120px;
+    width: 150px;
     /* 드롭다운 메뉴창 너비 고정 */
 }
 </style>

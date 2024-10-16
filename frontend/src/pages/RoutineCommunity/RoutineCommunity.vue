@@ -22,14 +22,15 @@
   </div>
 
   <nav class="filter">
-    <div class="accordion-container">
+    <!-- <div class="accordion-container">
       <div class="accordion" id="categoryAccordion">
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOne">
+        <div class="accordion-item"> 카테고리 선택
+          <p class="accordion-header" id="headingOne">
+            
             <button @click="toggleDropdown" class="accordion-button">
-              {{ selectedCategory !== 'all' ? categoryTranslations[selectedCategory] : '전체 (카테고리를 선택해주세요!)' }}
+              {{ selectedCategory !== 'all' ? categoryTranslations[selectedCategory] : '전체' }}
             </button>
-          </h2>
+          </p>
           <div id="collapseOne" class="accordion-collapse collapse">
             <div v-show="isDropdownOpen" class="accordion-collapse">
               <div class="row">
@@ -65,6 +66,35 @@
           </div>
         </div>
       </div>
+    </div> -->
+    <div class="categoryFilter">
+      <form action="#">
+        <label for="category_filter">카테고리 선택</label>
+        <select
+          name="category"
+          id="category"
+          @change="handleCategoryFilterChange"
+        >
+          <option value="all">전체</option>
+          <option value="food">식비</option>
+          <option value="dessert">카페/간식</option>
+          <option value="online_shopping">온라인쇼핑</option>
+          <option value="fashion_shopping">패션/쇼핑</option>
+          <option value="culture_leisure">문화/여가</option>
+          <option value="alcohol_entertainment">술/유흥</option>
+          <option value="education">교육</option>
+          <option value="health_medical">의료/건강</option>
+          <option value="living">생활</option>
+          <option value="housing_utilities">주거/공과금</option>
+          <option value="travel">여행</option>
+          <option value="automobile">자동차</option>
+          <option value="pet">반려동물</option>
+          <option value="beauty">뷰티</option>
+          <option value="finance">금융</option>
+          <option value="transportation">교통</option>
+          <option value="event_fees">경조사/회비</option>
+        </select>
+      </form>
     </div>
 
     <div class="otherFilter">
@@ -157,7 +187,7 @@
                 {{ routine.categoryTitle }}
               </span>
               <span class="date card-subtitle">
-                {{ routine.uploadDate }}
+                {{ formatTemplateDate(routine.uploadDate) }}
               </span>
               <!-- mb-2 text-body-secondary -->
             </div>
@@ -640,6 +670,25 @@ async function selectHabit(habitId) {
 function logImageUrl(imageUrl) {
   console.log('Image URL:', imageUrl);
 }
+
+
+// 날짜 포맷
+const formatTemplateDate = (date) => {
+    if (typeof (date) === 'string') {
+        const dateOnly = date.split(' ')[0];
+        const dateResult = dateOnly.split('-')
+        const strYear = dateResult[0]
+        const strMonth = dateResult[1]
+        const strDay = dateResult[2]
+        return `${strYear} / ${strMonth} / ${strDay}`;
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}년 ${month}월 ${day}일`;
+};
+
+
 </script>
 
 <style scoped>
@@ -704,6 +753,7 @@ function logImageUrl(imageUrl) {
   /* 그리드 간의 간격 */
 }
 
+
 .categoryFilter {
   grid-column: 1;
 }
@@ -711,21 +761,22 @@ function logImageUrl(imageUrl) {
 .categoryFilter select {
   width: 150px;
   height: 30px;
-  margin-left: 10px; /* 카테고리 문구와 드롭박스 사이 간격 */
-  border: solid 1px black; /* 테두리 없애기 */
+  margin-left: 10px; 
+  border: solid 1px black; 
   padding: 5px;
   font-size: 14px;
-  appearance: none; /* 기본 화살표 제거 */
+  appearance: none; 
 }
 
 .categoryFilter select:focus {
-  outline: none; /* 클릭 시 외곽선 제거 */
+  outline: none; 
 }
 
 .categoryFilter {
   display: flex;
   align-items: center;
 }
+
 
 .otherFilter {
   grid-column: 2;
@@ -808,6 +859,7 @@ function logImageUrl(imageUrl) {
 
 .accordion-container {
   position: relative;
+  grid-column: 1;
 }
 
 .accordion-item {
@@ -876,8 +928,7 @@ function logImageUrl(imageUrl) {
 }
 
 .accordion {
-  /* 첫 번째 열 */
-  grid-column: 1;
+  /* grid-column: 1; */
   /* 원하는 너비로 설정 */
   max-width: 70%;
   /* 여백 조정 */
@@ -935,10 +986,10 @@ function logImageUrl(imageUrl) {
   height: auto;
   flex: 1 1 30%;
   max-width: 33%;
+  max-height: 310px;
   /* min-height: 350px; */
   /* 카드 최소 높이 통일 */
-  overflow: hidden;
-  /* 넘치는 내용 숨기기 */
+  overflow: visible;
 
 }
 
@@ -951,9 +1002,9 @@ function logImageUrl(imageUrl) {
   justify-content: space-between;
 }
 
-.cards .card:hover {
+/* .cards .card:hover {
   transform: translateY(-5px);
-}
+} */
 
 .card-img-top {
   object-fit: cover;
@@ -1056,7 +1107,7 @@ function logImageUrl(imageUrl) {
 .card {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  /* height: 100%; */
 }
 
 .card-title {
@@ -1215,11 +1266,8 @@ col-6 col-md-6 .col {
   flex-grow: 0;
   flex-shrink: 0;
   /* 자식 요소가 부모의 크기에 맞춰 늘어나지 않도록 설정 */
-  height: auto;
-  /* 높이를 자동으로 조정 */
-  min-height: 200px;
-  /* 카드의 최소 높이 설정 */
-  max-height: 400px;
+  /* height: auto; */
+  max-height: 350px;
   /* 카드의 최대 높이 설정 */
   overflow: hidden;
   /* 컨텐츠가 넘칠 경우 숨김 */

@@ -2,7 +2,7 @@
     <div class="info">
         <h1 >My Routine Settings</h1>
         <h5>마이루틴 설정</h5>
-        <p>루틴 설정에 대한 설명</p>
+        <p>원하는 루틴을 추가, 편집, 삭제하고, '벌루틴 공유 커뮤니티'에 공유해보세요. <br>또, 매일 실천할 루틴을 '활성화된 루틴'으로 드래그하세요. 이때 '완료한 루틴'으로 직접 이동시킬 수는 없어요.</p>
     </div>
 
     <div class="container mt-5">
@@ -11,9 +11,9 @@
 
             <!-- 대기 및 진행 중 리스트 -->
 
-            <div class="col-10 d-flex justify-content-between">
+            <div class="col d-flex justify-content-between">
                     <div class="row">
-                        <!-- 대기 리스트 -->
+                        <!-- 비활성화 리스트 -->
                         <div class="col-6 inactive-box" >
                             
                             <h4 class="d-flex align-items-center" >
@@ -55,7 +55,7 @@
                             </draggable>
                         </div>
 
-                        <!-- 진행 중 리스트 -->
+                        <!-- 활성화 리스트 -->
                         <div class="col-6 active-box">
                             <h4 class="d-flex align-items-center">
                                 <img class = "beeImg" src="@/assets/images/bee/bee3.png" alt="" style="margin-top: -9px">
@@ -145,7 +145,7 @@
         </div>
 
         <!-- 사이드바 버튼들 -->
-    <div class="button-section col-2 sidebar d-flex flex-column align-items-center justify-content-start">
+    <div class="button-section col sidebar d-flex flex-column align-items-center justify-content-start">
                 <div class="d-flex flex-column">
                     <button type="button" class="btn btn-dark mb-3" data-bs-toggle="modal" data-bs-target="#myModal">
                         루틴 추가
@@ -703,7 +703,8 @@ export default {
 /* 활성화, 비활성화 박스 */
 .col-6 {
     /* border: 1px solid black; */
-    padding: 10px;
+    padding: 0px;
+    margin: 0;
     width: 50%;
     flex-grow: 1; /* 두 박스가 가용 공간을 균등하게 나누도록 설정 */
 
@@ -730,10 +731,18 @@ export default {
     margin-top: 40px;
 }
 
-.row {
+.container > .row {
     /* flex: 0 0 80%; */
     margin-right: -20px;
     /* width: 100%; */
+
+    padding: 0;
+}
+
+.col-10 > .row {
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 
@@ -741,7 +750,9 @@ export default {
 /* 비활성화와 활성화 박스를 나란히 배치 */
 .col-10 {
     display: flex;
-    gap: 20px; /* 박스 사이의 간격 */
+    gap: 20px; 
+    margin: 0;
+    padding: 0;
 }
 
 .inactive-box, .active-box {
@@ -815,6 +826,8 @@ export default {
 /* Category specific styles */
 .category-badge {
     background-color: black;
+    font-size: 11px;
+    min-width: 70px;
 }
 /* .badge-food {
     background-color: #5193F4;
