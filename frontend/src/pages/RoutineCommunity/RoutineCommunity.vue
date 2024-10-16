@@ -1,54 +1,76 @@
 <template>
   <!-- 루틴 커뮤니티 -->
-  <div class="intro">
+  <div class="info">
     <div class="introLeft">
-      <h3>Routine Share Community</h3>
+      <h1>Routine Share</h1>
+      <h5>벌루틴 공유</h5>
       <p>
         나만의 '벌루틴'을 공유하고, 다른 사람들의 '벌루틴'을 내것으로
         만들어보세요!
       </p>
     </div>
+  </div>
 
-    <!-- 검색창 -->
-    <div class="search-routine">
-      <input
-        type="text"
-        v-model="displayedQuery"
-        placeholder="검색어를 입력하세요"
-      />
-      <button @click="performSearch">검색</button>
-    </div>
+  <!-- 검색창 -->
+  <div class="search-routine">
+    <input
+      type="text"
+      v-model="displayedQuery"
+      placeholder="검색어를 입력하세요"
+    />
+    <button @click="performSearch">검색</button>
   </div>
 
   <nav class="filter">
-    <div class="categoryFilter">
-      <form action="#">
-        <label for="category_filter">카테고리</label>
-        <select
-          name="category"
-          id="category"
-          @change="handleCategoryFilterChange"
-        >
-          <option value="all">전체</option>
-          <option value="food">식비</option>
-          <option value="dessert">카페/간식</option>
-          <option value="online_shopping">온라인쇼핑</option>
-          <option value="fashion_shopping">패션/쇼핑</option>
-          <option value="culture_leisure">문화/여가</option>
-          <option value="alcohol_entertainment">술/유흥</option>
-          <option value="education">교육</option>
-          <option value="health_medical">의료/건강</option>
-          <option value="living">생활</option>
-          <option value="housing_utilities">주거/공과금</option>
-          <option value="travel">여행</option>
-          <option value="automobile">자동차</option>
-          <option value="pet">반려동물</option>
-          <option value="beauty">뷰티</option>
-          <option value="finance">금융</option>
-          <option value="transportation">교통</option>
-          <option value="event_fees">경조사/회비</option>
-        </select>
-      </form>
+    <div class="accordion-container">
+      <div class="accordion" id="categoryAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button @click="toggleDropdown" class="accordion-button">
+              <span class="selected-category">
+                {{ selectedCategory !== 'all' ? selectedCategory : '전체' }}
+              </span>
+              <!-- 가이드라인 메시지 -->
+              <span class="guideline-message">
+                카테고리를 선택해주세요.
+              </span>
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse">
+            <div v-show="isDropdownOpen" class="accordion-collapse">
+              <div class="row">
+                <div class="col-4">
+                  <ul>
+                    <li v-for="category in leftCategories" :key="category.value">
+                      <button @click="handleCategoryFilterChange(category.label)" class="btn btn-link">
+                        {{ category.label }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-4">
+                  <ul>
+                    <li v-for="category in middleCategories" :key="category.value">
+                      <button @click="handleCategoryFilterChange(category.label)" class="btn btn-link">
+                        {{ category.label }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-4">
+                  <ul>
+                    <li v-for="category in rightCategories" :key="category.value">
+                      <button @click="handleCategoryFilterChange(category.label)" class="btn btn-link">
+                        {{ category.label }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="otherFilter">
@@ -95,17 +117,14 @@
         나의 좋아요
       </form>
     </div>
-
-    <!-- <input type="submit" value="Submit" /> -->
   </nav>
 
   <div class="main">
     <!-- 인증사진 프리뷰 -->
     <div class="shots">
-      <h5>SHOT PREVIEW</h5>
-      <p>
-        벌루틴을 클릭하면, 해당 루틴에 대한 사람들의 꿀샷을 미리볼 수 있어요.
-      </p>
+      <h4>SHOT PREVIEW</h4>
+      <p>벌루틴을 클릭하면, 해당 루틴에 대한 사람들의 꿀샷을 미리볼 수 있어요.</p>
+
       <!-- 선택한 루틴 제목 표시 -->
       <!-- <h4 v-if="selectedHabitTitle">{{ selectedHabitTitle }}</h4> -->
 
@@ -126,8 +145,6 @@
     </div>
 
     <!-- 카드들 -->
-    <!-- <div class="cards row row-cols-1 row-cols-md-3 g-4" v-if="(isMyLikesFilterActive ? checkMyLike() : routineCommunityArray).length > 0"> -->
-    <!-- 좋아요 누른 게 없을 때 문구 띄우기 -->
     <div class="cards row row-cols-1 row-cols-md-3 g-4">
       <!-- 카드 하나 -->
       <!-- v-for 문 !!! -->
@@ -141,25 +158,19 @@
         <div class="card h-100" @click="selectHabit(routine.habitId)">
           <div class="card-body">
             <div class="subtitle">
-              <span class="type card-subtitle">
-                {{ routine.categoryTitle }}
-              </span>
-              <span class="date card-subtitle">
-                {{ routine.uploadDate }}
-              </span>
-              <!-- mb-2 text-body-secondary -->
+              <span class="type card-subtitle">{{ routine.categoryTitle }}</span>
+              <span class="date card-subtitle">{{ routine.uploadDate }}</span>
             </div>
             <h5 class="card-title">{{ routine.habitTitle }}</h5>
             <div class="card-text">
               <div class="writer">
-                <!-- <img class="avatar" src="@/assets/images/sample.jpg"> -->
                 <img class="avatar" :src="routine.avatar || defaultAvatar" />
                 <span class="writerName">{{ routine.nickname }}</span>
               </div>
               <div class="likeContainer">
                 <button
                   class="likeButton"
-                  @click="toggleLike(routine.communityId)"
+                  @click.stop="toggleLike(routine.communityId)"
                 >
                   <img
                     class="likeImg"
@@ -172,9 +183,7 @@
             </div>
 
             <div class="challengeContainer">
-              <p class="challengeComment">
-                {{ routine.participants }}명의 루티너 중<br />
-                오늘 {{ routine.complete }}명이 목표를 달성했어요.
+              <p class="challengeComment">{{ routine.participants }}명의 루티너 중<br />오늘 {{ routine.complete }}명이 목표를 달성했어요.
               </p>
               <!-- <a href="#" class="challengeButton btn btn-primary">
                 <img
@@ -199,11 +208,7 @@
           </div>
         </div>
       </div>
-      <!-- 카드 하나 끝-->
-      <!-- 카드 끝 -->
     </div>
-    <!-- 좋아요한 루틴이 없을 때 표시할 메시지 -->
-    <!-- <p v-else>좋아요한 루틴이 없습니다.</p>  -->
   </div>
 
   <!-- 페이지네이션 컴포넌트 -->
@@ -231,16 +236,14 @@ import { ref, onMounted, watch, computed } from 'vue';
 import axios from 'axios';
 import fullLike from '@/assets/icons/fullLike.png';
 import emptyLike from '@/assets/icons/emptyLike.png';
-import coffeeImg from '@/assets/images/coffee_sample.png';
-import coffeeImg2 from '@/assets/images/coffee_sample2.jpg';
-import foodImg from '@/assets/images/food_sample.jpg';
-import foodImg2 from '@/assets/images/food_sample2.jpg';
 import defaultAvatarImg from '@/assets/images/sample.jpg';
 import Paginate from 'vuejs-paginate-next';
 import { useHabitStore } from '@/stores/habitStore';
 import CustomModal from '@/components/Modal.vue';
 
 const defaultAvatar = defaultAvatarImg;
+// isDropdownOpen 변수 선언
+const isDropdownOpen = ref(false);
 const habitStore = useHabitStore();
 
 // props로 sortType 받기
@@ -272,6 +275,34 @@ const categoryTranslations = {
   event_fees: '경조사/회비',
 };
 
+const leftCategories = [
+  { value: 'all', label: '전체' },
+  { value: 'food', label: '식비' },
+  { value: 'dessert', label: '카페/간식' },
+  { value: 'online_shopping', label: '온라인쇼핑' },
+  { value: 'health_medical', label: '의료/건강' },
+  { value: 'living', label: '생활' }
+];
+
+const middleCategories = [
+  { value: 'fashion_shopping', label: '패션/쇼핑' },
+  { value: 'culture_leisure', label: '문화/여가' },
+  { value: 'alcohol_entertainment', label: '술/유흥' },
+  { value: 'travel', label: '여행' },
+  { value: 'housing_utilities', label: '주거/공과금' },
+  { value: 'automobile', label: '자동차' }
+];
+
+const rightCategories = [
+  { value: 'pet', label: '반려동물' },
+  { value: 'beauty', label: '뷰티' },
+  { value: 'finance', label: '금융' },
+  { value: 'transportation', label: '교통' },
+  { value: 'event_fees', label: '경조사/회비' },
+  { value: 'education', label: '교육' }
+];
+
+
 const isModalVisible = ref(false);
 const modalMessage = ref('');
 // Modal 표시 함수
@@ -284,6 +315,7 @@ const openModal = (message) => {
 const closeModal = () => {
   isModalVisible.value = false;
 };
+
 // sortType을 상태로 관리할 변수 선언
 const currentSortType = ref(props.sortType); // props.sortType을 상태로 복사해서 관리
 const routineCommunityArray = ref([]);
@@ -414,11 +446,26 @@ function handleFilterChange(event) {
   fetchRoutines(searchQuery.value); // 업데이트된 sortType으로 데이터를 가져옴
 }
 
+// 드롭다운 열기/닫기 토글 함수
+const toggleDropdown = () => {
+  console.log("toggleDropOpen called");
+  isDropdownOpen.value = !isDropdownOpen.value;
+  console.log('isDropdownOpen:', isDropdownOpen.value); // 상태 변화 확인
+};
+
 // 왼쪽 카테고리 필터 (ex: 식비, 여행, 주거/공과금.. etc)
-function handleCategoryFilterChange(event) {
-  selectedCategory.value = categoryTranslations[event.target.value];
-  console.log(selectedCategory.value);
+function handleCategoryFilterChange(category) {
+
+  // 전체를 선택했을 때 'all'로 설정
+  if (category === '전체') {
+    selectedCategory.value = 'all';
+  } else {
+    selectedCategory.value = category;
+  }
   fetchRoutines(searchQuery.value); // 기본 정렬로 카테고리 필터 적용
+
+  // 드롭다운을 닫기
+  isDropdownOpen.value = false;;
 }
 
 // 페이지 로드 시 기본 정렬된 데이터를 가져오기
@@ -426,6 +473,17 @@ onMounted(() => {
   fetchLikedRoutines();
   fetchRoutines();
 });
+
+// Bootstrap의 Collapse API를 사용하여 드롭다운 닫기
+const closeDropdown = () => {
+  const collapseElement = document.getElementById('collapseOne');
+  if (collapseElement) {
+    const bsCollapse = new bootstrap.Collapse(collapseElement, {
+      toggle: false
+    });
+    bsCollapse.hide();
+  }
+};
 
 // 좋아요 버튼 클릭 시 동작
 async function toggleLike(communityId) {
@@ -522,7 +580,7 @@ async function addHabitToMyHabit(habitId, communityId) {
     );
     console.log('내 루틴에 추가되었습니다.');
 
-    const response = await axios.get(`http://localhost:8080/habits/find`, {
+    const response = await axios.get(`http://localhost:8080/habits/find-my-habit`, {
       params: {
         habitId: habitId,
       },
@@ -531,7 +589,7 @@ async function addHabitToMyHabit(habitId, communityId) {
     habitStore.habits.push({
       myHabitId: response.data.myHabitId,
       habitId: response.data.habitId,
-      writerId: localStorage.getItem('userId'),
+      writerId: response.data.userId,
       habitTitle: response.data.habitTitle,
       categoryTitle: response.data.categoryTitle,
       state: '대기',
@@ -540,7 +598,7 @@ async function addHabitToMyHabit(habitId, communityId) {
       isCheckedToday: false,
       checkDate: null,
     });
-
+    console.log(response.data);
     openModal('MyRoutine에 추가되었습니다.'); // 성공 시 알림 표시
   } catch (error) {
     console.error('MyHabit 추가 중 오류 발생:', error);
@@ -585,16 +643,7 @@ function logImageUrl(imageUrl) {
 </script>
 
 <style scoped>
-@font-face {
-  font-family: 'Wanted Sans';
-  src: url('@/assets/fonts/WantedSans-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
-* {
-  font-family: 'Wanted Sans';
-}
 
 /* 화면 줄이면 !!*/
 @media (max-width: 850px) {
@@ -609,7 +658,7 @@ function logImageUrl(imageUrl) {
     display: none;
   }
 
-  /* cards는 화면 가운데 */
+  /* cards는 화면 가운데  이거 반응형임*/
   .cards {
     grid-column: 1;
     /* cards도 1열 */
@@ -620,16 +669,32 @@ function logImageUrl(imageUrl) {
   }
 }
 
+
+/* 인포 */
+.info {
+    margin: 6% 8%;
+}
+
+.info h1{
+    font-weight: 800;
+}
+
+.info p {
+    /* font-weight: 700; */
+    margin-top: 25px;
+}
+
 /* 전체 배치 */
 
+
 .filter {
-  margin: 3% 8%;
+  margin: 0% 8% 2% 8%;
   display: grid;
   grid-template-columns: 2fr;
 }
 
 .main {
-  margin: 2% 8%;
+  margin: 1% 8% 2% 8%;
 
   display: grid;
   /* grid-template-columns: 20% 80%; */
@@ -643,12 +708,62 @@ function logImageUrl(imageUrl) {
   grid-column: 1;
 }
 
+.categoryFilter select {
+  width: 150px;
+  height: 30px;
+  margin-left: 10px; /* 카테고리 문구와 드롭박스 사이 간격 */
+  border: solid 1px black; /* 테두리 없애기 */
+  padding: 5px;
+  font-size: 14px;
+  appearance: none; /* 기본 화살표 제거 */
+}
+
+.categoryFilter select:focus {
+  outline: none; /* 클릭 시 외곽선 제거 */
+}
+
+.categoryFilter {
+  display: flex;
+  align-items: center;
+}
+
 .otherFilter {
   grid-column: 2;
 }
 
+.otherFilter input {
+  margin-left: 13px;
+}
+
+.otherFilter input[type="radio"] {
+  appearance: none; /* 기본 라디오 버튼 스타일 제거 */
+  width: 10px;
+  height: 10px;
+  border: 1px solid black; /* 사각형 테두리 */
+  border-radius: 0px; /* 둥근 모서리 제거 */
+  position: relative;
+  cursor: pointer;
+}
+
+.otherFilter input[type="radio"]::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: white; /* 기본 상태는 흰색 */
+  display: block;
+}
+
+.otherFilter input[type="radio"]:checked::before {
+  background-color: black; /* 선택된 상태일 때 검정색으로 채우기 */
+}
+
+.otherFilter input[type="radio"]:checked {
+  border-color: black; /* 선택된 상태일 때 테두리 색도 검정색 */
+}
+
 .intro {
-  margin: 3% 8%;
+  margin: 3% 8% 0% 8%;
+  /* 상단 3%, 좌우 8%, 하단 0 */
   grid-column: 1 / span 2;
   /* 소개는 두 열을 모두 차지 */
   display: flex;
@@ -661,13 +776,137 @@ function logImageUrl(imageUrl) {
 }
 
 .search-routine {
-  flex: 0.2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* 오른쪽 끝으로 배치 */
+  margin-right: 8%;
+  margin-bottom: 15px;
 }
 
-/* .col {
-    flex: 1 1 30%; 
-    min-width: 200px; 
-} */
+.search-routine input {
+  height: 30px;
+  margin-right: 5px;
+  font-size: 14px;
+  /* 버튼과 입력창 사이 간격 */
+  border: 1px solid black;
+}
+
+.search-routine button {
+  display: inline-block;
+  height: 30px;
+  background-color: black;
+  color: white;
+  border: none;
+  font-size: 14px;
+}
+
+.search-routine button:hover {
+  background-color: rgb(227, 227, 227);
+  color: black;
+  border-color: black;
+}
+
+.accordion-container {
+  position: relative;
+}
+
+.accordion-item {
+  background-color: white !important;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
+}
+
+.accordion-header {
+  width: 100%;
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
+}
+
+.accordion-collapse {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: white;
+  opacity: 1;
+  /* 불투명하게 */
+  transition: opacity 0.3s ease-in-out;
+  /* 굵기를 3px로 하고 검은색 테두리 추가 */
+  border: 3px solid black;
+  border-top: none;
+  display: block;
+  visibility: visible;
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
+  margin: 0%;
+  padding: 0%;
+}
+
+.accordion-button {
+  background-color: white !important;
+  border: 3px solid black;
+  border-bottom: none;
+  box-sizing: border-box;
+  /* padding과 border를 포함한 너비 계산 */
+  width: 100%;
+  /* 버튼의 외부 그림자 제거 */
+  box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: white !important;
+  border: 3px solid black;
+  border-bottom: none;
+
+  /* 버튼의 외부 그림자 제거 */
+  box-shadow: none !important;
+}
+
+/* 선택적인 hover 상태에서 배경색 수정 */
+.accordion-button:hover {
+  /* hover 시 원하는 배경색 설정 (회색 예시) */
+  background-color: white !important;
+  border-bottom: none;
+}
+
+.accordion {
+  /* 첫 번째 열 */
+  grid-column: 1;
+  /* 원하는 너비로 설정 */
+  max-width: 70%;
+  /* 여백 조정 */
+  margin-right: 20px;
+
+  background-color: white !important;
+}
+
+.accordion ul {
+  padding-left: 0;
+  /* 목록의 기본 padding 제거 */
+}
+
+.accordion li {
+  list-style-type: none;
+  /* 점 제거 */
+  text-align: left;
+  /* 왼쪽 정렬 */
+  padding-left: 0;
+  /* 여백 제거 */
+}
+
+.accordion button {
+  width: 100%;
+  text-decoration: none;
+  /* 밑줄 제거 */
+  color: black;
+  /* 글자 색을 검은색으로 변경 */
+  font-weight: bold;
+  /* 글자 강조 */
+  text-align: left;
+  /* 버튼 텍스트 왼쪽 정렬 */
+}
 
 .cards {
   /* width: 80%; */
@@ -676,9 +915,47 @@ function logImageUrl(imageUrl) {
   /* min-width: 200px; 비었을 때 최소 높이 */
 }
 
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  /* 내용물이 차지하는 공간만큼 높이를 유지 */
+}
+
 /* 1등, 2등, 3등 표시 */
 .cards .col {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  flex: 1 1 30%;
+  max-width: 33%;
+  /* min-height: 350px; */
+  /* 카드 최소 높이 통일 */
+  overflow: hidden;
+  /* 넘치는 내용 숨기기 */
+
+}
+
+.cards .card {
+  /* height: 100%; */
+  /* max-height: 330px; */
+  /* 카드 높이 일관성 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cards .card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+
 }
 
 .cards .col:nth-child(1) .card::before {
@@ -773,7 +1050,9 @@ function logImageUrl(imageUrl) {
 
 /* ************ 카드 세부 ************ */
 .card {
-  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-title {
@@ -834,6 +1113,8 @@ function logImageUrl(imageUrl) {
   background-color: transparent;
 }
 
+
+
 .likeImg {
   width: 22px;
   /* 아이콘 크기 조절 */
@@ -878,6 +1159,11 @@ function logImageUrl(imageUrl) {
   border-radius: 0;
 }
 
+.challengeButton:hover {
+  background-color: rgba(211, 190, 85, 0.267);
+  color: black;
+}
+
 .challengeButtonText {
   font-size: 14px;
 }
@@ -885,15 +1171,16 @@ function logImageUrl(imageUrl) {
 /* 인증사진 미리보기 */
 .shots {
   grid-column: 1;
-  background-color: #d3be5544;
+  background-color: #ffd73984;
   margin-right: 100px;
   padding: 8px;
   width: 100%;
 }
 
-.shots h5 {
+.shots h4 {
   margin-bottom: 20px;
   text-decoration: underline;
+  font-weight: 800;
 }
 
 .shots p {
@@ -913,13 +1200,26 @@ function logImageUrl(imageUrl) {
 }
 
 .shots .card img {
-  width: 130px;
-  height: 130px;
+  aspect-ratio: 1/1;
   /* 이미지 높이를 자동으로 맞추기 */
   object-fit: cover;
   /* 이미지 비율 유지 */
-
   border-radius: 0;
+}
+
+col-6 col-md-6 .col {
+  flex-grow: 0;
+  flex-shrink: 0;
+  /* 자식 요소가 부모의 크기에 맞춰 늘어나지 않도록 설정 */
+  height: auto;
+  /* 높이를 자동으로 조정 */
+  min-height: 200px;
+  /* 카드의 최소 높이 설정 */
+  max-height: 400px;
+  /* 카드의 최대 높이 설정 */
+  overflow: hidden;
+  /* 컨텐츠가 넘칠 경우 숨김 */
+
 }
 
 /* 카드를 조밀하게 배치 */
@@ -930,25 +1230,67 @@ function logImageUrl(imageUrl) {
   /* 행 간 여백 제거 */
 }
 
+
+/* 페이지네이션 */
 .pagination {
   margin: 24px;
   display: flex;
-  /* 페이지네이션을 가로로 배치 */
   list-style: none;
-  /* 기본 리스트 스타일 제거 */
   justify-content: center;
-  /* 중앙 정렬 */
   padding-left: 0;
-  /* 패딩 제거 */
+  gap: 8px; /* 페이지 간 간격 */
 }
 
 .page-item {
   min-width: 32px;
-  padding: 2px 6px;
+  padding: 8px 12px;
   text-align: center;
   margin: 0 3px;
   border-radius: 6px;
-  border: 1px solid #eee;
-  color: #666;
+  border: 2px solid black; /* 페이지 테두리 검정색 */
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
+
+.page-item:hover {
+  background-color: #f0f0f0; /* 호버 시 밝은 배경 */
+}
+
+.active {
+  background-color: black !important; /* 선택된 페이지는 검정 배경 */
+  color: white; /* 선택된 페이지의 글씨는 흰색 */
+}
+
+.page-link {
+  text-decoration: none;
+  color: inherit; /* 부모 요소의 색상 상속 */
+  display: block;
+}
+
+.page-item.arrow {
+  background-color: transparent; /* 화살표는 배경 없이 */
+  border: none; /* 화살표 테두리 없앰 */
+}
+
+.page-item.arrow:hover {
+  background-color: transparent; /* 화살표는 호버 시에도 배경 없게 */
+  color: black;
+}
+
+.page-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.guideline-message {
+  margin-left: 5%;
+  /* 버튼과의 간격 */
+  color: #999;
+  /* 옅은 회색 */
+  font-size: 14px;
+  /* 작은 글씨 크기 */
+}
+
+
 </style>

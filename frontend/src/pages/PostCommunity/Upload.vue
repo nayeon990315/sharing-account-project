@@ -160,6 +160,9 @@ onMounted(() => {
   }
   formData.myHabitId = habitStore.selectedMyHabitId;
   formData.habitId = findSelectedHabit.value[0].habitId;
+  hashArr.value.push(findSelectedHabit.value[0].categoryTitle);
+  console.log('writerId: ', findSelectedHabit.value[0].writerId);
+  console.log('category: ', findSelectedHabit.value[0].categoryTitle);
 });
 
 const isModalVisible = ref(false);
@@ -204,6 +207,9 @@ watch(
   (newValue) => {
     formData.myHabitId = newValue;
     formData.habitId = findSelectedHabit.value[0].habitId;
+    hashArr.value = [];
+    hashArr.value.push(findSelectedHabit.value[0].categoryTitle);
+    console.log(hashArr.value);
   }
 );
 
@@ -234,7 +240,7 @@ const handleImageUpload = (event) => {
 const submitForm = async () => {
   formData.hashtag = hashArr.value
     .map((tag) => (tag.startsWith('#') ? tag : `#${tag}`))
-    .join(',');
+    .join(' ');
 
   const data = new FormData();
   data.append('myHabitId', formData.myHabitId);
@@ -368,6 +374,7 @@ const onDrop = (index, event) => {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+
   background-color: rgb(249, 249, 249);
   border-radius: 10px;
 }
@@ -393,6 +400,31 @@ const onDrop = (index, event) => {
   border-radius: 8px;
   margin-bottom: 15px;
 }
+
+.btn-success {
+  background-color: #42b983;
+}
+
+.disabled-list {
+  pointer-events: none;
+  opacity: 0.6;
+  background-color: #eeefe9;
+}
+
+.list-group-item-custom {
+  background-color: blue;
+  color: gray;
+}
+
+.list-group-item-light {
+  background-color: #f7d794;
+  color: rgb(0, 0, 0);
+}
+
+.text-small-custom {
+  color: white;
+}
+
 .hash-wrapper {
   display: flex;
   flex-wrap: wrap;

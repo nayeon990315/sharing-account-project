@@ -54,14 +54,23 @@ const selectedCategory = ref('전체');
 
 const categoryOptions = [
   '참여루틴',
-  '식비',
-  '카페/간식',
-  '쇼핑',
-  '교통',
-  '문화/여가',
-  '술/유흥',
-  '주거/공과금',
-  '기타',
+  "식비",
+    "카페/간식",
+    "온라인쇼핑",
+    "패션/쇼핑",
+    "문화/여가",
+    "술/유흥",
+    "교육",
+    "의료/건강",
+    "생활",
+    "주거/공과금",
+    "금융",
+    "뷰티",
+    "자동차",
+    "교통",
+    "반려동물",
+    "여행",
+    "경조사/회비"
 ];
 
 const posts = ref([]);
@@ -78,6 +87,7 @@ const getAllPost = async () => {
       'http://localhost:8080/post-community/all'
     );
 
+    
     // 각 게시물에 대해 habitTitle을 가져와서 추가
     const postsWithHabitTitle = await Promise.all(
       response.data.map(async (post) => {
@@ -162,7 +172,12 @@ const paginatedPosts = computed(() => {
 
 // 카테고리 변경 핸들러
 const handleCategoryFilterChange = (category) => {
-  selectedCategory.value = category;
+  if (category == "참여루틴") {
+    selectedCategory.value = "전체";
+  }
+  else {
+    selectedCategory.value = category;
+  } 
   currentPage.value = 1;
 };
 
