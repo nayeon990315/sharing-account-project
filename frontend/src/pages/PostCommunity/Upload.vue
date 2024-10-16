@@ -290,6 +290,13 @@ const submitForm = async () => {
       }
 
       await habitStore.getHabitsFromServer(formData.userId);
+
+      formData.content = ''
+      hashArr.value = []
+      formData.hashtag = ''
+      fileInput.value = null
+      imagePreview.value = null;
+      formData.image = null;
     }
   } catch (error) {
     console.error('Error submitting form', error);
