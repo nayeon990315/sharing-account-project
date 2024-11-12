@@ -3,8 +3,20 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.backend.roomstart.mapper.RoomStartMapper">
-    <!-- 1. -->
-    <!-- 2. -->
-    <!-- 3. -->
+    <!-- 1.설정 인원 모두 모였는지 확인 -->
+    <select id="checkParticipantsCount" parameterType="int" resultType="com.example.backend.roomstart.vo.RoomStartVO">
+        SELECT COUNT(*) FROM PersonList WHERE roomNum = #{roomNum}
+    </select>
+
+    <!-- 2. 보증금 이체 내역 확인-->
+    <select id="getDepositTransactions" parameterType="String" resultType="Transaction">
+        SELECT * FROM Transaction WHERE accountNumber = #{accountNumber} AND information = '보증금'
+    </select>
+    <!-- 3. 구독 계정 정보 저장-->
+    <update id="updateSubscriptionAccountInfo" parameterType="RoomComplete">
+        UPDATE RoomComplete
+        SET subscriptionAccount = #{subscriptionAccount}, subscribed = #{subscribed}, subscribePwd = #{subscribePwd}
+        WHERE roomNum = #{roomNum}
+    </update>
     <!-- 4. -->
 </mapper>

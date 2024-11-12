@@ -3,8 +3,28 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.backend.roomin.mapper.RoomInMapper">
-    <!-- 1. -->
-    <!-- 2. -->
-    <!-- 3. -->
-    <!-- 4. -->
+    <!-- 1.빠른 매칭 -->
+    <select id="findFastestAvailableRoom" resultType="com.example.backend.roomin.vo.RoomInVO">
+        SELECT * FROM RoomList
+        WHERE numberCurrent
+        < numberTotal
+          ORDER BY roomNum LIMIT 1
+    </select>
+    <!-- 2.선택 매칭 AI에 전달하기 위한 개인정보 출력 -->
+    <select id="getUserPersonalInfo" parameterType="int" resultType="com.example.backend.user.vo.UserVO">
+        SELECT userId, name, age, gender
+        FROM User
+        WHERE userId = #{userId}
+    </select>
+    <!-- 3.선택매칭 AI에 전달하기 위한  방 목록 출력 -->
+    <select id="getRoomListForAI" resultType="Room">
+        SELECT roomNum, title, category, period, dueDate
+        FROM RoomList
+        WHERE privateOrPublic = 'public'
+    </select>
+    <!-- 4.사용자 추가(팀원 역할로 방에 추가) -->
+    <insert id="addUserToRoom" parameterType="Person">
+        INSERT INTO PersonList (roomNum, UserId, role)
+        VALUES (#{roomNum}, #{UserId}, '팀원')
+    </insert>
 </mapper>
