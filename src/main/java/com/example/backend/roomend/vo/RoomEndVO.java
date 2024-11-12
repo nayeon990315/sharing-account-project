@@ -4,6 +4,5 @@ import lombok.Data;
 
 @Data
 public class RoomEndVO {
-    // 1.
-    // 2.
+
 }
