@@ -3,6 +3,16 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.backend.roomend.mapper.RoomEndMapper">
-    <!-- 1. -->
-    <!-- 2. -->
+    <!-- 1. 사용 기간 연장 시 기간 정보 수정 -->
+    <update id="updatePeriod" parameterType="map">
+        UPDATE RoomList
+        SET period = #{period}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 2. 사용 기간 연장 안할 시 해당 방 삭제-->
+    <delete id="deleteRoom" parameterType="int">
+        DELETE FROM RoomComplete
+        WHERE roomNum = #{roomNum};
+    </delete>
 </mapper>
