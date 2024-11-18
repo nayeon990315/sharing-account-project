@@ -7,5 +7,14 @@
     </settings>
     <typeAliases>
         <package name="com.example.backend.roomend.vo"/>
+        <!-- User -->
+        <package name="com.example.backend.user.vo"/>
+        <!-- Account -->
+        <package name="com.example.backend.account.mapper"/>
+        <package name="com.example.backend.account.vo"/>
+        <!-- 방 개설: roomBasic -->
+        <package name="com.example.backend.roombasic.vo"/>
+        <!-- 거래내역: transaction       -->
+        <package name="com.example.backend.transaction.vo"/>
     </typeAliases>
 </configuration>
