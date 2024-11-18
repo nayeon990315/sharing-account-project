@@ -22,12 +22,25 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @PropertySource({"classpath:/application.properties"})
-@MapperScan(basePackages = {"com.example.backend.roomend.mapper",
+@MapperScan(basePackages = {
+        "com.example.backend.roomend.mapper",
         "com.example.backend.roomout.mapper",
-        "com.example.backend.roominfo.mapper"})
-@ComponentScan(basePackages = {"com.example.backend.roomend.service",
+        "com.example.backend.roominfo.mapper",
+        "com.example.backend.user.mapper",
+        "com.example.backend.account.mapper",
+        "com.example.backend.roombasic.mapper",
+        "com.example.backend.transaction.mapper"
+})
+@ComponentScan(basePackages = {
+        "com.example.backend.roomend.service",
         "com.example.backend.roomout.service",
-        "com.example.backend.roominfo.service"})
+        "com.example.backend.roominfo.service",
+        "com.example.backend.user.service",
+        "com.example.backend.account.service",
+        "com.example.backend.roombasic.service",
+        "com.example.backend.transaction.service"
+})
+
 public class AppConfig {
     public AppConfig() {
         System.out.println("AppConfig created");
@@ -70,6 +83,10 @@ public class AppConfig {
                 new ClassPathResource("mapper/RoomEndMapper.xml"),
                 new ClassPathResource("mapper/RoomOutMapper.xml"),
                 new ClassPathResource("mapper/RoomInfoMapper.xml"),
+                new ClassPathResource("mapper/UserMapper.xml"),
+                new ClassPathResource("mapper/AccountMapper.xml"),
+                new ClassPathResource("mapper/RoomBasicMapper.xml"),
+                new ClassPathResource("mapper/TransactionMapper.xml"),
         };
         sessionFactory.setMapperLocations(mapperLocations);
 
