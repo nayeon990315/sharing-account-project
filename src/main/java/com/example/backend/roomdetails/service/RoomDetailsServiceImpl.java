@@ -1,38 +1,50 @@
 package com.example.backend.roomdetails.service;
 
+import com.example.backend.roomdetails.dto.*;
+
 import com.example.backend.roomdetails.mapper.RoomDetailsMapper;
-import com.example.backend.roomdetails.vo.Transaction;
-import com.example.backend.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class RoomDetailsServiceImpl implements RoomDetailsService {
 
-    @Autowired
-    private RoomDetailsMapper roomDetailsMapper;
+    private final RoomDetailsMapper roomDetailsMapper;
 
-    //1. 참여자 목록 조회
-    @Override
-    public List<UserVO> getParticipantsByRoomId(int roomNum) {
-        return roomDetailsMapper.getParticipantsByRoomId(roomNum);
+    @Autowired
+    public RoomDetailsServiceImpl(RoomDetailsMapper roomDetailsMapper) {
+        this.roomDetailsMapper = roomDetailsMapper;
     }
-    // 2. 회비 제출 날짜 조회
+
     @Override
-    public Date getDueDateByRoomId(int roomNum) {
-        return roomDetailsMapper.getDueDateByRoomId(roomNum);
+    public RoomDetailsDto getRoomBasicInfo(int roomNum) {
+        return roomDetailsMapper.getRoomBasicInfo(roomNum);
     }
-    // 3. 모임통장 거래 내역 조회
+
     @Override
-    public List<Transaction> getTransactionHistory(String accountNumber) {
-        return roomDetailsMapper.getTransactionHistory(accountNumber);
+    public List<ParticipantDto> getParticipantList(int roomNum) {
+        return roomDetailsMapper.getParticipantList(roomNum);
     }
-    // 4. 구독 계정 정보 조회
+
     @Override
-    public String getSubscriptionAccount(int roomNum) {
-        return roomDetailsMapper.getSubscriptionAccount(roomNum);
+    public SubscriptionAccountDto getSubscriptionAccountInfo(int roomNum) {
+        return roomDetailsMapper.getSubscriptionAccountInfo(roomNum);
+    }
+
+    @Override
+    public List<PaymentStatusDto> getMonthlyPaymentStatus(int roomNum) {
+        return roomDetailsMapper.getMonthlyPaymentStatus(roomNum);
+    }
+
+    @Override
+    public List<TransactionDto> getAccountTransactionHistory(String accountNumber) {
+        return roomDetailsMapper.getAccountTransactionHistory(accountNumber);
+    }
+
+    @Override
+    public void insertTransaction(String accountNumber, String transactionDetails, int amount) {
+        roomDetailsMapper.insertTransaction(accountNumber, transactionDetails, amount);
     }
 }
