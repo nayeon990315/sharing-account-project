@@ -2,6 +2,7 @@ package com.example.backend.roomdetails.service;
 
 import com.example.backend.roomdetails.mapper.RoomDetailsMapper;
 import com.example.backend.roomdetails.vo.Transaction;
+import com.example.backend.roomlist.vo.RoomListVO;
 import com.example.backend.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,17 @@ public class RoomDetailsServiceImpl implements RoomDetailsService {
     @Override
     public String getSubscriptionAccount(int roomNum) {
         return roomDetailsMapper.getSubscriptionAccount(roomNum);
+    }
+
+    // 22. 비밀번호 랜덤 값 생성
+    @Override
+    public String randomPassword() {
+        return roomDetailsMapper.randomPassword();
+    }
+
+    // 27. 내가 참여 중인 방 목록 출력
+    @Override
+    public List<RoomListVO> selectMyRoomList(String id) {
+        return roomDetailsMapper.selectMyRoomList(id);
     }
 }

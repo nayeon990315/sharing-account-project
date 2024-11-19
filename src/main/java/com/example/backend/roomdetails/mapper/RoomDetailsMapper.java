@@ -1,5 +1,6 @@
 package com.example.backend.roomdetails.mapper;
 
+import com.example.backend.roomlist.vo.RoomListVO;
 import com.example.backend.user.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import com.example.backend.roomdetails.vo.Transaction;
@@ -19,4 +20,10 @@ public interface RoomDetailsMapper {
     List<Transaction> getTransactionHistory(String accountNumber);
     // 4.구독 계정 정보 (사용자가 모두 모이면 구독 계정 정보 출력)
     String getSubscriptionAccount(int roomNum);
+
+    // 22. 비밀번호 랜덤 값 생성
+    String randomPassword();
+
+    // 27. 내가 참여 중인 방 목록 출력
+    List<RoomListVO> selectMyRoomList(String id);
 }
