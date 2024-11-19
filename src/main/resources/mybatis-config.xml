@@ -16,5 +16,7 @@
         <package name="com.example.backend.roombasic.vo"/>
         <!-- 거래내역: transaction       -->
         <package name="com.example.backend.transaction.vo"/>
+
+        <package name="com.example.backend.roomlist.vo"/>
     </typeAliases>
 </configuration>

@@ -29,7 +29,10 @@ import javax.sql.DataSource;
         "com.example.backend.user.mapper",
         "com.example.backend.account.mapper",
         "com.example.backend.roombasic.mapper",
-        "com.example.backend.transaction.mapper"
+        "com.example.backend.transaction.mapper",
+        "com.example.backend.roomlist.mapper",
+        "com.example.backend.roominout.mapper",
+        "com.example.backend.roomdetails.mapper"
 })
 @ComponentScan(basePackages = {
         "com.example.backend.roomend.service",
@@ -38,7 +41,10 @@ import javax.sql.DataSource;
         "com.example.backend.user.service",
         "com.example.backend.account.service",
         "com.example.backend.roombasic.service",
-        "com.example.backend.transaction.service"
+        "com.example.backend.transaction.service",
+        "com.example.backend.roomlist.service",
+        "com.example.backend.roominout.service",
+        "com.example.backend.roomdetails.service"
 })
 
 public class AppConfig {
@@ -87,6 +93,9 @@ public class AppConfig {
                 new ClassPathResource("mapper/AccountMapper.xml"),
                 new ClassPathResource("mapper/RoomBasicMapper.xml"),
                 new ClassPathResource("mapper/TransactionMapper.xml"),
+                new ClassPathResource("mapper/RoomListMapper.xml"),
+                new ClassPathResource("mapper/RoomInOutMapper.xml"),
+                new ClassPathResource("mapper/RoomDetailsMapper.xml"),
         };
         sessionFactory.setMapperLocations(mapperLocations);
 
