@@ -1,7 +1,9 @@
 package com.example.backend.roomdetails.controller;
 
+import com.example.backend.roomdetails.dto.*;
 import com.example.backend.exception.CustomNotFoundException;
 import com.example.backend.roomdetails.service.RoomDetailsService;
+import com.example.backend.roomdetails.vo.RoomDetailsVO;
 import com.example.backend.roomlist.vo.RoomListVO;
 import com.example.backend.user.vo.UserVO;
 import com.example.backend.roomdetails.vo.Transaction;
@@ -20,31 +22,50 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/roomdetails")
 public class RoomDetailsController {
+
+    private final RoomDetailsService roomDetailsService;
+
     @Autowired
-    private RoomDetailsService roomDetailsService;
-    // 1.참여자 목록 조회
-    @GetMapping("/participants/{roomNum}")
-    public ResponseEntity<List<UserVO>> getParticipantsByRoomId(@PathVariable int roomNum) {
-        List<UserVO> participants = roomDetailsService.getParticipantsByRoomId(roomNum);
-        return ResponseEntity.ok(participants);
+    public RoomDetailsController(RoomDetailsService roomDetailsService) {
+        this.roomDetailsService = roomDetailsService;
     }
-    // 2.회비 제출 날짜 조회
-    @GetMapping("/duedate/{roomNum}")
-    public ResponseEntity<Date> getDueDateByRoomId(@PathVariable int roomNum) {
-        Date dueDate = roomDetailsService.getDueDateByRoomId(roomNum);
-        return ResponseEntity.ok(dueDate); //상태코드 200 응답객체 생성
+
+    //12. 방 기본 정보 보여주기
+    @GetMapping("/basic-info")
+    public RoomDetailsDto getRoomBasicInfo(@RequestParam int roomNum) {
+        return roomDetailsService.getRoomBasicInfo(roomNum);
     }
-    // 3.모임통장 거래 내역 조회
-    @GetMapping("/transaction-history/{accountNumber}")
-    public ResponseEntity<List<Transaction>> getTransactionHistory(@PathVariable String accountNumber) {
-        List<Transaction> transactions = roomDetailsService.getTransactionHistory(accountNumber);
-        return ResponseEntity.ok(transactions);
+
+    // 13. 참여자 목록 출력
+    @GetMapping("/participants")
+    public List<ParticipantDto> getParticipantList(@RequestParam int roomNum) {
+        return roomDetailsService.getParticipantList(roomNum);
     }
-    // 4.구독 계정 정보 조회
-    @GetMapping("/subscription/{roomNum}")
-    public ResponseEntity<String> getSubscriptionAccount(@PathVariable int roomNum) {
-        String subscriptionAccount = roomDetailsService.getSubscriptionAccount(roomNum);
-        return ResponseEntity.ok(subscriptionAccount);
+
+    // 14. 구독 계정 정보 출력
+    @GetMapping("/subscription-account")
+    public SubscriptionAccountDto getSubscriptionAccountInfo(@RequestParam int roomNum) {
+        return roomDetailsService.getSubscriptionAccountInfo(roomNum);
+    }
+
+    // 15. 이번 달 납부 현황
+    @GetMapping("/monthly-payment-status")
+    public List<PaymentStatusDto> getMonthlyPaymentStatus(@RequestParam int roomNum) {
+        return roomDetailsService.getMonthlyPaymentStatus(roomNum);
+    }
+
+    // 16. 모임통장 거래 내역 보여주기
+    @GetMapping("/account-transactions")
+    public List<TransactionDto> getAccountTransactionHistory(@RequestParam String accountNumber) {
+        return roomDetailsService.getAccountTransactionHistory(accountNumber);
+    }
+
+    // 17. 이번 달 회비 납부하기 버튼 -> 모임통장 거래내역 추가
+    @PostMapping("/add-transaction")
+    public void insertTransaction(@RequestParam String accountNumber,
+                                  @RequestParam String transactionDetails,
+                                  @RequestParam int amount) {
+        roomDetailsService.insertTransaction(accountNumber, transactionDetails, amount);
     }
 
     // 22. 비밀번호 랜덤 값 생성
