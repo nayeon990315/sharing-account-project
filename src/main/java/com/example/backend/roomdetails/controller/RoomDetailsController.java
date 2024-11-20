@@ -3,10 +3,7 @@ package com.example.backend.roomdetails.controller;
 import com.example.backend.roomdetails.dto.*;
 import com.example.backend.exception.CustomNotFoundException;
 import com.example.backend.roomdetails.service.RoomDetailsService;
-import com.example.backend.roomdetails.vo.RoomDetailsVO;
 import com.example.backend.roomlist.vo.RoomListVO;
-import com.example.backend.user.vo.UserVO;
-import com.example.backend.roomdetails.vo.Transaction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -65,12 +61,51 @@ public class RoomDetailsController {
     public void insertTransaction(@RequestParam String accountNumber,
                                   @RequestParam String transactionDetails,
                                   @RequestParam int amount) {
-        roomDetailsService.insertTransaction(accountNumber, transactionDetails, amount);
+        try {
+            roomDetailsService.insertTransaction(accountNumber, transactionDetails, amount);
+            System.out.println("납부 확인");
+        }catch (Exception e){
+            System.out.println("납부 안함  "+e.getMessage());
+        }
+    }
+//    //20 시작시 계정추가
+//    @PostMapping("/account")
+//    public ResponseEntity<String> addAccount(
+//            @RequestParam String subscribeId,
+//            @RequestParam(required = false, defaultValue = "") String subscribePwd
+//    ) {
+//        try {
+//            roomDetailsService.addAccount(subscribeId, subscribePwd);
+//            return ResponseEntity.ok("계정이 성공적으로 추가되었습니다.");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("계정 추가 실패: " + e.getMessage());
+//        }
+//    }
+
+
+
+
+    //21 계정 수정
+    @PutMapping("/update-account/{roomNum}")
+    public ResponseEntity<String> updateAccount(
+            @PathVariable int roomNum,
+            @RequestParam String subscribeId,
+            @RequestParam String subscribePwd
+    ) {
+        try {
+            roomDetailsService.updateAccount(roomNum, subscribeId, subscribePwd);
+
+            return ResponseEntity.ok("success.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("fail");
+        }
     }
 
     // 22. 비밀번호 랜덤 값 생성
     @GetMapping("/random/password")
     public ResponseEntity<String> randomPassword() {
+
         try {
             String password = roomDetailsService.randomPassword();
             return ResponseEntity.ok(password);

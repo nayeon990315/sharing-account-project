@@ -95,4 +95,18 @@
                  LEFT JOIN RoomComplete rc ON rl.roomNum = rc.roomNum
         WHERE pl.id = #{id};
     </select>
+
+    <!--20 시작시 계정 추가-->
+    <insert id="addAccount" parameterType="map">
+        INSERT INTO RoomComplete (subscribeId, subscribePwd)
+        VALUES (#{subscribeId}, #{subscribePwd})
+    </insert>
+    
+    <!--21 계정 수정-->
+    <update id="updateAccount">
+        UPDATE RoomComplete
+        SET subscribeId = #{subscribeId},
+            subscribePwd = #{subscribePwd}
+        WHERE roomNum = #{roomNum}
+    </update>
 </mapper>

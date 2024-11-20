@@ -32,9 +32,21 @@ public interface RoomDetailsMapper {
                            @Param("transactionDetails") String transactionDetails,
                            @Param("amount") int amount);
 
+    //20 시작시 계정 추가
+    void addAccount(
+    @Param("subscribeId")
+    String subscribeId,
+    @Param("subscribePwd")
+    String subscribePwd);
+
+    //21 계정 수정
+    void updateAccount(@Param("roomNum")int roomNum,@Param("subscribeId") String subscribeId, @Param("subscribePwd")String subscribePwd);
+
     // 22. 비밀번호 랜덤 값 생성
     String randomPassword();
 
     // 27. 내가 참여 중인 방 목록 출력
     List<RoomListVO> selectMyRoomList(String id);
+
+
 }

@@ -56,6 +56,16 @@ public class RoomDetailsServiceImpl implements RoomDetailsService {
     public void insertTransaction(String accountNumber, String transactionDetails, int amount) {
         roomDetailsMapper.insertTransaction(accountNumber, transactionDetails, amount);
     }
+    //20 시작시 계정 추가
+    @Override
+    public void addAccount(String subscribeId, String subscribePwd) {
+        roomDetailsMapper.addAccount(subscribeId, subscribePwd);
+    }
+
+    //21 계정 수정
+    public void updateAccount(int roomNum, String serviceId, String password) {
+        roomDetailsMapper.updateAccount(roomNum, serviceId, password);
+    }
 
     // 22. 비밀번호 랜덤 값 생성
     @Override
@@ -68,4 +78,5 @@ public class RoomDetailsServiceImpl implements RoomDetailsService {
     public List<RoomListVO> selectMyRoomList(String id) {
         return roomDetailsMapper.selectMyRoomList(id);
     }
+
 }
