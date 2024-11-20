@@ -12,4 +12,7 @@ public class UserVO {
     private String gender;
     private Integer age;
     private Integer warning;// null 허용 때문에 Integer
+    private Integer year;
+    private Integer month;
+    private Integer day;
 }
