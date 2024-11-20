@@ -32,4 +32,11 @@ public interface RoomDetailsService {
 
     // 27. 내가 참여 중인 방 목록 출력
     List<RoomListVO> selectMyRoomList(String id);
+
+    //20 시작시 아이디 비밀번호 추가
+    void addAccount(String subscribeId, String subscribePwd);
+
+    //21 계정 수정
+    void updateAccount(int roomNum, String subscribeId, String subscribePwd);
+
 }
