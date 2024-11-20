@@ -2,6 +2,8 @@ package com.example.backend.user.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UserVO {
     private String userId; // DB의 `id`

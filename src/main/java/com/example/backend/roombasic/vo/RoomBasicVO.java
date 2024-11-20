@@ -13,7 +13,9 @@ public class RoomBasicVO {
     private int numberTotal;
     private String period;
     private Date dueDate;
-    private String privateOrPublic;
     
     // 팀장 ID는 따로 담지 않음
+
+    // RoomComplete
+    private int numberCurrent; // 현재 구성원 수 -> 1로 설정(팀장)
 }

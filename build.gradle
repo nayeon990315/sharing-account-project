@@ -84,6 +84,10 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     implementation 'commons-fileupload:commons-fileupload:1.4'
+
+    // jackson라이브러리
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
 }
 
 test {

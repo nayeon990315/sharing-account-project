@@ -1,5 +1,6 @@
 package com.example.backend.user.mapper;
 
+import com.example.backend.user.vo.SurveyVO;
 import com.example.backend.user.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -10,7 +11,7 @@ import java.util.Map;
 @Mapper
 public interface UserMapper {
     // 1. 로그인 (아이디, 비밀번호 확인)
-    public UserVO findUserByIdPwd(@Param("userId") String userId, @Param("pwd") String pwd);
+    public String findUserByIdPwd(@Param("userId") String userId, @Param("pwd") String pwd);
 
 
     // 2. 회원가입 (인적사항 추가)
@@ -27,4 +28,20 @@ public interface UserMapper {
 
     // 4. 회원 탈퇴
     public void deleteUser(@Param("userId") String userId);
+
+
+    // 5. 아이디 중복 확인
+    public int countByUserId(String userId);
+
+
+    // 설문조사
+    // 6. 설문조사 데이터 저장
+    public void insertSurvey(SurveyVO surveyVO);
+
+    // 7. 설문조사 데이터 조회
+    public SurveyVO getSurvey(String userId);
+
+
+    // 8. 개인정보 출력
+    public UserVO selectInfo(String userId);
 }
