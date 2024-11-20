@@ -72,21 +72,6 @@ public class UserController {
         return ResponseEntity.ok(surveyData);
     }
 
-    // 3-1. 프로필 변경 (이름, 성별, 나이 한 번에 변경)
-    @PutMapping("/{userId}/update/info")
-    public ResponseEntity<String> updateUserInfo(@PathVariable String userId, @RequestBody UserVO userVO) {
-        userVO.setUserId(userId); // PathVariable로 받은 userId를 UserVO에 설정
-        userService.updateUserInfo(userVO);
-        return ResponseEntity.ok("User info updated successfully");
-    }
-
-    // 3-2. 비밀번호 변경
-    @PutMapping("/{userId}/update/password")
-    public ResponseEntity<String> updateUserPwd(@PathVariable String userId, @RequestParam("pwd") String pwd) {
-        userService.updateUserPwd(userId, pwd);
-        return ResponseEntity.ok("Password updated successfully");
-    }
-
     // 4. 회원 탈퇴
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@RequestParam String userId) {
@@ -94,10 +79,25 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully");
     }
 
-    // 8. 개인정보 출력
+    // 24. 개인정보 출력
     @GetMapping("{userId}/info")
     public ResponseEntity<UserVO> login(@PathVariable("userId") String userId) {
         UserVO user = userService.selectInfo(userId);
         return ResponseEntity.ok(user);
+    }
+
+    // 25. 개인정보 수정
+    @PutMapping("/{userId}/update/info")
+    public ResponseEntity<String> updateUserInfo(@PathVariable String userId, @RequestBody UserVO userVO) {
+        userVO.setUserId(userId); // PathVariable로 받은 userId를 UserVO에 설정
+        userService.updateUserInfo(userVO);
+        return ResponseEntity.ok("User info updated successfully");
+    }
+
+    // 26. 비밀번호 변경
+    @PutMapping("/{userId}/update/password")
+    public ResponseEntity<String> updateUserPwd(@PathVariable String userId, @RequestParam("pwd") String pwd) {
+        userService.updateUserPwd(userId, pwd);
+        return ResponseEntity.ok("Password updated successfully");
     }
 }
