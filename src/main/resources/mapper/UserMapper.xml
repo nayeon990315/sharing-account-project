@@ -75,4 +75,11 @@
         FROM User
         WHERE id = #{userId}
     </select>
+
+    <!--28 개인 경고 출력 -->
+    <select id="showWarning" resultType="UserVO">
+        select id AS userId, warning
+        from User
+        where id = #{userId}
+    </select>
 </mapper>

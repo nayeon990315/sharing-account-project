@@ -44,4 +44,7 @@ public interface UserMapper {
 
     // 8. 개인정보 출력
     public UserVO selectInfo(String userId);
+
+    //28 개인 경고 출력
+    public UserVO showWarning(String userId);
 }

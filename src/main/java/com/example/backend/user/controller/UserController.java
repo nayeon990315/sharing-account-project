@@ -6,13 +6,9 @@ import com.example.backend.user.vo.SurveyVO;
 import com.example.backend.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -100,4 +96,12 @@ public class UserController {
         UserVO user = userService.selectInfo(userId);
         return ResponseEntity.ok(user);
     }
+
+    //28.경고 상태 보여주기
+    @GetMapping("/warning/{userId}")
+    public ResponseEntity<UserVO> warning(@PathVariable String userId) {
+        UserVO user = userService.showWarning(userId);
+        return ResponseEntity.ok(user);
+    }
+
 }

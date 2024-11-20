@@ -33,4 +33,6 @@ public interface UserService {
 
     // 8. 개인정보 출력
     public UserVO selectInfo(String userId);
+    //28경고 상태 보여주기
+    UserVO showWarning(String userId);
 }

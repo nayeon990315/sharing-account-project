@@ -74,4 +74,9 @@ public class UserServiceImpl implements UserService {
     public UserVO selectInfo(String userId) {
         return userMapper.selectInfo(userId);
     }
+
+    @Override
+    public UserVO showWarning(String userId) {
+        return userMapper.showWarning(userId);
+    }
 }
