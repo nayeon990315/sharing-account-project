@@ -74,4 +74,14 @@ public class UserServiceImpl implements UserService {
     public UserVO selectInfo(String userId) {
         return userMapper.selectInfo(userId);
     }
+
+    //28 경고 상태 보여주기
+    @Override
+    public UserVO showWarning(String userId) {
+        return userMapper.showWarning(userId);
+    }
+    //29 경고 추가
+    public void addWarningByName(String name) {
+        userMapper.incrementWarningByName(name);
+    }
 }
