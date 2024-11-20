@@ -1,5 +1,6 @@
 package com.example.backend.user.service;
 
+import com.example.backend.user.vo.SurveyVO;
 import com.example.backend.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
     // 1. 로그인 (아이디, 비밀번호 확인)
     @Override
-    public UserVO findUserByIdPwd(String userId, String pwd) {
+    public String findUserByIdPwd(String userId, String pwd) {
         return userMapper.findUserByIdPwd(userId, pwd);
     }
 
@@ -47,5 +48,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
         userMapper.deleteUser(userId);
+    }
+
+    // 5. 아이디 중복 확인
+    @Override
+    public boolean isUserIdDuplicate(String userId) {
+        int count = userMapper.countByUserId(userId);
+        return count > 0; // 중복이면 true
+    }
+
+    // 6. 설문조사 데이터 저장
+    @Override
+    public void insertSurvey(SurveyVO surveyVO) {
+        userMapper.insertSurvey(surveyVO);
+    }
+
+    // 7. 설문조사 데이터 조회
+    @Override
+    public SurveyVO getSurvey(String userId) {
+        return userMapper.getSurvey(userId);
+    }
+
+    // 8. 개인정보 출력
+    @Override
+    public UserVO selectInfo(String userId) {
+        return userMapper.selectInfo(userId);
     }
 }

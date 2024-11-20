@@ -13,12 +13,14 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.example.backend.roomend.controller",
-        "com.example.backend.roomout.controller",
         "com.example.backend.roominfo.controller",
         "com.example.backend.user.controller",
         "com.example.backend.account.controller",
         "com.example.backend.roombasic.controller",
-        "com.example.backend.transaction.controller"
+        "com.example.backend.transaction.controller",
+        "com.example.backend.roomlist.controller",
+        "com.example.backend.roominout.controller",
+        "com.example.backend.roomdetails.controller"
 })
 public class WebConfig implements WebMvcConfigurer {
 

@@ -3,7 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.backend.roomdetails.mapper.RoomDetailsMapper">
-    <!-- 방 기본 정보 보여주기 -->
+    <resultMap id="MyRoomResultMap" type="RoomListVO">
+        <result property="roomNum" column="roomNum"/>
+        <result property="accountNumber" column="accountNumber"/>
+        <result property="title" column="title"/>
+        <result property="category" column="category"/>
+        <result property="period" column="period"/>
+        <result property="role" column="role"/>
+        <result property="memberCurrent" column="memberCurrent"/>
+    </resultMap>
+
+    <!-- 12. 방 기본 정보 보여주기 -->
     <select id="getRoomBasicInfo" resultType="com.example.backend.roomdetails.dto.RoomDetailsDto">
         SELECT
             rl.title AS title,
@@ -14,7 +24,7 @@
         WHERE rl.roomNum = #{roomNum}
     </select>
 
-    <!-- 참가자 목록 출력 -->
+    <!-- 13. 참가자 목록 출력 -->
     <select id="getParticipantList" resultType="com.example.backend.roomdetails.dto.ParticipantDto">
         SELECT
             u.name AS name,
@@ -24,7 +34,7 @@
         WHERE pl.roomNum = #{roomNum}
     </select>
 
-    <!-- 구독 계정 정보 출력 -->
+    <!-- 14. 구독 계정 정보 출력 -->
     <select id="getSubscriptionAccountInfo" resultType="com.example.backend.roomdetails.dto.SubscriptionAccountDto">
         SELECT
             rc.subscribeId AS accountId,
@@ -33,7 +43,7 @@
         WHERE rc.roomNum = #{roomNum}
     </select>
 
-    <!-- 이번 달 납부 현황 -->
+    <!-- 15. 이번 달 납부 현황 -->
     <select id="getMonthlyPaymentStatus" resultType="com.example.backend.roomdetails.dto.PaymentStatusDto">
         SELECT
             u.name AS name,
@@ -46,7 +56,7 @@
         WHERE pl.roomNum = #{roomNum}
     </select>
 
-    <!-- 모임통장 거래 내역 -->
+    <!-- 16. 모임통장 거래 내역 -->
     <select id="getAccountTransactionHistory" resultType="com.example.backend.roomdetails.dto.TransactionDto">
         SELECT
             t.accountNumber AS accountNumber,
@@ -57,8 +67,32 @@
         WHERE t.accountNumber = #{accountNumber}
     </select>
 
-    <!-- 거래내역 추가 -->
+    <!-- 17. 거래 내역 추가 -->
     <insert id="insertTransaction">
         INSERT INTO Transaction (accountNumber, information, time, amount)
         VALUES (#{accountNumber}, #{transactionDetails}, NOW(), #{amount})
-    </insert></mapper>
+    </insert>
+
+    <!-- 22. 비밀번호 랜덤 값 생성 -->
+    <select id="randomPassword" resultType="string">
+        SELECT CONCAT(
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ', FLOOR(1 + (RAND() * 26)), 1),
+                    SUBSTRING('abcdefghijklmnopqrstuvwxyz', FLOOR(1 + (RAND() * 26)), 1),
+                    SUBSTRING('0123456789', FLOOR(1 + (RAND() * 10)), 1),
+                    SUBSTRING('!@#$%^*()', FLOOR(1 + (RAND() * 10)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1)
+        ) AS random_password;
+    </select>
+
+    <!-- 27. 내가 참여 중인 방 목록 출력 -->
+    <select id="selectMyRoomList" parameterType="string" resultMap="MyRoomResultMap">
+        SELECT rl.roomNum, rl.accountNumber, rl.title, rl.category, rl.period, pl.role, rc.memberCurrent
+        FROM RoomList rl
+                 LEFT JOIN PersonList pl ON rl.roomNum = pl.roomNum
+                 LEFT JOIN RoomComplete rc ON rl.roomNum = rc.roomNum
+        WHERE pl.id = #{id};
+    </select>
+</mapper>

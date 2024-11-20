@@ -3,6 +3,9 @@ package com.example.backend.roomdetails.service;
 import com.example.backend.roomdetails.dto.*;
 
 import com.example.backend.roomdetails.mapper.RoomDetailsMapper;
+import com.example.backend.roomdetails.vo.Transaction;
+import com.example.backend.roomlist.vo.RoomListVO;
+import com.example.backend.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,33 +21,51 @@ public class RoomDetailsServiceImpl implements RoomDetailsService {
         this.roomDetailsMapper = roomDetailsMapper;
     }
 
+    // 12. 방 기본 정보 출력
     @Override
     public RoomDetailsDto getRoomBasicInfo(int roomNum) {
         return roomDetailsMapper.getRoomBasicInfo(roomNum);
     }
 
+    // 13. 참여자 목록 출력
     @Override
     public List<ParticipantDto> getParticipantList(int roomNum) {
         return roomDetailsMapper.getParticipantList(roomNum);
     }
 
+    // 14. 구독 계정 정보 출력
     @Override
     public SubscriptionAccountDto getSubscriptionAccountInfo(int roomNum) {
         return roomDetailsMapper.getSubscriptionAccountInfo(roomNum);
     }
 
+    // 15. 이번 달 납부 현황 출력
     @Override
     public List<PaymentStatusDto> getMonthlyPaymentStatus(int roomNum) {
         return roomDetailsMapper.getMonthlyPaymentStatus(roomNum);
     }
 
+    // 16. 모임통장 거래 내역 출력
     @Override
     public List<TransactionDto> getAccountTransactionHistory(String accountNumber) {
         return roomDetailsMapper.getAccountTransactionHistory(accountNumber);
     }
 
+    // 17. 이번 달 회비 납부하기 버튼
     @Override
     public void insertTransaction(String accountNumber, String transactionDetails, int amount) {
         roomDetailsMapper.insertTransaction(accountNumber, transactionDetails, amount);
+    }
+
+    // 22. 비밀번호 랜덤 값 생성
+    @Override
+    public String randomPassword() {
+        return roomDetailsMapper.randomPassword();
+    }
+
+    // 27. 내가 참여 중인 방 목록 출력
+    @Override
+    public List<RoomListVO> selectMyRoomList(String id) {
+        return roomDetailsMapper.selectMyRoomList(id);
     }
 }

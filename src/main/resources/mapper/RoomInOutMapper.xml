@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.backend.roominout.mapper.RoomInOutMapper">
+
+    <!-- 10. 방 현재 구성원 수 증가 -->
+    <update id="increaseCurrntNumber" parameterType="int">
+        UPDATE RoomComplete
+        SET memberCurrent = memberCurrent + 1
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 11. 사용자 목록에 정보 추가 -->
+    <insert id="insertPersonList" parameterType="map">
+        INSERT INTO PersonList (roomNum, id, role, payment)
+        VALUES (#{roomNum}, #{id}, '팀원', 0);
+    </insert>
+
+    <!-- 18. 방 현재 구성원 수 감소 -->
+    <update id="decreaseCurrntNumber" parameterType="int">
+        UPDATE RoomComplete
+        SET memberCurrent = memberCurrent - 1
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 19. 사용자 목록에서 삭제 -->
+    <delete id="deletePersonList" parameterType="map">
+        DELETE FROM PersonList
+        WHERE roomNum = #{roomNum} AND id = #{id};
+    </delete>
+</mapper>
