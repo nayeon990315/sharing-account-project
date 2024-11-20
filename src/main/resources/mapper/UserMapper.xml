@@ -71,7 +71,7 @@
 
     <!-- 8. 개인정보 출력 -->
     <select id="selectInfo" resultType="UserVO">
-        SELECT id AS userId, pwd, name, gender, age
+        SELECT id AS userId, pwd, name, gender, age, warning, year, month, day
         FROM User
         WHERE id = #{userId}
     </select>

@@ -82,7 +82,6 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
     //28.경고 상태 보여주기
     @GetMapping("/warning/{userId}")
     public ResponseEntity<UserVO> warning(@PathVariable String userId) {
@@ -98,6 +97,7 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to add warning: " + e.getMessage());
         }
+    }
 
     // 25. 개인정보 수정
     @PutMapping("/{userId}/update/info")
@@ -109,7 +109,9 @@ public class UserController {
 
     // 26. 비밀번호 변경
     @PutMapping("/{userId}/update/password")
-    public ResponseEntity<String> updateUserPwd(@PathVariable String userId, @RequestParam("pwd") String pwd) {
+    public ResponseEntity<String> updateUserPwd(
+            @PathVariable String userId,
+            @RequestBody String pwd) {
         userService.updateUserPwd(userId, pwd);
         return ResponseEntity.ok("Password updated successfully");
     }
