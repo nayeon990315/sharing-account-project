@@ -26,7 +26,7 @@ public interface UserService {
     public boolean isUserIdDuplicate(String userId);
 
     // 6. 설문조사 데이터 저장
-    public void insertSurvey(SurveyVO surveyVO);
+    void insertSurvey(SurveyVO surveyVO);
 
     // 7. 설문조사 데이터 조회
     public SurveyVO getSurvey(String userId);

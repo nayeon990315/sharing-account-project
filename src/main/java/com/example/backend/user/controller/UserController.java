@@ -1,16 +1,20 @@
 package com.example.backend.user.controller;
 
+import com.example.backend.exception.CustomNotFoundException;
 import com.example.backend.user.service.UserService;
 import com.example.backend.user.vo.SurveyVO;
 import com.example.backend.user.vo.UserVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -25,18 +29,47 @@ public class UserController {
         return "Test endpoint is working";
     }
 
-    // 1. 로그인 (아이디, 비밀번호 확인)
+    // 1. ID와 비밀번호 일치 여부 확인
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestParam("userId") String userId, @RequestParam("pwd") String pwd) {
         String loginId = userService.findUserByIdPwd(userId, pwd);
         return ResponseEntity.ok(loginId);
     }
 
-    // 2. 회원가입 (인적사항 추가)
+    // 2. 아이디 중복 확인
+    @GetMapping("/checkDuplicatedId")
+    public ResponseEntity<Boolean> checkDuplicateId(@RequestParam String userId) {
+        boolean isDuplicate = userService.isUserIdDuplicate(userId);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
+    // 3. 사용자 정보 저장
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserVO userVO) {
         userService.insertUser(userVO);
         return ResponseEntity.ok("User registered successfully");
+    }
+
+    // 설문조사
+    // 4-1. 설문조사 데이터 저장
+    @PostMapping("/survey/submit")
+    public ResponseEntity<String> insertSurvey(@RequestBody SurveyVO surveyVO) {
+        try {
+            log.info("rsult = {}", surveyVO.getUserId());
+            userService.insertSurvey(surveyVO);
+            return ResponseEntity.status(HttpStatus.OK).body("Survey saved successfully.");
+        } catch (CustomNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to save survey.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save survey.");
+        }
+    }
+
+    // 4-2. 설문조사 데이터 조회
+    @GetMapping("/survey/{userId}")
+    public ResponseEntity<SurveyVO> getSurvey(@PathVariable String userId) {
+        SurveyVO surveyData = userService.getSurvey(userId);
+        return ResponseEntity.ok(surveyData);
     }
 
     // 3-1. 프로필 변경 (이름, 성별, 나이 한 번에 변경)
@@ -60,30 +93,6 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.ok("User deleted successfully");
     }
-
-    // 5. 아이디 중복 확인
-    @GetMapping("/checkDuplicatedId")
-    public ResponseEntity<Boolean> checkDuplicateId(@RequestParam String userId) {
-        boolean isDuplicate = userService.isUserIdDuplicate(userId);
-        return ResponseEntity.ok(isDuplicate);
-    }
-
-    // 설문조사
-    // 6. 설문조사 데이터 저장
-    @PostMapping("/survey/submit")
-    public ResponseEntity<String> insertSurvey(@RequestParam String userId,@RequestBody SurveyVO surveyVO) {
-        surveyVO.setUserId(userId);
-        userService.insertSurvey(surveyVO);
-        return ResponseEntity.ok("Survey data saved successfully");
-    }
-
-    // 7. 설문조사 데이터 조회
-    @GetMapping("/survey/{userId}")
-    public ResponseEntity<SurveyVO> getSurvey(@PathVariable String userId) {
-        SurveyVO surveyData = userService.getSurvey(userId);
-        return ResponseEntity.ok(surveyData);
-    }
-
 
     // 8. 개인정보 출력
     @GetMapping("{userId}/info")
