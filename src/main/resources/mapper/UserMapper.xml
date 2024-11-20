@@ -4,8 +4,8 @@
 
 <mapper namespace="com.example.backend.user.mapper.UserMapper">
     <!-- 1. 로그인 (아이디, 비밀번호 확인)-->
-    <select id="findUserByIdPwd" parameterType="String" resultType="com.example.backend.user.vo.UserVO">
-        SELECT id AS userId, pwd, name, gender, age
+    <select id="findUserByIdPwd" parameterType="String" resultType="String">
+        SELECT id AS userId
         FROM User
         WHERE id = #{userId} and pwd = #{pwd}
     </select>
@@ -43,4 +43,37 @@
     <delete id="deleteUser" parameterType="String">
         DELETE FROM User WHERE id = #{userId}
     </delete>
+
+
+    <!-- 5. 아이디 중복 확인   -->
+    <select id="countByUserId" resultType="int" parameterType="String">
+        SELECT COUNT(*)
+        FROM User
+        WHERE id = #{userId}
+    </select>
+
+
+    <!-- 설문조사   -->
+    <!-- 6. 설문조사 데이터 저장 -->
+    <insert id="insertSurvey" parameterType="com.example.backend.user.vo.SurveyVO">
+        INSERT INTO Survey (id, subscription_type, ott_services)
+--         VALUES (#{subscriptionType}, CAST(#{ottServices,jdbcType=VARCHAR} AS JSON))
+        VALUES (#{userId}, #{subscriptionType}, #{ottServices})
+    </insert>
+
+    <!-- 7. 설문조사 데이터 조회 -->
+    <select id="getSurvey" resultType="com.example.backend.user.vo.SurveyVO" parameterType="String">
+        SELECT subscription_type AS subscriptionType,
+               ott_services AS ottServices
+        FROM Survey
+        WHERE id = #{userId}
+    </select>
+
+
+    <!-- 8. 개인정보 출력 -->
+    <select id="selectInfo" resultType="UserVO">
+        SELECT id AS userId, pwd, name, gender, age
+        FROM User
+        WHERE id = #{userId}
+    </select>
 </mapper>
