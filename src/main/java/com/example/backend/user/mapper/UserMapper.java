@@ -47,4 +47,8 @@ public interface UserMapper {
 
     //28 개인 경고 출력
     public UserVO showWarning(String userId);
+
+    //29 개인 경고 추가
+    void incrementWarningByName(@Param("name") String name);
+
 }

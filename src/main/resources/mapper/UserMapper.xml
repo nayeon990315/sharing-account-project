@@ -82,4 +82,11 @@
         from User
         where id = #{userId}
     </select>
+    
+    <!--29 경고 1회 추가 -->
+    <update id="incrementWarningByName">
+        UPDATE User
+        SET warning = COALESCE(warning, 0) + 1
+        WHERE name = #{name}
+    </update>
 </mapper>

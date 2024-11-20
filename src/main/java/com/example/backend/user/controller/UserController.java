@@ -103,5 +103,14 @@ public class UserController {
         UserVO user = userService.showWarning(userId);
         return ResponseEntity.ok(user);
     }
-
+    //29.경고 계정 보여주기
+    @PostMapping("/add-warning")
+    public ResponseEntity<String> addWarning(@RequestParam String name) {
+        try {
+            userService.addWarningByName(name);
+            return ResponseEntity.ok("Warning count increased for user: " + name);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to add warning: " + e.getMessage());
+        }
+    }
 }

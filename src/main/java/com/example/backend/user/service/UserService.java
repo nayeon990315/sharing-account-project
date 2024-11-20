@@ -35,4 +35,6 @@ public interface UserService {
     public UserVO selectInfo(String userId);
     //28경고 상태 보여주기
     UserVO showWarning(String userId);
+    //29 경고 추가
+    void addWarningByName(String name);
 }
