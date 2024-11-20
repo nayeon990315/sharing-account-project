@@ -20,17 +20,16 @@ public class RoomBasicServiceImpl implements RoomBasicService {
         // 1. RoomList에 방 정보 추가
         roomBasicMapper.insertRoom(roomBasicVO);
 
+        int roomNum = roomBasicVO.getRoomNum();
+
         // 2-1. 방 생성자를 팀장으로 PersonList에 추가
         Map<String, Object> params = new HashMap<>();
-        params.put("roomNum", roomBasicVO.getRoomNum());
+        params.put("roomNum", roomNum);
         params.put("id", creatorId);
         roomBasicMapper.insertTeamLeader(params);
 
         // 2-2. RoomComplete에 총 구성원 1로 추가
-        Map<String, Object> params2 = new HashMap<>();
-        params2.put("roomNum", roomBasicVO.getRoomNum());
-        params2.put("numberCurrent", 1);
-        roomBasicMapper.insertRoomComplete(params2);
+        roomBasicMapper.insertRoomComplete(roomNum);
     }
 
     // 3. 방 세부 내용 변경
