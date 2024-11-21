@@ -29,6 +29,9 @@ public class UserController {
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestParam("userId") String userId, @RequestParam("pwd") String pwd) {
         String loginId = userService.findUserByIdPwd(userId, pwd);
+        if(loginId == null) {
+            throw new CustomNotFoundException("User not found");
+        }
         return ResponseEntity.ok(loginId);
     }
 

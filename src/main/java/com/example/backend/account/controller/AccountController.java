@@ -4,6 +4,7 @@ import com.example.backend.account.service.AccountService;
 import com.example.backend.account.vo.AccountVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,10 +17,8 @@ public class AccountController {
 
     // 1. 모임통장 개설 (새로운 모임 통장 계좌번호 추가)
     @PostMapping("/sharingAccount/create")
-    public AccountVO createAccount(@RequestParam String userId) {
-        return accountService.createSharingAccount(userId);
+    public ResponseEntity<AccountVO> createAccount(@RequestParam String userId) {
+        return ResponseEntity.ok(accountService.createSharingAccount(userId));
     }
-
-
     // 2.
 }
