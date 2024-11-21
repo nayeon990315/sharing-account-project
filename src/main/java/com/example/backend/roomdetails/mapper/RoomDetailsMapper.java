@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Map;
 
 @Mapper
 public interface RoomDetailsMapper {
@@ -50,4 +51,7 @@ public interface RoomDetailsMapper {
 
     // 30. 팀원 목록 출력
     List<String> selectMemberList(int roomNum);
+
+    // 31. 회비 납부 상태 변경
+    void updatePaymentState(Map<String, Object> params);
 }

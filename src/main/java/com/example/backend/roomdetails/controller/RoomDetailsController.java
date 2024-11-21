@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -133,5 +134,12 @@ public class RoomDetailsController {
     @GetMapping("/member/list")
     public List<String> selectMemberList(@RequestParam("roomNum") int roomNum) {
         return roomDetailsService.selectMemberList(roomNum);
+    }
+
+    // 31. 납부 상태 변경
+    @PutMapping("/update/payment/state")
+    public ResponseEntity<String> updatePaymentState(@RequestBody Map<String, Object> params) {
+        roomDetailsService.updatePaymentState(params);
+        return ResponseEntity.ok("Payment state updated successfully");
     }
 }
