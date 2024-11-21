@@ -39,4 +39,6 @@ public interface RoomDetailsService {
     //21 계정 수정
     void updateAccount(int roomNum, String subscribeId, String subscribePwd);
 
+    // 30. 팀원 목록 출력
+    List<String> selectMemberList(int roomNum);
 }

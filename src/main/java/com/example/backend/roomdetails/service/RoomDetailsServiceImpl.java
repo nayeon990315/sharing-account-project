@@ -79,4 +79,9 @@ public class RoomDetailsServiceImpl implements RoomDetailsService {
         return roomDetailsMapper.selectMyRoomList(id);
     }
 
+    // 30. 팀원 목록 출력
+    @Override
+    public List<String> selectMemberList(int roomNum) {
+        return roomDetailsMapper.selectMemberList(roomNum);
+    }
 }

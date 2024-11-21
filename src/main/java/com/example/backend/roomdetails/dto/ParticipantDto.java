@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class ParticipantDto {
     private String name;
     private String role;
+    private int payment;
 }

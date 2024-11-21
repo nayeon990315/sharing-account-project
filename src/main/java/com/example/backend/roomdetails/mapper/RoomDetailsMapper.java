@@ -48,5 +48,6 @@ public interface RoomDetailsMapper {
     // 27. 내가 참여 중인 방 목록 출력
     List<RoomListVO> selectMyRoomList(String id);
 
-
+    // 30. 팀원 목록 출력
+    List<String> selectMemberList(int roomNum);
 }

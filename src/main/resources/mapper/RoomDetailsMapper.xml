@@ -28,7 +28,8 @@
     <select id="getParticipantList" resultType="com.example.backend.roomdetails.dto.ParticipantDto">
         SELECT
             u.name AS name,
-            pl.role AS role
+            pl.role AS role,
+            pl.payment
         FROM PersonList pl
                  JOIN User u ON pl.id = u.id
         WHERE pl.roomNum = #{roomNum}
@@ -109,4 +110,11 @@
             subscribePwd = #{subscribePwd}
         WHERE roomNum = #{roomNum}
     </update>
+
+    <!-- 30. 팀원 목록 출력 -->
+    <select id="selectMemberList" parameterType="int" resultType="string">
+        SELECT u.name
+        FROM USER u JOIN PERSONLIST p ON u.id = p.id
+        WHERE ROOMNUM = #{roomNum} AND p.role = '팀원' AND p.payment = 0;
+    </select>
 </mapper>

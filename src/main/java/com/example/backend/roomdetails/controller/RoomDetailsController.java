@@ -128,4 +128,10 @@ public class RoomDetailsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }
+
+    // 30. 팀원 목록 출력
+    @GetMapping("/member/list")
+    public List<String> selectMemberList(@RequestParam("roomNum") int roomNum) {
+        return roomDetailsService.selectMemberList(roomNum);
+    }
 }
