@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RoomDetailsServiceImpl implements RoomDetailsService {
@@ -83,5 +84,11 @@ public class RoomDetailsServiceImpl implements RoomDetailsService {
     @Override
     public List<String> selectMemberList(int roomNum) {
         return roomDetailsMapper.selectMemberList(roomNum);
+    }
+
+    // 31. 회비 납부 상태 변경
+    @Override
+    public void updatePaymentState(Map<String, Object> params) {
+        roomDetailsMapper.updatePaymentState(params);
     }
 }

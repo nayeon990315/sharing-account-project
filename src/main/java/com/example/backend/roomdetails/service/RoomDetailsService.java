@@ -7,6 +7,7 @@ import com.example.backend.user.vo.UserVO;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Map;
 
 public interface RoomDetailsService {
     // 12. 방 기본 정보 출력
@@ -41,4 +42,7 @@ public interface RoomDetailsService {
 
     // 30. 팀원 목록 출력
     List<String> selectMemberList(int roomNum);
+
+    // 31. 회비 납부 상태 변경
+    void updatePaymentState(Map<String, Object> params);
 }

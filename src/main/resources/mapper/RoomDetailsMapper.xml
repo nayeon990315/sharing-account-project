@@ -66,6 +66,7 @@
             t.amount AS amount
         FROM Transaction t
         WHERE t.accountNumber = #{accountNumber}
+        ORDER BY transactionTime DESC;
     </select>
 
     <!-- 17. 거래 내역 추가 -->
@@ -117,4 +118,11 @@
         FROM USER u JOIN PERSONLIST p ON u.id = p.id
         WHERE ROOMNUM = #{roomNum} AND p.role = '팀원' AND p.payment = 0;
     </select>
+
+    <!-- 31. 회비 납부 상태 변경 -->
+    <update id="updatePaymentState" parameterType="map">
+        update personlist
+        set payment = 1
+        where id = #{id} and roomNum = #{roomNum};
+    </update>
 </mapper>
