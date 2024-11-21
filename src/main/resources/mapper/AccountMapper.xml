@@ -9,5 +9,10 @@
         VALUES (#{userId}, #{accountNumber})
     </insert>
 
-    <!-- 2. -->
+    <!-- 2. userId로 계좌 조회-->
+    <select id="findSharingAccountById" resultType="java.lang.String">
+        SELECT accountNumber
+        FROM sharingaccount
+        WHERE id = #{userId}
+    </select>
 </mapper>

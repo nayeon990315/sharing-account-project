@@ -20,5 +20,10 @@ public class AccountController {
     public ResponseEntity<AccountVO> createAccount(@RequestParam String userId) {
         return ResponseEntity.ok(accountService.createSharingAccount(userId));
     }
-    // 2.
+    // 2. userId로 본인 모임통장 조회
+    @GetMapping("/sharingAccount")
+    public ResponseEntity<String> getAccountbyUserId(@RequestParam String userId) {
+        String accountNum = accountService.getSharingAccountByUserId(userId);
+        return ResponseEntity.ok(accountNum);
+    }
 }

@@ -8,6 +8,7 @@ public interface AccountMapper {
     // 1. 모임통장 개설 (새로운 모임 통장 계좌번호 추가)
     public void insertSharingAccount(AccountVO sharingAccount);
 
+    public String findSharingAccountById(String userId);
 
     // 2.
 }

@@ -36,5 +36,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-    // 2.
+    // 2. userId로 모임통장 가져오기
+    public String getSharingAccountByUserId(String userId){
+        String accountNum = accountMapper.findSharingAccountById(userId);
+        if(accountNum == null){
+            return "no account";
+        }
+        return accountNum;
+    }
 }
