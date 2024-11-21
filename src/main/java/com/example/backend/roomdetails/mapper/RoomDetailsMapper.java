@@ -41,7 +41,7 @@ public interface RoomDetailsMapper {
     String subscribePwd);
 
     //21 계정 수정
-    void updateAccount(@Param("roomNum")int roomNum,@Param("subscribeId") String subscribeId, @Param("subscribePwd")String subscribePwd);
+    void updateAccount(Map<String, Object> params);
 
     // 22. 비밀번호 랜덤 값 생성
     String randomPassword();

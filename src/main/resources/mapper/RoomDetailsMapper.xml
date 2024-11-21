@@ -105,7 +105,7 @@
     </insert>
     
     <!--21 계정 수정-->
-    <update id="updateAccount">
+    <update id="updateAccount" parameterType="map">
         UPDATE RoomComplete
         SET subscribeId = #{subscribeId},
             subscribePwd = #{subscribePwd}

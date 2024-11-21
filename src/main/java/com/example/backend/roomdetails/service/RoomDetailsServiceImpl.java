@@ -64,8 +64,9 @@ public class RoomDetailsServiceImpl implements RoomDetailsService {
     }
 
     //21 계정 수정
-    public void updateAccount(int roomNum, String serviceId, String password) {
-        roomDetailsMapper.updateAccount(roomNum, serviceId, password);
+    @Override
+    public void updateAccount(Map<String, Object> params) {
+        roomDetailsMapper.updateAccount(params);
     }
 
     // 22. 비밀번호 랜덤 값 생성
