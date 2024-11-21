@@ -11,7 +11,7 @@ import java.util.Map;
 @Mapper
 public interface UserMapper {
     // 1. 로그인 (아이디, 비밀번호 확인)
-    public String findUserByIdPwd(@Param("userId") String userId, @Param("pwd") String pwd);
+    public UserVO findUserByIdPwd(@Param("userId") String userId, @Param("pwd") String pwd);
 
 
     // 2. 회원가입 (인적사항 추가)

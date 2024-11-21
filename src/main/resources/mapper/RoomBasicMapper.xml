@@ -6,7 +6,7 @@
     <!-- 1. 방 개설 (새로운 방 개설하면 상세 내용 추가) - RoomList-->
     <insert id="insertRoom" parameterType="RoomBasicVO" useGeneratedKeys="true" keyProperty="roomNum">
         INSERT INTO RoomList (accountNumber, title, category, memberTotal, period, dueDate)
-        VALUES (#{accountNumber}, #{title}, #{category}, 1, #{period}, #{dueDate});
+        VALUES (#{accountNumber}, #{title}, #{category}, #{memberTotal}, #{period}, #{dueDate});
     </insert>
 
     <!-- 2. 사용자 추가 (새로운 방 개설하면 개설한 사람의 역할이 방장으로 설정되어 추가) - PersonList & RoomComplete-->

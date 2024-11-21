@@ -4,8 +4,8 @@
 
 <mapper namespace="com.example.backend.user.mapper.UserMapper">
     <!-- 1. 로그인 (아이디, 비밀번호 확인)-->
-    <select id="findUserByIdPwd" parameterType="String" resultType="String">
-        SELECT id AS userId
+    <select id="findUserByIdPwd" parameterType="String" resultType="UserVO">
+        SELECT id AS userId, pwd, name, gender, age, userAccountNumber, warning, year, month, day
         FROM User
         WHERE id = #{userId} and pwd = #{pwd}
     </select>

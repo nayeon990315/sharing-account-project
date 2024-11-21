@@ -51,4 +51,10 @@ public class RoomListController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<RoomListVO>> getRoomsByUser(@RequestParam("userId") String userId) {
+        List<RoomListVO> rooms = roomListService.getRoomsByUserId(userId);
+        return ResponseEntity.ok(rooms);
+    }
 }

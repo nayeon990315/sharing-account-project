@@ -16,4 +16,13 @@
         FROM RoomList l JOIN RoomComplete c ON l.roomNum = c.roomNum
         WHERE l.title LIKE CONCAT('%', #{keyword}, '%') AND l.memberTotal > c.memberCurrent;
     </select>
+
+
+    <select id="getRoomsById" resultType="RoomlistVO">
+        SELECT rl.*
+        FROM personlist pl
+                 INNER JOIN roomlist rl ON pl.roomNum = rl.roomNum
+        WHERE pl.id = #{userId}
+    </select>
+
 </mapper>

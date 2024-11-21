@@ -27,12 +27,12 @@ public class UserController {
 
     // 1. ID와 비밀번호 일치 여부 확인
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam("userId") String userId, @RequestParam("pwd") String pwd) {
-        String loginId = userService.findUserByIdPwd(userId, pwd);
-        if(loginId == null) {
+    public ResponseEntity<UserVO> login(@RequestParam("userId") String userId, @RequestParam("pwd") String pwd) {
+        UserVO userLogined = userService.findUserByIdPwd(userId, pwd);
+        if(userLogined == null) {
             throw new CustomNotFoundException("User not found");
         }
-        return ResponseEntity.ok(loginId);
+        return ResponseEntity.ok(userLogined);
     }
 
     // 2. 아이디 중복 확인

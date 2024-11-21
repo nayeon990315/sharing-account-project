@@ -23,4 +23,9 @@ public class RoomListServiceImpl implements RoomListService {
     public List<RoomListVO> selectRoomListByTitle(String keyword) {
         return roomListMapper.selectRoomListByTitle(keyword);
     }
+
+    @Override
+    public List<RoomListVO> getRoomsByUserId(String userId){
+        return roomListMapper.getRoomsById(userId);
+    }
 }

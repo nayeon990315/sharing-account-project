@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
     // 1. 로그인 (아이디, 비밀번호 확인)
     @Override
-    public String findUserByIdPwd(String userId, String pwd) {
+    public UserVO findUserByIdPwd(String userId, String pwd) {
         return userMapper.findUserByIdPwd(userId, pwd);
     }
 

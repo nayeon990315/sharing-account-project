@@ -8,7 +8,7 @@ import java.util.Map;
 public interface UserService {
 
     // 1. 로그인 (아이디, 비밀번호 확인)
-    String findUserByIdPwd(String userId, String pwd);
+    UserVO findUserByIdPwd(String userId, String pwd);
 
     // 2. 회원가입 (인적사항 추가)
     void insertUser(UserVO userVO);

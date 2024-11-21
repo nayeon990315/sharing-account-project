@@ -11,4 +11,6 @@ public interface RoomListService {
 
     // 6. 검색 내용이 포함된 방 목록 출력
     List<RoomListVO> selectRoomListByTitle(String keyword);
+
+    public List<RoomListVO> getRoomsByUserId(String userId);
 }
