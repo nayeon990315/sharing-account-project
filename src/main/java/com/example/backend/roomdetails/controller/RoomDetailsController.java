@@ -87,14 +87,10 @@ public class RoomDetailsController {
 
 
     //21 계정 수정
-    @PutMapping("/update-account/{roomNum}")
-    public ResponseEntity<String> updateAccount(
-            @PathVariable int roomNum,
-            @RequestParam String subscribeId,
-            @RequestParam String subscribePwd
-    ) {
+    @PutMapping("/update-account")
+    public ResponseEntity<String> updateAccount(@RequestBody Map<String, Object> params) {
         try {
-            roomDetailsService.updateAccount(roomNum, subscribeId, subscribePwd);
+            roomDetailsService.updateAccount(params);
 
             return ResponseEntity.ok("success.");
         } catch (Exception e) {
