@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.backend.roomlist.mapper.RoomListMapper">
+    <!-- 5. 구독 카테고리 별 방 목록 출력 -->
+    <select id="selectRoomListByCategory" parameterType="string" resultType="RoomListVO">
+        SELECT l.roomNum, l.accountNumber, l.title, l.category, l.memberTotal, c.memberCurrent, l.period, l.dueDate
+        FROM RoomList l JOIN RoomComplete c ON l.roomNum = c.roomNum
+        WHERE l.category = #{category} AND l.memberTotal > c.memberCurrent;
+    </select>
+
+    <!-- 6. 검색 내용이 포함된 방 목록 출력 -->
+    <select id="selectRoomListByTitle" parameterType="string" resultType="RoomListVO">
+        SELECT l.roomNum, l.accountNumber, l.title, l.category, l.memberTotal, c.memberCurrent, l.period, l.dueDate
+        FROM RoomList l JOIN RoomComplete c ON l.roomNum = c.roomNum
+        WHERE l.title LIKE CONCAT('%', #{keyword}, '%') AND l.memberTotal > c.memberCurrent;
+    </select>
+
+
+    <select id="getRoomsById" resultType="RoomlistVO">
+        SELECT rl.*
+        FROM personlist pl
+                 INNER JOIN roomlist rl ON pl.roomNum = rl.roomNum
+        WHERE pl.id = #{userId}
+    </select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.backend.roominfo.mapper.RoomInfoMapper">
+    <resultMap id="roomMemberResultMap" type="com.example.backend.roominfo.vo.RoomInfoVO">
+        <result property="roomNum" column="roomNum" />
+        <result property="memberCurrent" column="memberCurrent" />
+    </resultMap>
+
+    <!-- 1. 참여 중 통장 목록 출력 -->
+    <select id="participationAccount" resultType="String">
+        SELECT accountNumber
+        FROM RoomList
+        WHERE roomNum
+            IN (SELECT roomNum FROM RoomComplete);
+    </select>
+
+    <!-- 2. 참여 중 아닌 통장 목록 출력-->
+    <select id="notParticipationAccount" resultType="String">
+        SELECT accountNumber
+        FROM RoomList
+        WHERE roomNum
+            NOT IN (SELECT roomNum FROM RoomComplete);
+    </select>
+
+    <!-- 3. 시작 전 : 지금까지 모인 인원 수 출력 -->
+    <select id="nowMemberNum" resultMap="roomMemberResultMap">
+        SELECT roomNum, memberCurrent FROM RoomComplete
+        WHERE memberCurrent NOT IN (SELECT memberTotal FROM RoomList);
+    </select>
+
+    <!-- 4. -->
+
+    <!-- 5. 완료 : 보증금 이체 -->
+    <insert id="transfer" parameterType="map">
+        INSERT INTO Transaction
+        VALUE(CURRENT_TIMESTAMP, #{accountNumber}, #{userName}, #{price});
+    </insert>
+
+</mapper>

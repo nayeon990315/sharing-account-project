@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.backend.roomdetails.mapper.RoomDetailsMapper">
+    <resultMap id="MyRoomResultMap" type="RoomListVO">
+        <result property="roomNum" column="roomNum"/>
+        <result property="accountNumber" column="accountNumber"/>
+        <result property="title" column="title"/>
+        <result property="category" column="category"/>
+        <result property="period" column="period"/>
+        <result property="role" column="role"/>
+        <result property="memberCurrent" column="memberCurrent"/>
+    </resultMap>
+
+    <!-- 12. 방 기본 정보 보여주기 -->
+    <select id="getRoomBasicInfo" resultType="com.example.backend.roomdetails.dto.RoomDetailsDto">
+        SELECT
+            rl.title AS title,
+            rl.category AS subscriptionType,
+            rl.period AS duration,
+            rl.dueDate AS fundraisingDate
+        FROM RoomList rl
+        WHERE rl.roomNum = #{roomNum}
+    </select>
+
+    <!-- 13. 참가자 목록 출력 -->
+    <select id="getParticipantList" resultType="com.example.backend.roomdetails.dto.ParticipantDto">
+        SELECT
+            u.name AS name,
+            pl.role AS role,
+            pl.payment
+        FROM PersonList pl
+                 JOIN User u ON pl.id = u.id
+        WHERE pl.roomNum = #{roomNum}
+    </select>
+
+    <!-- 14. 구독 계정 정보 출력 -->
+    <select id="getSubscriptionAccountInfo" resultType="com.example.backend.roomdetails.dto.SubscriptionAccountDto">
+        SELECT
+            rc.subscribeId AS accountId,
+            rc.subscribePwd AS accountPassword
+        FROM RoomComplete rc
+        WHERE rc.roomNum = #{roomNum}
+    </select>
+
+    <!-- 15. 이번 달 납부 현황 -->
+    <select id="getMonthlyPaymentStatus" resultType="com.example.backend.roomdetails.dto.PaymentStatusDto">
+        SELECT
+            u.name AS name,
+            CASE
+                WHEN pl.payment = 1 THEN '납부함'
+                ELSE '납부하지 않음'
+                END AS paymentStatus
+        FROM PersonList pl
+                 JOIN User u ON pl.id = u.id
+        WHERE pl.roomNum = #{roomNum}
+    </select>
+
+    <!-- 16. 모임통장 거래 내역 -->
+    <select id="getAccountTransactionHistory" resultType="com.example.backend.roomdetails.dto.TransactionDto">
+        SELECT
+            t.accountNumber AS accountNumber,
+            t.information AS transactionDetails,
+            t.time AS transactionTime,
+            t.amount AS amount
+        FROM Transaction t
+        WHERE t.accountNumber = #{accountNumber}
+        ORDER BY transactionTime DESC;
+    </select>
+
+    <!-- 17. 거래 내역 추가 -->
+    <insert id="insertTransaction">
+        INSERT INTO Transaction (accountNumber, information, time, amount)
+        VALUES (#{accountNumber}, #{transactionDetails}, NOW(), #{amount})
+    </insert>
+
+    <!-- 22. 비밀번호 랜덤 값 생성 -->
+    <select id="randomPassword" resultType="string">
+        SELECT CONCAT(
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZ', FLOOR(1 + (RAND() * 26)), 1),
+                    SUBSTRING('abcdefghijklmnopqrstuvwxyz', FLOOR(1 + (RAND() * 26)), 1),
+                    SUBSTRING('0123456789', FLOOR(1 + (RAND() * 10)), 1),
+                    SUBSTRING('!@#$%^*()', FLOOR(1 + (RAND() * 10)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1),
+                    SUBSTRING('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^*()', FLOOR(1 + (RAND() * 70)), 1)
+        ) AS random_password;
+    </select>
+
+    <!-- 27. 내가 참여 중인 방 목록 출력 -->
+    <select id="selectMyRoomList" parameterType="string" resultMap="MyRoomResultMap">
+        SELECT rl.roomNum, rl.accountNumber, rl.title, rl.category, rl.period, pl.role, rc.memberCurrent
+        FROM RoomList rl
+                 LEFT JOIN PersonList pl ON rl.roomNum = pl.roomNum
+                 LEFT JOIN RoomComplete rc ON rl.roomNum = rc.roomNum
+        WHERE pl.id = #{id};
+    </select>
+
+    <!--20 시작시 계정 추가-->
+    <insert id="addAccount" parameterType="map">
+        INSERT INTO RoomComplete (subscribeId, subscribePwd)
+        VALUES (#{subscribeId}, #{subscribePwd})
+    </insert>
+    
+    <!--21 계정 수정-->
+    <update id="updateAccount" parameterType="map">
+        UPDATE RoomComplete
+        SET subscribeId = #{subscribeId},
+            subscribePwd = #{subscribePwd}
+        WHERE roomNum = #{roomNum}
+    </update>
+
+    <!-- 30. 팀원 목록 출력 -->
+    <select id="selectMemberList" parameterType="int" resultType="string">
+        SELECT u.name
+        FROM USER u JOIN PERSONLIST p ON u.id = p.id
+        WHERE ROOMNUM = #{roomNum} AND p.role = '팀원' AND p.payment = 0;
+    </select>
+
+    <!-- 31. 회비 납부 상태 변경 -->
+    <update id="updatePaymentState" parameterType="map">
+        update personlist
+        set payment = 1
+        where id = #{id} and roomNum = #{roomNum};
+    </update>
+</mapper>
